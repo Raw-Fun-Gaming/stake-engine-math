@@ -1,29 +1,46 @@
-from src.executables.executables import Executables
+from typing import Any
+
 from src.calculations.cluster import Cluster
-from src.calculations.board import Board
 from src.config.config import Config
+from src.executables.executables import Executables
+from src.types import Board
 
 
 class GameCalculations(Executables):
-    """
-    This function will override the evaluate_clusters() function in cluster.py
-    This is to account for the grid multiplier in winning positions.
+    """Override cluster evaluation to account for grid position multipliers.
+
+    This class customizes the cluster evaluation logic to include position-based
+    multipliers on the game grid.
     """
 
-    # Override cluster evaluation functions to include grid position multipliers
     def evaluate_clusters_with_grid(
         self,
         config: Config,
         board: Board,
-        clusters: dict,
-        pos_mult_grid: list,
-        global_multiplier: int = 1,
-        return_data: dict = {"totalWin": 0, "wins": []},
-    ) -> type:
+        clusters: dict[str, list[list[tuple[int, int]]]],
+        pos_mult_grid: list[list[float]],
+        global_multiplier: float = 1.0,
+        return_data: dict[str, Any] | None = None,
+    ) -> tuple[Board, dict[str, Any]]:
+        """Evaluate clusters with grid position multipliers.
+
+        Calculates cluster wins while applying position-based multipliers from
+        the game grid. Returns the modified board and updated win data.
+
+        Args:
+            config: Game configuration with paytable
+            board: Current game board
+            clusters: Dictionary mapping symbols to their cluster positions
+            pos_mult_grid: Grid of position multipliers
+            global_multiplier: Global multiplier to apply
+            return_data: Existing win data to update (creates new if None)
+
+        Returns:
+            Tuple of (modified board, win data dictionary)
         """
-        Determine payout amount from cluster, including symbol multiplier and global multiplier value.
-        Game specific function which takes into account position multipliers.
-        """
+        if return_data is None:
+            return_data = {"totalWin": 0, "wins": []}
+
         exploding_symbols = []
         total_win = 0
         for sym in clusters:

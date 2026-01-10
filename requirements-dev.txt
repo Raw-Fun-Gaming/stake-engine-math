@@ -1,0 +1,33 @@
+# Development dependencies
+# Install with: pip install -r requirements-dev.txt
+
+# Code formatting
+black==24.1.1
+isort==5.13.2
+
+# Linting
+flake8==7.0.0
+flake8-docstrings==1.7.0
+pydocstyle==6.3.0
+
+# Type checking
+mypy==1.8.0
+types-setuptools==69.0.0
+
+# Testing
+pytest==8.3.5
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+pytest-xdist==3.5.0  # Parallel test execution
+
+# Pre-commit hooks
+pre-commit==3.6.0
+
+# Documentation
+sphinx==7.2.6
+sphinx-rtd-theme==2.0.0
+
+# Debugging and profiling
+ipython==8.20.0
+line-profiler==4.1.2
+memory-profiler==0.61.0
