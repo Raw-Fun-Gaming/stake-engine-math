@@ -15,7 +15,8 @@
       "Bash(git add:*)",
       "Bash(type\" to proper tuple type\n- Added parameter type hints\n\n## Statistics\n- Files created: 8 \\(standards, configs, documentation\\)\n- Files modified: 6 \\(state.py, win_manager.py, events.py, betmode.py, types.py, game_calculations.py\\)\n- Type hints added: 62+ functions/methods, 36+ attributes\n- Docstrings added: 53+ comprehensive function/method docs\n- Mypy errors fixed: 17+ type errors resolved\n\n## Next Steps \\(Phase 1.2 continued\\)\n- Add type hints to src/config/config.py\n- Add type hints to calculation modules \\(cluster, lines, ways, scatter\\)\n- Add type hints to write_data modules\n- Run full mypy check and fix remaining cross-module errors\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(type\" to proper tuple type\n- Added parameter type hints\n\n## Statistics\n- Files created: 8 \\(standards, configs, documentation\\)\n- Files modified: 6 \\(state.py, win_manager.py, events.py, betmode.py, types.py, game_calculations.py\\)\n- Type hints added: 62+ functions/methods, 36+ attributes\n- Docstrings added: 53+ comprehensive function/method docs\n- Mypy errors fixed: 17+ type errors resolved\n\n## Next Steps \\(Phase 1.2 continued\\)\n- Add type hints to src/config/config.py\n- Add type hints to calculation modules \\(cluster, lines, ways, scatter\\)\n- Add type hints to write_data modules\n- Run full mypy check and fix remaining cross-module errors\n\nNote: Committed with --no-verify as pre-commit hooks need configuration\nadjustment. Black auto-formatting will be applied in next commit.\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
-      "Bash(black:*)"
+      "Bash(black:*)",
+      "Bash(git restore:*)"
     ]
   }
 }
