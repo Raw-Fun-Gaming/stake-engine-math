@@ -26,7 +26,9 @@ PositionList: TypeAlias = list[Position]
 Distribution: TypeAlias = dict[Union[str, int, float], float]
 
 # Win details dictionary
-WinDetails: TypeAlias = dict[str, Union[str, int, float, list[Position], list[dict[str, int]]]]
+WinDetails: TypeAlias = dict[
+    str, Union[str, int, float, list[Position], list[dict[str, int]]]
+]
 
 # Event dictionary
 Event: TypeAlias = dict[str, Union[str, int, float, list, dict]]

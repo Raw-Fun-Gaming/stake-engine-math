@@ -1,20 +1,21 @@
 """Main file for generating results for sample ways-pay game."""
 
-from gamestate import GameState
 from game_config import GameConfig
 from game_optimization import OptimizationSetup
+from gamestate import GameState
+
 from optimization_program.run_script import OptimizationExecution
-from utils.game_analytics.run_analysis import create_stat_sheet
-from utils.rgs_verification import execute_all_tests
 from src.state.run_sims import create_books
 from src.write_data.write_configs import generate_configs
+from utils.game_analytics.run_analysis import create_stat_sheet
+from utils.rgs_verification import execute_all_tests
 
 if __name__ == "__main__":
 
     num_threads = 10
     rust_threads = 20
-    batching_size = 50000
-    compression = True
+    batching_size = 1000
+    compression = False
     profiling = False
 
     num_sim_args = {

@@ -210,4 +210,6 @@ class BetMode:
         for d in self.get_distributions():
             if d._criteria == targetCriteria:
                 return d._conditions  # type: ignore[no-any-return]
-        raise RuntimeError(f"target criteria: {targetCriteria} not found in betmode-distributions.")
+        raise RuntimeError(
+            f"target criteria: {targetCriteria} not found in betmode-distributions."
+        )

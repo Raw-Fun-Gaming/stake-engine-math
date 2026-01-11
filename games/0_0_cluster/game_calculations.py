@@ -67,7 +67,10 @@ class GameCalculations(Executables):
                                 "globalMult": global_multiplier,
                                 "clusterMult": board_mult,
                                 "winWithoutMult": sym_win,
-                                "overlay": {"reel": central_pos[0], "row": central_pos[1]},
+                                "overlay": {
+                                    "reel": central_pos[0],
+                                    "row": central_pos[1],
+                                },
                             },
                         }
                     ]
@@ -78,7 +81,9 @@ class GameCalculations(Executables):
                             "reel": positions[0],
                             "row": positions[1],
                         } not in exploding_symbols:
-                            exploding_symbols.append({"reel": positions[0], "row": positions[1]})
+                            exploding_symbols.append(
+                                {"reel": positions[0], "row": positions[1]}
+                            )
 
         return_data["totalWin"] += total_win
 

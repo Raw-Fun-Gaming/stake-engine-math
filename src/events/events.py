@@ -48,14 +48,18 @@ def reveal_event(gamestate: Any) -> None:
     for reel, _ in enumerate(gamestate.board):
         board_client.append([])
         for row in range(len(gamestate.board[reel])):
-            board_client[reel].append(json_ready_sym(gamestate.board[reel][row], special_attributes))
+            board_client[reel].append(
+                json_ready_sym(gamestate.board[reel][row], special_attributes)
+            )
 
     if gamestate.config.include_padding:
         for reel, _ in enumerate(board_client):
-            board_client[reel] = [json_ready_sym(gamestate.top_symbols[reel], special_attributes)] + board_client[
-                reel
-            ]
-            board_client[reel].append(json_ready_sym(gamestate.bottom_symbols[reel], special_attributes))
+            board_client[reel] = [
+                json_ready_sym(gamestate.top_symbols[reel], special_attributes)
+            ] + board_client[reel]
+            board_client[reel].append(
+                json_ready_sym(gamestate.bottom_symbols[reel], special_attributes)
+            )
 
     event: dict[str, Any] = {
         "index": len(gamestate.book.events),
@@ -88,7 +92,9 @@ def trigger_free_spins_event(
     Raises:
         AssertionError: If both or neither trigger flags are set, or if tot_fs <= 0
     """
-    assert basegame_trigger != freegame_trigger, "must set either basegame_trigger or freeSpinTrigger to = True"
+    assert (
+        basegame_trigger != freegame_trigger
+    ), "must set either basegame_trigger or freeSpinTrigger to = True"
     event: dict[str, Any] = {}
     scatter_positions: list[dict[str, int]] = []
     for reel, _ in enumerate(gamestate.special_syms_on_board["scatter"]):
@@ -136,7 +142,9 @@ def set_win_event(gamestate: Any, winlevel_key: str = "standard") -> None:
                     gamestate.config.wincap * 100,
                 )
             ),
-            "winLevel": gamestate.config.get_win_level(gamestate.win_manager.spin_win, winlevel_key),
+            "winLevel": gamestate.config.get_win_level(
+                gamestate.win_manager.spin_win, winlevel_key
+            ),
         }
         gamestate.book.add_event(event)
 
@@ -155,7 +163,8 @@ def set_total_win_event(gamestate: Any) -> None:
         "type": EventConstants.SET_TOTAL_WIN.value,
         "amount": int(
             round(
-                min(gamestate.win_manager.running_bet_win, gamestate.config.wincap) * 100,
+                min(gamestate.win_manager.running_bet_win, gamestate.config.wincap)
+                * 100,
                 0,
             )
         ),
@@ -193,7 +202,8 @@ def win_cap_event(gamestate: Any) -> None:
         "type": EventConstants.WIN_CAP.value,
         "amount": int(
             round(
-                min(gamestate.win_manager.running_bet_win, gamestate.config.wincap) * 100,
+                min(gamestate.win_manager.running_bet_win, gamestate.config.wincap)
+                * 100,
                 0,
             )
         ),
@@ -222,10 +232,16 @@ def win_event(gamestate: Any, include_padding_index: bool = True) -> None:
             new_positions = w["positions"]
 
         win_data_copy["details"][idx]["amount"] = int(
-            round(min(win_data_copy["details"][idx]["win"], gamestate.config.wincap) * 100, 0)
+            round(
+                min(win_data_copy["details"][idx]["win"], gamestate.config.wincap)
+                * 100,
+                0,
+            )
         )
         win_data_copy["details"][idx]["positions"] = new_positions
-        win_data_copy["details"][idx]["count"] = win_data_copy["details"][idx]["clusterSize"]
+        win_data_copy["details"][idx]["count"] = win_data_copy["details"][idx][
+            "clusterSize"
+        ]
 
         # Remove old field names
         del win_data_copy["details"][idx]["win"]
@@ -240,10 +256,15 @@ def win_event(gamestate: Any, include_padding_index: bool = True) -> None:
                     ),
                 )
             )
-            win_data_copy["details"][idx]["multiplier"] = win_data_copy["details"][idx]["meta"]["globalMult"]
+            win_data_copy["details"][idx]["multiplier"] = win_data_copy["details"][idx][
+                "meta"
+            ]["globalMult"]
 
             # Handle overlay if present
-            if "overlay" in win_data_copy["details"][idx]["meta"] and include_padding_index:
+            if (
+                "overlay" in win_data_copy["details"][idx]["meta"]
+                and include_padding_index
+            ):
                 overlay_data = win_data_copy["details"][idx]["meta"]["overlay"]
                 overlay_data["row"] += 1
                 win_data_copy["details"][idx]["overlay"] = overlay_data
@@ -255,10 +276,13 @@ def win_event(gamestate: Any, include_padding_index: bool = True) -> None:
         "index": len(gamestate.book.events),
         "type": EventConstants.WIN.value,
         "reason": "cluster",
-        "amount": int(round(min(gamestate.win_data["totalWin"], gamestate.config.wincap) * 100, 0)),
+        "amount": int(
+            round(min(gamestate.win_data["totalWin"], gamestate.config.wincap) * 100, 0)
+        ),
         "totalAmount": int(
             round(
-                min(gamestate.win_manager.running_bet_win, gamestate.config.wincap) * 100,
+                min(gamestate.win_manager.running_bet_win, gamestate.config.wincap)
+                * 100,
                 0,
             )
         ),
@@ -278,7 +302,9 @@ def update_tumble_win_event(gamestate: Any) -> None:
     event: dict[str, Any] = {
         "index": len(gamestate.book.events),
         "type": EventConstants.UPDATE_TUMBLE_WIN.value,
-        "amount": int(round(min(gamestate.win_manager.spin_win, gamestate.config.wincap) * 100, 0)),
+        "amount": int(
+            round(min(gamestate.win_manager.spin_win, gamestate.config.wincap) * 100, 0)
+        ),
     }
     gamestate.book.add_event(event)
 
@@ -313,8 +339,12 @@ def end_free_spins_event(gamestate: Any, winlevel_key: str = "endFeature") -> No
     event: dict[str, Any] = {
         "index": len(gamestate.book.events),
         "type": EventConstants.END_FREE_SPINS.value,
-        "amount": int(min(gamestate.win_manager.freegame_wins, gamestate.config.wincap) * 100),
-        "winLevel": gamestate.config.get_win_level(gamestate.win_manager.freegame_wins, winlevel_key),
+        "amount": int(
+            min(gamestate.win_manager.freegame_wins, gamestate.config.wincap) * 100
+        ),
+        "winLevel": gamestate.config.get_win_level(
+            gamestate.win_manager.freegame_wins, winlevel_key
+        ),
     }
     gamestate.book.add_event(event)
 
@@ -330,7 +360,9 @@ def set_final_win_event(gamestate: Any) -> None:
     event: dict[str, Any] = {
         "index": len(gamestate.book.events),
         "type": EventConstants.SET_FINAL_WIN.value,
-        "amount": int(round(min(gamestate.final_win, gamestate.config.wincap) * 100, 0)),
+        "amount": int(
+            round(min(gamestate.final_win, gamestate.config.wincap) * 100, 0)
+        ),
     }
     gamestate.book.add_event(event)
 
@@ -373,10 +405,15 @@ def tumble_board_event(gamestate: Any) -> None:
 
     exploding = sorted(exploding, key=lambda x: x["reel"])
 
-    new_symbols: list[list[dict[str, Any]]] = [[] for _ in range(gamestate.config.num_reels)]
+    new_symbols: list[list[dict[str, Any]]] = [
+        [] for _ in range(gamestate.config.num_reels)
+    ]
     for r, _ in enumerate(gamestate.new_symbols_from_tumble):
         if len(gamestate.new_symbols_from_tumble[r]) > 0:
-            new_symbols[r] = [json_ready_sym(s, special_attributes) for s in gamestate.new_symbols_from_tumble[r]]
+            new_symbols[r] = [
+                json_ready_sym(s, special_attributes)
+                for s in gamestate.new_symbols_from_tumble[r]
+            ]
 
     event: dict[str, Any] = {
         "index": len(gamestate.book.events),
@@ -434,6 +471,7 @@ def upgrade_event(
         "fromPositions": from_positions,
     }
     gamestate.book.add_event(event)
+
 
 def prize_win_event(gamestate: Any, include_padding_index: bool = True) -> None:
     """Generate prize payout events for M and H symbols on the board.
@@ -501,7 +539,8 @@ def prize_win_event(gamestate: Any, include_padding_index: bool = True) -> None:
             "amount": total_prize_amount,
             "totalAmount": int(
                 round(
-                    min(gamestate.win_manager.running_bet_win, gamestate.config.wincap) * 100,
+                    min(gamestate.win_manager.running_bet_win, gamestate.config.wincap)
+                    * 100,
                     0,
                 )
             ),

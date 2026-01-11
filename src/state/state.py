@@ -256,9 +256,7 @@ class GeneralGameState(ABC):
         self.temp_wins.append(dstr)
         self.temp_wins.append(self.book_id)
 
-    def check_force_keys(
-        self, description: tuple[tuple[str, str], ...]
-    ) -> None:
+    def check_force_keys(self, description: tuple[tuple[str, str], ...]) -> None:
         """Check and append unique force-key parameters to betmode.
 
         Args:
@@ -272,9 +270,7 @@ class GeneralGameState(ABC):
             if keyValue[0] not in current_mode_force_keys:
                 current_betmode.add_force_key(keyValue[0])  # type: ignore[attr-defined]
 
-    def combine(
-        self, modes: list[list[BetMode]], betmode_name: str
-    ) -> None:
+    def combine(self, modes: list[list[BetMode]], betmode_name: str) -> None:
         """Combine force record keys across multiple mode configurations.
 
         Args:
@@ -443,7 +439,9 @@ class GeneralGameState(ABC):
 
         # Calculate simulation range for this thread
         start_sim = thread_index * num_sims + (total_threads * num_sims) * repeat_count
-        end_sim = (thread_index + 1) * num_sims + (total_threads * num_sims) * repeat_count
+        end_sim = (thread_index + 1) * num_sims + (
+            total_threads * num_sims
+        ) * repeat_count
 
         for sim in range(start_sim, end_sim):
             self.criteria = sim_to_criteria[sim]

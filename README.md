@@ -1,15 +1,20 @@
 # Stake Engine Math SDK
 
-Welcome to [Stake Engine Math SDK](https://engine.stake.com/)!
-
 The Math SDK is a Python-based engine for defining game rules, simulating outcomes, and optimizing win distributions. It generates all necessary backend and configuration files, lookup tables, and simulation results.
-   
 
-For technical details [view the docs](https://stakeengine.github.io/math-sdk/)
+## Documentation
+
+- **[docs/](docs/)** - User guides and tutorials
+  - [Running Games](docs/running-games.md) - How to run simulations and build books
+  - [Game Structure](docs/game-structure.md) - Architecture and file organization
+  - [Optimization](docs/optimization.md) - Using the optimization algorithm
+  - [Events](docs/events.md) - Event system guide
+  - [Testing](docs/testing.md) - Writing and running tests
+- **[CLAUDE.md](CLAUDE.md)** - Comprehensive technical reference
 
 ## Improvements & Added Features
 
-This repository includes several enhancements and new features compared to the [original SDK](https://stakeengine.github.io/math-sdk/):
+This repository includes several enhancements and new features compared to the original SDK:
 
 ### 📝 **JSON Output Formatting**
 - **Automatic JSON formatting** when compression is disabled - books files are automatically formatted with proper indentation for better readability
@@ -25,7 +30,7 @@ This repository includes several enhancements and new features compared to the [
 
 ### 🧪 **Unit Testing Framework**
 - **Game-specific unit tests** - Each game can have its own dedicated test suite
-- **Isolated testing** - Test individual components without requiring full game simulation  
+- **Isolated testing** - Test individual components without requiring full game simulation
 - **Fast execution** - Quick feedback during development with focused test cases
 - **Test automation** - Integrated with Makefile for easy test running (`make unittest GAME=<game_name>`)
 - **Example implementations** - Tower defense game includes comprehensive sticky symbols tests
@@ -47,10 +52,10 @@ This repository includes several enhancements and new features compared to the [
 - **Event-driven architecture** - Enhanced event system for better game state management
 - **Flexible configuration** - More options for customizing game behavior and output formats
 - **Template improvements** - Better game templates and examples for faster development
-   
+
 
 # Installation
- 
+
 This repository requires Python3 (version >= 3.12), along with the PIP package installer.
 If the included optimization algorithm is being used, Rust/Cargo will also need to be installed.
 
@@ -59,5 +64,45 @@ It is recommended to use [Make](https://www.gnu.org/software/make/) and setup th
 make setup
 ```
 
-Alternatively, visit our [Setup and Installation page](https://stakeengine.github.io/math-sdk/math_docs/general_overview/) for more details.
+# Running Games
 
+To run a game simulation and build books:
+
+```sh
+# Activate virtual environment
+source env/bin/activate
+
+# Run game simulation
+make run GAME=<game_name>
+
+# Example: Run the 0_0_cluster game
+make run GAME=0_0_cluster
+```
+
+## Configuration
+
+The behavior is controlled by settings in each game's `run.py` file:
+
+```python
+# Enable/disable simulation runs
+run_sims = True
+
+# Number of simulations per betmode
+num_sim_args = {"base": 10000}
+
+# Compression settings
+compression = False  # False for readable JSON, True for compressed zstd files
+
+# JSON format
+output_regular_json = True  # True for single JSON file, False for JSONL format
+```
+
+## Testing
+
+```sh
+# Run game-specific unit tests
+make unit-test GAME=<game_name>
+
+# Run full SDK tests
+make test
+```
