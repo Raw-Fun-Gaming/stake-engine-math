@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from src.calculations.symbol import Symbol
 
 # Type aliases
-SymbolBoard = list[list[Symbol]]
+SymbolBoard = list[list["Symbol"]]
 
 
 class Tumble(Board):

@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 # Type aliases for clarity
 Position = dict[str, int]
-Board = list[list[Symbol]]
+Board = list[list["Symbol"]]
 
 
 class Ways:

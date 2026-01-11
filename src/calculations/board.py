@@ -12,17 +12,17 @@ from typing import TYPE_CHECKING, Any
 
 from src.calculations.statistics import get_random_outcome
 from src.events.events import reveal_event
-from src.state.state import GeneralGameState
+from src.state.base_game_state import BaseGameState
 
 if TYPE_CHECKING:
     from src.calculations.symbol import Symbol
 
 # Type aliases for clarity
 Position = dict[str, int]
-SymbolBoard = list[list[Symbol]]
+SymbolBoard = list[list["Symbol"]]
 
 
-class Board(GeneralGameState):
+class Board(BaseGameState):
     """Board generation and manipulation for slot games.
 
     Provides methods for:

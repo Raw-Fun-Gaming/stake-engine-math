@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 # Type aliases for clarity
 Position = tuple[int, int]
-Board = list[list[Symbol]]
+Board = list[list["Symbol"]]
 ClusterPositions = list[Position]
 Clusters = dict[str, list[ClusterPositions]]
 
