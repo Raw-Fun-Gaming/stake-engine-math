@@ -8,12 +8,9 @@ All events follow a consistent structure and use EventConstants for type safety.
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from src.events.event_constants import EventConstants
-
-if TYPE_CHECKING:
-    from src.state.state import GeneralGameState
 
 
 def json_ready_sym(symbol: Any, special_attributes: list[str]) -> dict[str, Any]:
@@ -239,13 +236,21 @@ def win_event(gamestate: Any, include_padding_index: bool = True) -> None:
             )
         )
         win_data_copy["details"][idx]["positions"] = new_positions
-        win_data_copy["details"][idx]["count"] = win_data_copy["details"][idx][
-            "clusterSize"
-        ]
+
+        # Convert clusterSize (cluster-pay) or kind (line-pay/ways-pay) to count
+        if "clusterSize" in win_data_copy["details"][idx]:
+            win_data_copy["details"][idx]["count"] = win_data_copy["details"][idx][
+                "clusterSize"
+            ]
+            del win_data_copy["details"][idx]["clusterSize"]
+        elif "kind" in win_data_copy["details"][idx]:
+            win_data_copy["details"][idx]["count"] = win_data_copy["details"][idx][
+                "kind"
+            ]
+            del win_data_copy["details"][idx]["kind"]
 
         # Remove old field names
         del win_data_copy["details"][idx]["win"]
-        del win_data_copy["details"][idx]["clusterSize"]
 
         if "meta" in win_data_copy["details"][idx]:
             win_data_copy["details"][idx]["baseAmount"] = int(
