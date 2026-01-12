@@ -42,9 +42,7 @@ class GameState(Board):
         multiplier_value = 1
         if self.gametype == self.config.freegame_type:
             multiplier_value = get_random_outcome(
-                self.get_current_distribution_conditions()["mult_values"][
-                    self.gametype
-                ]
+                self.get_current_distribution_conditions()["mult_values"][self.gametype]
             )
         symbol.assign_attribute({"multiplier": multiplier_value})
 

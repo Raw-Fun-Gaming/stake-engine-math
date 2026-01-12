@@ -17,6 +17,19 @@ from warnings import warn
 
 from src.calculations.symbol import SymbolStorage
 from src.config.output_filenames import OutputFiles
+
+# Event imports (from Executables)
+from src.events.events import (
+    end_free_spins_event,
+    set_final_win_event,
+    trigger_free_spins_event,
+    tumble_board_event,
+    update_free_spins_event,
+    update_global_mult_event,
+    update_tumble_win_event,
+    win_cap_event,
+    win_event,
+)
 from src.state.books import Book
 from src.types import Board, Event, SimulationID
 from src.wins.win_manager import WinManager
@@ -26,19 +39,6 @@ from src.write_data.write_data import (
     print_recorded_wins,
     write_json,
     write_library_events,
-)
-
-# Event imports (from Executables)
-from src.events.events import (
-    win_event,
-    end_free_spins_event,
-    tumble_board_event,
-    update_tumble_win_event,
-    win_cap_event,
-    trigger_free_spins_event,
-    update_free_spins_event,
-    set_final_win_event,
-    update_global_mult_event,
 )
 
 if TYPE_CHECKING:
@@ -465,7 +465,7 @@ class BaseGameState(ABC):
         The default implementation calls tumble_board() from the Tumble class
         if available.
         """
-        if hasattr(self, 'tumble_board'):
+        if hasattr(self, "tumble_board"):
             self.tumble_board()  # type: ignore[attr-defined]
             tumble_board_event(self)
         else:
@@ -503,11 +503,9 @@ class BaseGameState(ABC):
         Returns:
             True if free spin trigger condition is met
         """
-        if (
-            self.count_special_symbols(scatter_key)
-            >= min(self.config.freespin_triggers[self.gametype].keys())
-            and not (self.repeat)
-        ):
+        if self.count_special_symbols(scatter_key) >= min(
+            self.config.freespin_triggers[self.gametype].keys()
+        ) and not (self.repeat):
             return True
         return False
 
@@ -569,9 +567,7 @@ class BaseGameState(ABC):
         self.tot_fs += self.config.freespin_triggers[self.gametype][
             self.count_special_symbols(scatter_key)
         ]
-        trigger_free_spins_event(
-            self, freegame_trigger=True, basegame_trigger=False
-        )
+        trigger_free_spins_event(self, freegame_trigger=True, basegame_trigger=False)
 
     def update_freespin(self) -> None:
         """Called before a new reveal during freegame."""
