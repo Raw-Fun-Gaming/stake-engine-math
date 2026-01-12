@@ -532,6 +532,47 @@ changes are tested in production.
 **Next Steps**: Phase 2 foundation complete. Ready for Phase 3 or further
 Phase 2 work (integrating exceptions, adopting enums) when appropriate.
 
+### 2026-01-13
+**Verification Testing & Bug Fixes ✅ COMPLETE**
+
+**Session: Post-Refactor Verification**
+- ✅ Ran full test suite - all 10 tests passed ✅
+- ✅ Tested all 7 migrated games for functionality
+- ✅ Discovered bug in `src/events/events.py` - line-pay games failing
+- ✅ Fixed KeyError in `win_event()` function:
+  - Issue: Function only handled "clusterSize" (cluster-pay)
+  - Fix: Added conditional handling for "kind" (line-pay/ways-pay)
+  - Both fields now convert to "count" in event output
+- ✅ Removed unused `GeneralGameState` import (leftover from Phase 1.3)
+- ✅ Re-tested all games successfully:
+  - 0_0_lines: ✅ 14.9s (PAR sheet generated)
+  - 0_0_cluster: ✅ 67.1s (PAR sheet generated)
+  - 0_0_ways: ✅ 55.7s (PAR sheet generated)
+  - 0_0_scatter: ✅ 19.9s (PAR sheet generated)
+  - 0_0_expwilds: ✅ 4.9s (PAR sheet generated)
+  - tower_treasures: ✅ 5.9s (books generated)
+- ✅ Committed bug fix (1 commit)
+
+**Bug Fix Details**:
+- **File**: `src/events/events.py`
+- **Lines**: 243-252
+- **Change**: Conditional field mapping (clusterSize OR kind → count)
+- **Impact**: Fixed all line-pay and ways-pay games
+- **Tests**: All 7 games verified working
+
+**Commits**:
+1. `fix: Handle both clusterSize and kind fields in win_event` (9519fd6)
+
+**Summary**: All Phase 1 and Phase 2 changes verified working. Discovered and
+fixed compatibility issue with event generation across different win types.
+All games now run successfully with new flattened architecture.
+
+**Total Commits**: 17 (16 from Phase 1-2 + 1 bug fix)
+
+**Next Steps**:
+- Push all 17 commits to remote
+- Consider Phase 3 (Output Optimization) or further Phase 2 work
+
 ---
 
 ## Notes and Decisions
@@ -571,4 +612,4 @@ None currently.
 
 ---
 
-**Last Updated**: 2026-01-10
+**Last Updated**: 2026-01-13
