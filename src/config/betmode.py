@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import Any
 
 from src.config.constants import *  # noqa: F403
+from src.exceptions import GameConfigError
 
 
 class BetMode:
@@ -94,10 +95,14 @@ class BetMode:
             rtp: Return to player percentage (must be < 1.0)
 
         Raises:
-            Warning: If RTP is >= 1.0
+            GameConfigError: If RTP is >= 1.0 (invalid for slot games)
         """
         if rtp >= 1.0:
-            raise Warning(f"Return To Player is >=1.0!: {rtp}")
+            raise GameConfigError(
+                f"Invalid RTP value {rtp} for betmode '{self._name}'. "
+                f"RTP must be less than 1.0 (100%). "
+                f"Check the 'rtp' parameter in your BetMode configuration."
+            )
         self._rtp: float = rtp
 
     def set_force_keys(self) -> None:
@@ -210,6 +215,9 @@ class BetMode:
         for d in self.get_distributions():
             if d._criteria == targetCriteria:
                 return d._conditions  # type: ignore[no-any-return]
-        raise RuntimeError(
-            f"target criteria: {targetCriteria} not found in betmode-distributions."
+        available_criteria = [d._criteria for d in self.get_distributions()]
+        raise GameConfigError(
+            f"Distribution criteria '{targetCriteria}' not found in betmode '{self._name}'. "
+            f"Available criteria: {available_criteria}. "
+            f"Check your distribution configuration in game_config.py."
         )

@@ -6,6 +6,8 @@ This module manages win tracking at multiple levels:
 - Per-spin/reveal wins within a simulation
 """
 
+from src.exceptions import SimulationError
+
 
 class WinManager:
     """Stores all simulation win info at cumulative and individual spin level.
@@ -99,7 +101,11 @@ class WinManager:
         elif self.free_game_mode.lower() == gametype.lower():
             self.freegame_wins += self.spin_win
         else:
-            raise RuntimeError("Must define a valid gametype")
+            raise SimulationError(
+                f"Invalid gametype '{gametype}'. "
+                f"Valid gametypes are: '{self.base_game_mode}' (base) or '{self.free_game_mode}' (free). "
+                f"Check that your game state's 'gametype' attribute is set correctly."
+            )
 
     def update_end_round_wins(self) -> None:
         """Accumulate total wins for a given betting round.

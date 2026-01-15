@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING, Any
 
 from src.calculations.statistics import get_random_outcome
 from src.events.events import reveal_event
+from src.exceptions import BoardGenerationError
 from src.state.base_game_state import BaseGameState
 
 if TYPE_CHECKING:
@@ -104,7 +105,13 @@ class Board(BaseGameState):
 
         for r in range(1, self.config.num_reels):
             if anticipation[r - 1] > anticipation[r]:
-                raise RuntimeError
+                raise BoardGenerationError(
+                    f"Invalid anticipation sequence at reel {r}: "
+                    f"anticipation values must be non-decreasing left-to-right. "
+                    f"Found anticipation[{r-1}]={anticipation[r-1]} > anticipation[{r}]={anticipation[r]}. "
+                    f"Full anticipation array: {anticipation}. "
+                    f"Check scatter symbol placement and anticipation_triggers configuration."
+                )
 
         self.board = board
         self.get_special_symbols_on_board()
@@ -209,7 +216,12 @@ class Board(BaseGameState):
             ValueError: If symbol name is not registered in symbol storage
         """
         if name not in self.symbol_storage.symbols:
-            raise ValueError(f"Symbol '{name}' is not registered.")
+            registered_symbols = list(self.symbol_storage.symbols.keys())
+            raise ValueError(
+                f"Symbol '{name}' is not registered in symbol storage. "
+                f"Registered symbols: {registered_symbols}. "
+                f"Add the symbol to your paytable or special_symbols in game_config.py."
+            )
         symObject: Symbol = self.symbol_storage.create_symbol_state(name)
         if name in self.special_symbol_functions:
             for func in self.special_symbol_functions[name]:

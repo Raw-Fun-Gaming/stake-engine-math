@@ -11,6 +11,8 @@ from __future__ import annotations
 import random
 from typing import Any
 
+from src.exceptions import WinCalculationError
+
 
 def get_random_outcome(
     distribution: dict[Any, float], totalWeight: float | None = None
@@ -36,9 +38,23 @@ def get_random_outcome(
         >>> dist = {"A": 10, "B": 20, "C": 70}
         >>> outcome = get_random_outcome(dist)  # 70% chance of "C"
     """
-    assert isinstance(distribution, dict), "distribution must be of type: dict "
+    if not isinstance(distribution, dict):
+        raise WinCalculationError(
+            f"Distribution must be a dict, got {type(distribution).__name__}. "
+            f"Distribution should map values to weights, e.g., {{'A': 10, 'B': 20}}."
+        )
+    if not distribution:
+        raise WinCalculationError(
+            "Cannot draw from empty distribution. "
+            "Check that your distribution configuration has at least one entry."
+        )
     if totalWeight is None:
         totalWeight = sum(distribution.values())
+    if totalWeight <= 0:
+        raise WinCalculationError(
+            f"Distribution has non-positive total weight ({totalWeight}). "
+            f"All weights must be positive. Distribution keys: {list(distribution.keys())}."
+        )
     roll: float = random.uniform(0, totalWeight)
     cumulative: float = 0.0
     for value, weight in distribution.items():
@@ -46,7 +62,12 @@ def get_random_outcome(
         if cumulative >= roll:
             return value
 
-    raise Exception("error drawing item from distribution")
+    # This should only happen with NaN weights or floating point issues
+    raise WinCalculationError(
+        f"Failed to draw item from distribution after iterating all {len(distribution)} entries. "
+        f"Total weight: {totalWeight}, roll: {roll}, final cumulative: {cumulative}. "
+        f"Check for NaN or invalid weight values in your distribution."
+    )
 
 
 def get_mean_std_median(dist: dict[float, int | float]) -> tuple[float, float, float]:

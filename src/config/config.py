@@ -11,6 +11,7 @@ from typing import Any
 
 from src.config.betmode import BetMode
 from src.config.paths import PATH_TO_GAMES
+from src.exceptions import GameConfigError, ReelStripError
 from src.output.output_formatter import OutputMode
 
 
@@ -68,11 +69,17 @@ class Config:
         self.include_losing_boards: bool = True  # Include board reveals for 0-win spins
         self.compress_positions: bool = False  # Use [reel, row] instead of {reel, row}
         self.compress_symbols: bool = False  # Use "L5" instead of {"name": "L5"}
-        self.skip_implicit_events: bool = False  # Skip redundant events (e.g., setFinalWin with 0)
+        self.skip_implicit_events: bool = (
+            False  # Skip redundant events (e.g., setFinalWin with 0)
+        )
 
         # Event filtering options (Phase 3.2: Event Optimization)
-        self.skip_derived_wins: bool = False  # Skip SET_WIN, SET_TOTAL_WIN (can sum WIN events)
-        self.skip_progress_updates: bool = False  # Skip UPDATE_FREE_SPINS, UPDATE_TUMBLE_WIN
+        self.skip_derived_wins: bool = (
+            False  # Skip SET_WIN, SET_TOTAL_WIN (can sum WIN events)
+        )
+        self.skip_progress_updates: bool = (
+            False  # Skip UPDATE_FREE_SPINS, UPDATE_TUMBLE_WIN
+        )
         self.verbose_event_level: str = "full"  # "full", "standard", "minimal"
 
         if self.game_id != "0_0_sample":
@@ -162,11 +169,25 @@ class Config:
         Raises:
             RuntimeError: If win_amount doesn't fall within any level range
         """
+        if winlevel_key not in self.win_levels:
+            raise GameConfigError(
+                f"Win level key '{winlevel_key}' not found in win_levels configuration. "
+                f"Available keys: {list(self.win_levels.keys())}. "
+                f"Add this key to self.win_levels in your game_config.py."
+            )
         levels = self.win_levels[winlevel_key]
         for idx, pair in levels.items():
             if win_amount >= pair[0] and win_amount < pair[1]:
                 return idx
-        raise RuntimeError(f"winLevel not found: {win_amount}")
+        # Show the actual ranges for debugging
+        ranges_str = ", ".join(
+            [f"Level {k}: [{v[0]}, {v[1]})" for k, v in levels.items()]
+        )
+        raise GameConfigError(
+            f"Win amount {win_amount} does not fall within any win level range for '{winlevel_key}'. "
+            f"Configured ranges: {ranges_str}. "
+            f"Check that win_levels covers all possible win amounts including edge cases."
+        )
 
     def get_special_symbol_names(self) -> None:
         """Extract all special symbol names from special_symbols dict.
@@ -211,10 +232,12 @@ class Config:
 
         isSubset = uniqueSymbols.issubset(set(self.all_valid_sym_names))
         if not isSubset:
-            raise RuntimeError(
-                f"Symbol identified in reel that does not exist in valid symbol names. \n"
-                f"Valid Symbols: {self.all_valid_sym_names}\n"
-                f"Detected Symbols: {list(uniqueSymbols)}"
+            invalid_symbols = uniqueSymbols - set(self.all_valid_sym_names)
+            raise ReelStripError(
+                f"Reel strip contains {len(invalid_symbols)} unregistered symbol(s): {sorted(invalid_symbols)}. "
+                f"Valid symbols (from paytable + special_symbols): {sorted(self.all_valid_sym_names)}. "
+                f"Either add the missing symbols to your paytable/special_symbols in game_config.py, "
+                f"or remove them from the reel strip CSV file."
             )
 
     def read_reels_csv(self, file_path: str) -> list[list[str]]:
@@ -261,7 +284,12 @@ class Config:
                             )
                         )
 
-                    assert len(reelstrips[reelIndex][-1]) > 0, "Symbol is empty."
+                    if len(reelstrips[reelIndex][-1]) == 0:
+                        raise ReelStripError(
+                            f"Empty symbol found in reel strip at reel {reelIndex}, row {count}. "
+                            f"File: {file_path}. "
+                            f"Check for empty cells or trailing commas in your CSV file."
+                        )
                 count += 1
 
         return reelstrips
@@ -317,3 +345,142 @@ class Config:
                 paytable[(i, symbol)] = payout
 
         return paytable
+
+    def validate_config(self, raise_on_error: bool = True) -> list[str]:
+        """Validate configuration for common errors.
+
+        Checks for:
+        - Required attributes are set
+        - RTP is within valid range (0.0 - 1.0)
+        - Paytable is not empty and has valid format
+        - Board dimensions are positive integers
+        - Win cap is positive
+        - Special symbols match paytable
+        - Bet modes are configured
+        - Reel path exists (if set)
+
+        Args:
+            raise_on_error: If True, raise GameConfigError on first error.
+                           If False, return list of all error messages.
+
+        Returns:
+            List of validation error messages (empty if valid)
+
+        Raises:
+            GameConfigError: If raise_on_error=True and validation fails
+
+        Example:
+            >>> config = GameConfig()
+            >>> config.validate_config()  # Raises if invalid
+            >>> errors = config.validate_config(raise_on_error=False)
+            >>> if errors:
+            ...     print(f"Found {len(errors)} errors")
+        """
+        errors: list[str] = []
+
+        # Check game identification
+        if not self.game_id or self.game_id == "0_0_asample":
+            errors.append(
+                "game_id not set. Define a unique game_id in your game_config.py."
+            )
+
+        # Check RTP
+        if not (0.0 < self.rtp < 1.0):
+            errors.append(
+                f"RTP {self.rtp} is out of valid range (0.0, 1.0). "
+                f"Slot games must have RTP between 0% and 100%."
+            )
+
+        # Check win cap
+        if self.wincap <= 0:
+            errors.append(f"wincap must be positive, got {self.wincap}.")
+
+        # Check board dimensions
+        if self.num_reels <= 0:
+            errors.append(f"num_reels must be positive, got {self.num_reels}.")
+
+        if isinstance(self.num_rows, int):
+            if self.num_rows <= 0:
+                errors.append(f"num_rows must be positive, got {self.num_rows}.")
+        elif isinstance(self.num_rows, list):
+            if len(self.num_rows) != self.num_reels:
+                errors.append(
+                    f"num_rows list length ({len(self.num_rows)}) must match num_reels ({self.num_reels})."
+                )
+            for i, rows in enumerate(self.num_rows):
+                if rows <= 0:
+                    errors.append(f"num_rows[{i}] must be positive, got {rows}.")
+
+        # Check paytable
+        if not self.paytable:
+            errors.append(
+                "paytable is empty. Define at least one symbol payout in game_config.py."
+            )
+        else:
+            for key, value in self.paytable.items():
+                # Support both standard (count, symbol) and range ((min, max), symbol) formats
+                if not isinstance(key, tuple) or len(key) != 2:
+                    errors.append(
+                        f"Invalid paytable key: {key}. "
+                        f"Keys must be tuples of (count, symbol_name) or ((min, max), symbol_name)."
+                    )
+                elif isinstance(key[0], tuple):
+                    # Range format: ((min, max), symbol)
+                    if len(key[0]) != 2 or not all(
+                        isinstance(x, int) and x > 0 for x in key[0]
+                    ):
+                        errors.append(
+                            f"Invalid range in paytable key {key}. "
+                            f"Range must be (min_count, max_count) with positive integers."
+                        )
+                    if not isinstance(key[1], str):
+                        errors.append(
+                            f"Invalid symbol in paytable key {key}. "
+                            f"Symbol name must be a string."
+                        )
+                elif not isinstance(key[0], int) or key[0] <= 0:
+                    errors.append(
+                        f"Invalid count in paytable key {key}. "
+                        f"Count must be a positive integer."
+                    )
+                elif not isinstance(key[1], str):
+                    errors.append(
+                        f"Invalid symbol in paytable key {key}. "
+                        f"Symbol name must be a string."
+                    )
+                if not isinstance(value, (int, float)) or value < 0:
+                    errors.append(
+                        f"Invalid payout for {key}: {value}. "
+                        f"Payout must be a non-negative number."
+                    )
+
+        # Check bet modes
+        if not self.bet_modes:
+            errors.append(
+                "No bet_modes configured. "
+                "Define at least one BetMode in game_config.py."
+            )
+
+        # Check reels path exists (if set)
+        if self.reels_path and not os.path.exists(self.reels_path):
+            errors.append(
+                f"Reels path does not exist: {self.reels_path}. "
+                f"Create the directory and add reel strip CSV files."
+            )
+
+        # Check verbose_event_level is valid
+        valid_levels = {"full", "standard", "minimal"}
+        if self.verbose_event_level not in valid_levels:
+            errors.append(
+                f"Invalid verbose_event_level: '{self.verbose_event_level}'. "
+                f"Must be one of: {valid_levels}."
+            )
+
+        # Raise or return errors
+        if raise_on_error and errors:
+            raise GameConfigError(
+                f"Configuration validation failed with {len(errors)} error(s):\n"
+                + "\n".join(f"  - {e}" for e in errors)
+            )
+
+        return errors

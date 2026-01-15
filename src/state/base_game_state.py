@@ -18,7 +18,6 @@ from warnings import warn
 from src.calculations.symbol import SymbolStorage
 from src.config.output_filenames import OutputFiles
 from src.events.event_filter import EventFilter
-from src.output.output_formatter import OutputFormatter
 
 # Event imports (from Executables)
 from src.events.events import (
@@ -32,6 +31,8 @@ from src.events.events import (
     win_cap_event,
     win_event,
 )
+from src.exceptions import GameConfigError
+from src.output.output_formatter import OutputFormatter
 from src.state.books import Book
 from src.types import Board, Event, SimulationID
 from src.wins.win_manager import WinManager
@@ -250,12 +251,22 @@ class BaseGameState(ABC):
         """
         current_betmode = self.get_current_betmode()
         if current_betmode is None:
-            raise RuntimeError("Could not locate current betmode.")
+            available_modes = [bm.get_name() for bm in self.config.bet_modes]
+            raise GameConfigError(
+                f"Could not locate betmode '{self.betmode}'. "
+                f"Available betmodes: {available_modes}. "
+                f"Check that self.betmode is set to a valid mode name."
+            )
         dist = current_betmode.get_distributions()  # type: ignore[attr-defined]
         for c in dist:
             if c._criteria == self.criteria:
                 return c  # type: ignore[return-value]
-        raise RuntimeError("Could not locate criteria distribution.")
+        available_criteria = [d._criteria for d in dist]
+        raise GameConfigError(
+            f"Could not locate distribution for criteria '{self.criteria}' in betmode '{self.betmode}'. "
+            f"Available criteria: {available_criteria}. "
+            f"Check your distribution configuration in game_config.py."
+        )
 
     def get_current_distribution_conditions(self) -> dict[str, Any]:
         """Get distribution conditions for the current criteria.
@@ -268,11 +279,21 @@ class BaseGameState(ABC):
         """
         betmode = self.get_betmode(self.betmode)
         if betmode is None:
-            raise RuntimeError("Could not locate betmode")
+            available_modes = [bm.get_name() for bm in self.config.bet_modes]
+            raise GameConfigError(
+                f"Could not locate betmode '{self.betmode}'. "
+                f"Available betmodes: {available_modes}. "
+                f"Check that self.betmode is set to a valid mode name."
+            )
         for d in betmode.get_distributions():  # type: ignore[attr-defined]
             if d._criteria == self.criteria:
                 return d._conditions  # type: ignore[return-value]
-        raise RuntimeError("Could not locate betmode conditions")
+        available_criteria = [d._criteria for d in betmode.get_distributions()]
+        raise GameConfigError(
+            f"Could not locate conditions for criteria '{self.criteria}' in betmode '{self.betmode}'. "
+            f"Available criteria: {available_criteria}. "
+            f"Check your distribution configuration in game_config.py."
+        )
 
     def record(self, description: dict[str, Any]) -> None:
         """Record an event for force distribution tracking.

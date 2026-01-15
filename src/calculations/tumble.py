@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING, Any
 
 from src.calculations.board import Board
 from src.events.events import set_total_win_event, set_win_event
+from src.exceptions import BoardGenerationError
 
 if TYPE_CHECKING:
     from src.calculations.symbol import Symbol
@@ -75,8 +76,12 @@ class Tumble(Board):
             ]
 
             if len(copy_reel) != self.config.num_rows[reel]:
-                raise RuntimeError(
-                    f"new reel length must match expected board size:\n expected: {self.config.num_rows[reel]} \n actual: {len(copy_reel)}"
+                raise BoardGenerationError(
+                    f"Tumble board size mismatch on reel {reel}: "
+                    f"expected {self.config.num_rows[reel]} symbols, got {len(copy_reel)}. "
+                    f"Exploding symbols: {exploding_symbols}. "
+                    f"This usually indicates a bug in the tumble logic or incorrect symbol removal. "
+                    f"Check that symbols are properly marked with 'explode' attribute."
                 )
             static_board[reel] = copy_reel
 
