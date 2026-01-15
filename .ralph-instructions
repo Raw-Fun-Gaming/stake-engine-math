@@ -12,7 +12,7 @@ Execute the tasks in RALPH_TASKS.md sequentially, starting with Phase 3.1: Compr
 2. Work through tasks in order
 3. After completing each task:
    - Run relevant tests
-   - Commit with descriptive messages
+   - **DO NOT commit changes** - the user will review and commit manually
    - Update RALPH_TASKS.md progress log
 4. If blocked, document the blocker and skip to next task
 5. Follow CONTRIBUTING.md standards
