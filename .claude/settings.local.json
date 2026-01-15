@@ -10,7 +10,20 @@
       "Bash(git add * && git commit:*)",
       "Bash(git commit:*)",
       "Bash(standard:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(pytest:*)",
+      "Bash(source env/bin/activate)",
+      "Bash(pip install:*)",
+      "Bash(python scripts/profile_performance.py:*)",
+      "Bash(gtimeout 120 python:*)",
+      "Bash(grep:*)",
+      "Bash(for i in 1 2 3)",
+      "Bash(do echo \"Run $i:\")",
+      "Bash(done)",
+      "Bash(git restore:*)",
+      "Bash(git reset:*)",
+      "Bash(black:*)",
+      "Bash(isort:*)"
     ],
     "deny": [],
     "ask": []

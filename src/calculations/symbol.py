@@ -119,29 +119,52 @@ class Symbol:
         for fun in self.special_functions:
             fun(self)
 
+    # Class-level cache for paytable lookups (shared across all instances)
+    _paytable_cache: dict[int, tuple[set[str], dict[str, list[dict[str, float]]]]] = {}
+
     def assign_paying_bool(self, config: Config) -> None:
         """Determine if symbol pays and extract its paytable values.
 
         Sets self.is_paying and self.paytable based on config.paytable.
+        Uses class-level caching to avoid recomputing paytable structure
+        for every symbol instance.
 
         Args:
             config: Game configuration with paytable
         """
-        paying_symbols: set[str] = set()
-        pay_value: list[dict[str, float]] = []
-        for tup, val in config.paytable.items():
-            assert isinstance(
-                tup[1], str
-            ), "paytable expects string for symbol name, (kind, symbol): value"
-            paying_symbols.add(tup[1])
-            if self.name == tup[1]:
-                pay_value.append({str(tup[0]): val})
-        if self.name not in list(paying_symbols):
-            self.is_paying: bool = False
-            self.paytable: list[dict[str, float]] | None = None
-        else:
+        # Use config id as cache key
+        config_id = id(config)
+
+        # Check cache first
+        if config_id not in Symbol._paytable_cache:
+            # Build paytable cache for this config
+            paying_symbols: set[str] = set()
+            symbol_paytables: dict[str, list[dict[str, float]]] = {}
+
+            for tup, val in config.paytable.items():
+                assert isinstance(
+                    tup[1], str
+                ), "paytable expects string for symbol name, (kind, symbol): value"
+                symbol_name = tup[1]
+                paying_symbols.add(symbol_name)
+
+                if symbol_name not in symbol_paytables:
+                    symbol_paytables[symbol_name] = []
+                symbol_paytables[symbol_name].append({str(tup[0]): val})
+
+            # Cache the computed structure
+            Symbol._paytable_cache[config_id] = (paying_symbols, symbol_paytables)
+
+        # Retrieve from cache
+        paying_symbols, symbol_paytables = Symbol._paytable_cache[config_id]
+
+        # Assign symbol properties
+        if self.name in paying_symbols:
             self.is_paying = True
-            self.paytable = pay_value
+            self.paytable = symbol_paytables[self.name]
+        else:
+            self.is_paying = False
+            self.paytable = None
 
     def is_special(self) -> bool:
         """Check if symbol has any special properties.
