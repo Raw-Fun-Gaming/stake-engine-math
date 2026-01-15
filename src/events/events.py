@@ -244,6 +244,12 @@ def win_event(gamestate: Any, include_padding_index: bool = True) -> None:
         gamestate: Current game state with win_data
         include_padding_index: If True, offset row positions by 1 for padding symbols
     """
+    # Create OutputFormatter from config settings
+    formatter = OutputFormatter(
+        output_mode=gamestate.config.output_mode,
+        compress_positions=gamestate.config.compress_positions,
+    )
+
     win_data_copy: dict[str, Any] = {}
     win_data_copy["details"] = deepcopy(gamestate.win_data["wins"])
     for idx, w in enumerate(win_data_copy["details"]):
@@ -254,6 +260,9 @@ def win_event(gamestate: Any, include_padding_index: bool = True) -> None:
         else:
             new_positions = w["positions"]
 
+        # Format positions using OutputFormatter
+        formatted_positions = formatter.format_position_list(new_positions)
+
         win_data_copy["details"][idx]["amount"] = int(
             round(
                 min(win_data_copy["details"][idx]["win"], gamestate.config.wincap)
@@ -261,7 +270,7 @@ def win_event(gamestate: Any, include_padding_index: bool = True) -> None:
                 0,
             )
         )
-        win_data_copy["details"][idx]["positions"] = new_positions
+        win_data_copy["details"][idx]["positions"] = formatted_positions
 
         # Convert clusterSize (cluster-pay) or kind (line-pay/ways-pay) to count
         if "clusterSize" in win_data_copy["details"][idx]:
@@ -424,25 +433,35 @@ def tumble_board_event(gamestate: Any) -> None:
     Args:
         gamestate: Current game state with win_data and new_symbols_from_tumble
     """
+    # Create OutputFormatter from config settings
+    formatter = OutputFormatter(
+        output_mode=gamestate.config.output_mode,
+        compress_positions=gamestate.config.compress_positions,
+        compress_symbols=gamestate.config.compress_symbols,
+    )
+
     special_attributes = list(gamestate.config.special_symbols.keys())
 
-    exploding: list[dict[str, int]] = []
+    exploding_raw: list[dict[str, int]] = []
     for win in gamestate.win_data["wins"]:
         for pos in win["positions"]:
             if gamestate.config.include_padding:
-                exploding.append({"reel": pos["reel"], "row": pos["row"] + 1})
+                exploding_raw.append({"reel": pos["reel"], "row": pos["row"] + 1})
             else:
-                exploding.append({"reel": pos["reel"], "row": pos["row"]})
+                exploding_raw.append({"reel": pos["reel"], "row": pos["row"]})
 
-    exploding = sorted(exploding, key=lambda x: x["reel"])
+    exploding_raw = sorted(exploding_raw, key=lambda x: x["reel"])
 
-    new_symbols: list[list[dict[str, Any]]] = [
+    # Format positions
+    exploding = formatter.format_position_list(exploding_raw)
+
+    new_symbols: list[list[Any]] = [
         [] for _ in range(gamestate.config.num_reels)
     ]
     for r, _ in enumerate(gamestate.new_symbols_from_tumble):
         if len(gamestate.new_symbols_from_tumble[r]) > 0:
             new_symbols[r] = [
-                json_ready_sym(s, special_attributes)
+                formatter.format_symbol(s, special_attributes)
                 for s in gamestate.new_symbols_from_tumble[r]
             ]
 
@@ -494,12 +513,24 @@ def upgrade_event(
         # No upgrade for clusters smaller than medium threshold
         return
 
+    # Create OutputFormatter from config settings
+    formatter = OutputFormatter(
+        output_mode=gamestate.config.output_mode,
+        compress_positions=gamestate.config.compress_positions,
+    )
+
+    # Format positions
+    formatted_position = formatter.format_position(
+        upgrade_position["reel"], upgrade_position["row"]
+    )
+    formatted_from_positions = formatter.format_position_list(from_positions)
+
     event: dict[str, Any] = {
         "index": len(gamestate.book.events),
         "type": EventConstants.UPGRADE.value,
         "symbol": {"name": upgrade_target},
-        "position": upgrade_position,
-        "fromPositions": from_positions,
+        "position": formatted_position,
+        "fromPositions": formatted_from_positions,
     }
     gamestate.book.add_event(event)
 
@@ -517,6 +548,12 @@ def prize_win_event(gamestate: Any, include_padding_index: bool = True) -> None:
     # Check if game has prize configuration
     if not hasattr(gamestate.config, "prize_config"):
         return
+
+    # Create OutputFormatter from config settings
+    formatter = OutputFormatter(
+        output_mode=gamestate.config.output_mode,
+        compress_positions=gamestate.config.compress_positions,
+    )
 
     prize_config = gamestate.config.prize_config
     prize_symbols = prize_config["symbols"]
@@ -547,10 +584,13 @@ def prize_win_event(gamestate: Any, include_padding_index: bool = True) -> None:
             amount = int(round(symbol_payout * count * 100, 0))
             total_prize_amount += amount
 
+            # Format positions
+            formatted_positions = formatter.format_position_list(positions)
+
             details.append(
                 {
                     "symbol": symbol_name,
-                    "positions": positions,
+                    "positions": formatted_positions,
                     "amount": amount,
                     "count": count,
                     "baseAmount": amount,
