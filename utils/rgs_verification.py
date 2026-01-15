@@ -3,25 +3,27 @@ Verify lookup-tale and book result format
 Output statistics tested via RGS
 """
 
+import hashlib
+import importlib
 import json
 import os
-import importlib
+import pickle
 from io import TextIOWrapper
+
 import numpy as np
 import zstandard as zst
-import hashlib
-import pickle
+
 from utils.analysis.distribution_functions import (
-    make_win_distribution,
-    get_distribution_moments,
+    calculate_rtp,
     get_distribution_average,
+    get_distribution_median,
+    get_distribution_moments,
+    get_maxwin_hitrate,
+    get_prob_no_win,
+    make_win_distribution,
+    min_dist_difference,
     non_zero_hitrate,
     prob_less_than_bet,
-    get_prob_no_win,
-    get_maxwin_hitrate,
-    get_distribution_median,
-    min_dist_difference,
-    calculate_rtp,
 )
 
 
@@ -94,7 +96,9 @@ def verify_lookup_format(filename: str) -> list:
             # Payout checks
             assert payout.is_integer() and payout >= 0, "Payout mult be uint64 format:"
             if payout > 0:
-                assert payout >= 10, "Minimum non-zero payout is 10 (RGS accepts 'cents' increments)."
+                assert (
+                    payout >= 10
+                ), "Minimum non-zero payout is 10 (RGS accepts 'cents' increments)."
             assert payout % 10 == 0, "Payout values must be in increments of 10."
             integer_payouts.append(int(payout))
 
@@ -106,20 +110,32 @@ def verify_lookup_format(filename: str) -> list:
             assert weight.is_integer() and weight >= 0, "Weight must be uint64 format."
             running_weight_total += weight
 
-    assert running_weight_total <= np.iinfo(np.uint64).max, "Sum of weights must be <= MAX(uint64)"
+    assert (
+        running_weight_total <= np.iinfo(np.uint64).max
+    ), "Sum of weights must be <= MAX(uint64)"
 
     return win_distribution, integer_payouts, running_weight_total, min_win, max_win
 
 
 # payout mult value match to lut + length match
 def verify_books_and_payout_mults(books_filename: str) -> list:
-    """Ensure the values written to the books match those in the lookup table exactly."""
+    """Ensure the values written to the books match those in the lookup table exactly.
+
+    Supports both format versions:
+    - Legacy (no formatVersion field): Assumed verbose format
+    - 2.0-verbose: Verbose symbol/position format
+    - 2.0-compact: Compact symbol/position format
+
+    The verification logic is format-agnostic since it only checks payoutMultiplier values.
+    """
     assert str(books_filename).endswith(".jsonl.zstd") or str(books_filename).endswith(
         "jsonl.zst"
     ), "Verification is only run for compressed book files of format .jsonl.zst."
 
     book_payout_ints = []
     total_num_events = 0
+    format_versions_seen = set()
+
     with open(books_filename, "rb") as f:
         decompressor = zst.ZstdDecompressor()
         with decompressor.stream_reader(f) as reader:
@@ -138,8 +154,21 @@ def verify_books_and_payout_mults(books_filename: str) -> list:
                     if key not in blob:
                         raise RuntimeError(f"Missing required key: {key}")
 
+                # Track format versions seen (optional field)
+                format_version = blob.get("formatVersion", "1.0-verbose")
+                format_versions_seen.add(format_version)
+
                 total_num_events += len(blob["events"])
                 book_payout_ints.append(blob["payoutMultiplier"])
+
+    # Log format versions for debugging
+    if len(format_versions_seen) > 1:
+        print(
+            f"⚠️  Multiple format versions detected in books file: {format_versions_seen}"
+        )
+    elif format_versions_seen:
+        detected_format = list(format_versions_seen)[0]
+        print(f"✅ Books format version: {detected_format}")
 
     return book_payout_ints, total_num_events
 
@@ -148,7 +177,9 @@ def compare_payout_values(book_int_payouts, lut_int_payouts) -> None:
     """Ensure payout multiplier values match between books and lookup tables."""
     book_ints = pickle.dumps(book_int_payouts)
     lut_ints = pickle.dumps(lut_int_payouts)
-    assert hashlib.md5(book_ints).hexdigest() == hashlib.md5(lut_ints).hexdigest(), "Mismatch in payout array."
+    assert (
+        hashlib.md5(book_ints).hexdigest() == hashlib.md5(lut_ints).hexdigest()
+    ), "Mismatch in payout array."
 
 
 def get_num_non_zero_payouts(book_int_payouts) -> None:
@@ -157,7 +188,13 @@ def get_num_non_zero_payouts(book_int_payouts) -> None:
 
 
 def get_lut_statistics(
-    win_distribution, bet_cost, unique_payouts, weight_range, min_win, max_win, num_events
+    win_distribution,
+    bet_cost,
+    unique_payouts,
+    weight_range,
+    min_win,
+    max_win,
+    num_events,
 ) -> object:
     """Run RGS statistic tests for upload verification."""
 
@@ -206,7 +243,9 @@ def execute_all_tests(config, excluded_modes=[]):
             if not (os.path.exists(book_file)) or not (os.path.exists(lut_file)):
                 raise RuntimeError("Books/Lookup file does not exist.")
 
-            win_dist, lut_payouts, weights_range, min_win, max_win = verify_lookup_format(lut_file)
+            win_dist, lut_payouts, weights_range, min_win, max_win = (
+                verify_lookup_format(lut_file)
+            )
             book_payouts, num_events = verify_books_and_payout_mults(book_file)
 
             compare_payout_values(book_payouts, lut_payouts)

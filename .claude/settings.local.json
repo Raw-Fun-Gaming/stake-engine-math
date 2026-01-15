@@ -19,7 +19,9 @@
       "Bash(git restore:*)",
       "Bash(python:*)",
       "Bash(grep:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(python3 -m pytest:*)",
+      "Bash(pytest:*)"
     ]
   }
 }
