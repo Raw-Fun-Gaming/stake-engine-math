@@ -1,0 +1,49 @@
+======================================================================
+EVENT FILTERING BENCHMARK
+======================================================================
+
+Comparing file sizes and event counts with different filtering configs
+Using compact output mode for all tests
+
+======================================================================
+Running benchmark: Baseline (No Filtering)
+======================================================================
+  skip_derived_wins: False
+  skip_progress_updates: False
+  verbose_event_level: full
+  simulations: 500
+
+Creating books...
+
+Creating books for 0_0_lines in base
+Batch 1 of 1
+Thread 0 finished with 28.146 RTP. [baseGame: 0.915, freeGame: 27.231]
+Saving books for  0_0_lines in base
+Saving force files for 0_0_lines in base
+Saving LUTs for 0_0_lines in base
+
+Finished creating books in 0.5707340240478516 seconds.
+
+Traceback (most recent call last):
+  File "/Users/r.fu/Projects/stake-engine-math/benchmark_event_filtering.py", line 271, in <module>
+    main()
+    ~~~~^^
+  File "/Users/r.fu/Projects/stake-engine-math/benchmark_event_filtering.py", line 195, in main
+    result = run_benchmark(
+        config["name"],
+    ...<3 lines>...
+        num_sims,
+    )
+  File "/Users/r.fu/Projects/stake-engine-math/benchmark_event_filtering.py", line 102, in run_benchmark
+    books_data.append(json.loads(line))
+                      ~~~~~~~~~~^^^^^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/json/decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3_1/Frameworks/Python.framework/Versions/3.13/lib/python3.13/json/decoder.py", line 361, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ~~~~~~~~~~~~~~^^^^^^^^
+json.decoder.JSONDecodeError: Expecting ',' delimiter: line 1 column 714515 (char 714514)
