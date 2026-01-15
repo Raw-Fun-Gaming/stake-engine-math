@@ -2,6 +2,45 @@
 
 The Math SDK is a Python-based engine for defining game rules, simulating outcomes, and optimizing win distributions. It generates all necessary backend and configuration files, lookup tables, and simulation results.
 
+## 🎉 Major Architecture Refactoring (January 2026)
+
+The codebase has undergone a comprehensive refactoring (Phases 1-2) that dramatically simplifies the architecture and improves maintainability:
+
+### Key Improvements
+
+- **🏗️ Flattened Inheritance**: Reduced from 6 layers to 2 layers (67% reduction in complexity)
+- **📁 Simplified Structure**: Games now use 1 file instead of 4 (75% reduction)
+- **📝 Comprehensive Type Hints**: 180+ functions with full type annotations
+- **📚 Rich Documentation**: 120+ docstrings with examples and usage guidance
+- **🛡️ Better Error Handling**: Custom exception hierarchy with clear error messages
+- **🔤 Modern Code Quality**: Enums, constants, and standardized patterns
+- **✅ Fully Tested**: All 7 games migrated and verified working
+
+### What Changed
+
+**Before:**
+```
+games/<game>/
+  ├── gamestate.py
+  ├── game_override.py
+  ├── game_executables.py
+  └── game_calculations.py
+```
+
+**After:**
+```
+games/<game>/
+  └── gamestate.py  # All game logic in one file (~100-400 lines)
+```
+
+**Benefits:**
+- Easier to understand - all game logic in one place
+- Easier to debug - no jumping between 4+ files
+- Easier to maintain - changes don't require coordinating across layers
+- Easier to create new games - clear, self-contained template
+
+See [REFACTOR_PROGRESS.md](REFACTOR_PROGRESS.md) for complete details and [CLAUDE.md](CLAUDE.md) for the updated architecture guide.
+
 ## Documentation
 
 - **[docs/](docs/)** - User guides and tutorials
