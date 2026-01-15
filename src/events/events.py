@@ -11,6 +11,7 @@ from copy import deepcopy
 from typing import Any
 
 from src.events.event_constants import EventConstants
+from src.output.output_formatter import OutputFormatter
 
 
 def json_ready_sym(symbol: Any, special_attributes: list[str]) -> dict[str, Any]:
@@ -40,22 +41,37 @@ def reveal_event(gamestate: Any) -> None:
     Args:
         gamestate: Current game state with board and configuration
     """
-    board_client: list[list[dict[str, Any]]] = []
+    # Create OutputFormatter from config settings
+    formatter = OutputFormatter(
+        output_mode=gamestate.config.output_mode,
+        include_losing_boards=gamestate.config.include_losing_boards,
+        compress_positions=gamestate.config.compress_positions,
+        compress_symbols=gamestate.config.compress_symbols,
+        skip_implicit_events=gamestate.config.skip_implicit_events,
+    )
+
+    # Check if we should skip this reveal (losing board with include_losing_boards=False)
+    # Note: We need to check final win, but at reveal time we don't know it yet
+    # So we'll always include reveals and let books writing filter them out if needed
+
     special_attributes = list(gamestate.config.special_symbols.keys())
+
+    # Use formatter to format the board
+    board_client: list[list[Any]] = []
     for reel, _ in enumerate(gamestate.board):
         board_client.append([])
         for row in range(len(gamestate.board[reel])):
             board_client[reel].append(
-                json_ready_sym(gamestate.board[reel][row], special_attributes)
+                formatter.format_symbol(gamestate.board[reel][row], special_attributes)
             )
 
     if gamestate.config.include_padding:
         for reel, _ in enumerate(board_client):
             board_client[reel] = [
-                json_ready_sym(gamestate.top_symbols[reel], special_attributes)
+                formatter.format_symbol(gamestate.top_symbols[reel], special_attributes)
             ] + board_client[reel]
             board_client[reel].append(
-                json_ready_sym(gamestate.bottom_symbols[reel], special_attributes)
+                formatter.format_symbol(gamestate.bottom_symbols[reel], special_attributes)
             )
 
     event: dict[str, Any] = {
@@ -92,6 +108,13 @@ def trigger_free_spins_event(
     assert (
         basegame_trigger != freegame_trigger
     ), "must set either basegame_trigger or freeSpinTrigger to = True"
+
+    # Create OutputFormatter from config settings
+    formatter = OutputFormatter(
+        output_mode=gamestate.config.output_mode,
+        compress_positions=gamestate.config.compress_positions,
+    )
+
     event: dict[str, Any] = {}
     scatter_positions: list[dict[str, int]] = []
     for reel, _ in enumerate(gamestate.special_syms_on_board["scatter"]):
@@ -100,19 +123,22 @@ def trigger_free_spins_event(
         for pos in scatter_positions:
             pos["row"] += 1
 
+    # Format positions using the formatter
+    formatted_positions = formatter.format_position_list(scatter_positions)
+
     if basegame_trigger:
         event = {
             "index": len(gamestate.book.events),
             "type": EventConstants.TRIGGER_FREE_SPINS.value,
             "total": gamestate.tot_fs,
-            "positions": scatter_positions,
+            "positions": formatted_positions,
         }
     elif freegame_trigger:
         event = {
             "index": len(gamestate.book.events),
             "type": EventConstants.RETRIGGER_FREE_SPINS.value,
             "total": gamestate.tot_fs,
-            "positions": scatter_positions,
+            "positions": formatted_positions,
         }
 
     assert gamestate.tot_fs > 0, "total freegame (gamestate.tot_fs) must be >0"

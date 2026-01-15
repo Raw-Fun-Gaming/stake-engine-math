@@ -11,6 +11,7 @@ from typing import Any
 
 from src.config.betmode import BetMode
 from src.config.paths import PATH_TO_GAMES
+from src.output.output_formatter import OutputMode
 
 
 class Config:
@@ -40,6 +41,11 @@ class Config:
         win_levels: Win level thresholds for different contexts
         reels: Reel strip configurations
         padding_reels: Padding symbol configurations
+        output_mode: Output format (COMPACT for smaller files, VERBOSE for readability)
+        include_losing_boards: Whether to include board reveals for 0-win spins
+        compress_positions: Use array format [reel, row] instead of object format
+        compress_symbols: Use string "L5" instead of object {"name": "L5"}
+        skip_implicit_events: Skip redundant events that can be inferred
     """
 
     def __init__(self) -> None:
@@ -53,6 +59,14 @@ class Config:
         self.output_regular_json: bool = (
             True  # if True, outputs .json if compression = False. If False, outputs .jsonl
         )
+
+        # Output formatting options (Phase 3.1: Output Optimization)
+        self.output_mode: OutputMode = OutputMode.VERBOSE  # compact or verbose format
+        self.include_losing_boards: bool = True  # Include board reveals for 0-win spins
+        self.compress_positions: bool = False  # Use [reel, row] instead of {reel, row}
+        self.compress_symbols: bool = False  # Use "L5" instead of {"name": "L5"}
+        self.skip_implicit_events: bool = False  # Skip redundant events (e.g., setFinalWin with 0)
+
         if self.game_id != "0_0_sample":
             self.construct_paths()
 
