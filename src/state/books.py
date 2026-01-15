@@ -10,6 +10,7 @@ from copy import deepcopy
 from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from src.events.event_filter import EventFilter
     from src.output.output_formatter import OutputFormatter
 
 
@@ -26,15 +27,24 @@ class Book:
         criteria: Simulation criteria/mode (e.g., "base", "bonus")
         basegame_wins: Total wins from base game
         freegame_wins: Total wins from free spins
+        formatter: Optional OutputFormatter for format versioning
+        event_filter: Optional EventFilter for selective event inclusion
     """
 
-    def __init__(self, book_id: int, criteria: str, formatter: OutputFormatter | None = None) -> None:
+    def __init__(
+        self,
+        book_id: int,
+        criteria: str,
+        formatter: OutputFormatter | None = None,
+        event_filter: EventFilter | None = None,
+    ) -> None:
         """Initialize simulation book.
 
         Args:
             book_id: Unique identifier for this simulation
             criteria: Simulation criteria/mode
             formatter: Optional OutputFormatter for format versioning
+            event_filter: Optional EventFilter for selective event emission
         """
         self.id: int = book_id
         self.payout_multiplier: float = 0.0
@@ -43,13 +53,26 @@ class Book:
         self.basegame_wins: float = 0.0
         self.freegame_wins: float = 0.0
         self.formatter: OutputFormatter | None = formatter
+        self.event_filter: EventFilter | None = event_filter
 
     def add_event(self, event: dict[str, Any]) -> None:
-        """Append event to book.
+        """Append event to book if it passes filtering.
 
         Args:
             event: Event dictionary to add to the book
+
+        Note:
+            If an EventFilter is configured, the event will only be added
+            if it passes the filter's should_include_event() check.
         """
+        # Apply event filtering if filter is configured
+        if self.event_filter is not None:
+            event_type = event.get("type")
+            if event_type and not self.event_filter.should_include_event(
+                event_type, event
+            ):
+                return  # Skip this event
+
         self.events.append(deepcopy(event))
 
     def append_book_items(self, event_id: int, appended_info: dict[str, Any]) -> None:

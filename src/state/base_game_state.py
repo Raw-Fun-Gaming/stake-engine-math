@@ -17,6 +17,7 @@ from warnings import warn
 
 from src.calculations.symbol import SymbolStorage
 from src.config.output_filenames import OutputFiles
+from src.events.event_filter import EventFilter
 from src.output.output_formatter import OutputFormatter
 
 # Event imports (from Executables)
@@ -152,7 +153,8 @@ class BaseGameState(ABC):
         """Reset all state variables for a new simulation.
 
         Clears the board, resets win tracking, free spin counts, and
-        prepares a new book for event recording with format versioning.
+        prepares a new book for event recording with format versioning
+        and event filtering.
         """
         self.temp_wins = []
         self.board: Board = [
@@ -172,7 +174,10 @@ class BaseGameState(ABC):
             skip_implicit_events=self.config.skip_implicit_events,
         )
 
-        self.book = Book(self.book_id, self.criteria, formatter)
+        # Create EventFilter from config for selective event emission (Phase 3.2)
+        event_filter = EventFilter(self.config)
+
+        self.book = Book(self.book_id, self.criteria, formatter, event_filter)
         self.win_data = {
             "totalWin": 0,
             "wins": [],
