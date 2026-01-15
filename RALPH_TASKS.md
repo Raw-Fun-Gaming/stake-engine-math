@@ -731,14 +731,22 @@ _Claude will update this section as work progresses_
 - Format version field automatically added to all books
 - Games automatically inherit formatter through super().reset_book()
 
+**Additional Updates (2026-01-15 continued):**
+- ✅ Updated win_event() to format positions with OutputFormatter
+- ✅ Updated tumble_board_event() to format positions and symbols
+- ✅ Updated upgrade_event() to format positions
+- ✅ Updated prize_win_event() to format positions
+- ✅ All event functions now use OutputFormatter
+- ✅ All 31 tests still passing
+- ✅ Committed to git (commit 84da572)
+
 **Remaining Work in Phase 3.1:**
-- [ ] Task 3.1.6: Update books writing logic to respect compression settings
 - [ ] Task 3.1.7: Update books parsing/analysis tools for both formats
 - [ ] Task 3.1.8: Run full game simulations and benchmark real file sizes
 - [ ] Task 3.1.9: Test RGS compatibility with compact format
 
-**Status:** Phase 3.1 is 60% complete. Core formatting infrastructure is done.
-Remaining tasks are integration, testing, and validation.
+**Status:** Phase 3.1 is 80% complete. Core infrastructure and event integration done.
+Remaining: analysis tools compatibility, full benchmarks, RGS testing.
 
 ---
 
