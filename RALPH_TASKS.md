@@ -710,20 +710,35 @@ _Claude will update this section as work progresses_
 - Ready to begin autonomous execution
 - Starting with Phase 3.1: Compress Books Format
 
-#### 2026-01-15 - Phase 3.1 Progress
-**Tasks 3.1.1-3.1.3 Complete ✅**
-- ✅ Created OutputFormatter class (280 lines, comprehensive)
+#### 2026-01-15 - Phase 3.1 Progress (PARTIAL COMPLETION)
+**Tasks 3.1.1-3.1.5 Complete ✅**
+- ✅ Created OutputFormatter class (280 lines, full-featured)
 - ✅ Implemented compact symbol serialization ({"name": "L5"} → "L5")
 - ✅ Implemented compact position serialization ({reel, row} → [reel, row])
-- ✅ Added 21 unit tests, all passing
+- ✅ Added 21 unit tests for OutputFormatter, all passing
 - ✅ Integrated with Config class (5 new config options)
 - ✅ Updated reveal_event() to use OutputFormatter
 - ✅ Updated trigger_free_spins_event() to format positions
-- ✅ Verified 61% size savings on board formatting
-- ✅ Committed to git (commit 14edbfa)
+- ✅ Verified 61% size savings on board formatting (simple test)
+- ✅ Added format versioning to Book.to_json() ("2.0-compact" or "2.0-verbose")
+- ✅ BaseGameState creates formatter from config in reset_book()
+- ✅ All 31 tests passing after integration
+- ✅ Committed to git (2 commits: 14edbfa, dd3da25)
 
-**Current Task: 3.1.4 - Skip Losing Boards (already implemented in formatter)**
-**Next: 3.1.5 - Add format versioning to books files**
+**Achievements:**
+- Core infrastructure complete and tested
+- Backward compatible (defaults to verbose mode)
+- Format version field automatically added to all books
+- Games automatically inherit formatter through super().reset_book()
+
+**Remaining Work in Phase 3.1:**
+- [ ] Task 3.1.6: Update books writing logic to respect compression settings
+- [ ] Task 3.1.7: Update books parsing/analysis tools for both formats
+- [ ] Task 3.1.8: Run full game simulations and benchmark real file sizes
+- [ ] Task 3.1.9: Test RGS compatibility with compact format
+
+**Status:** Phase 3.1 is 60% complete. Core formatting infrastructure is done.
+Remaining tasks are integration, testing, and validation.
 
 ---
 
