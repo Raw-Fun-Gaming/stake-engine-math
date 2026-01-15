@@ -46,6 +46,9 @@ class Config:
         compress_positions: Use array format [reel, row] instead of object format
         compress_symbols: Use string "L5" instead of object {"name": "L5"}
         skip_implicit_events: Skip redundant events that can be inferred
+        skip_derived_wins: Skip SET_WIN, SET_TOTAL_WIN (client can sum WIN events)
+        skip_progress_updates: Skip UPDATE_FREE_SPINS, UPDATE_TUMBLE_WIN counters
+        verbose_event_level: Event verbosity ("full"=all, "standard"=important, "minimal"=required only)
     """
 
     def __init__(self) -> None:
@@ -66,6 +69,11 @@ class Config:
         self.compress_positions: bool = False  # Use [reel, row] instead of {reel, row}
         self.compress_symbols: bool = False  # Use "L5" instead of {"name": "L5"}
         self.skip_implicit_events: bool = False  # Skip redundant events (e.g., setFinalWin with 0)
+
+        # Event filtering options (Phase 3.2: Event Optimization)
+        self.skip_derived_wins: bool = False  # Skip SET_WIN, SET_TOTAL_WIN (can sum WIN events)
+        self.skip_progress_updates: bool = False  # Skip UPDATE_FREE_SPINS, UPDATE_TUMBLE_WIN
+        self.verbose_event_level: str = "full"  # "full", "standard", "minimal"
 
         if self.game_id != "0_0_sample":
             self.construct_paths()
