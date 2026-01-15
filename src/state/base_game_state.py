@@ -17,6 +17,7 @@ from warnings import warn
 
 from src.calculations.symbol import SymbolStorage
 from src.config.output_filenames import OutputFiles
+from src.output.output_formatter import OutputFormatter
 
 # Event imports (from Executables)
 from src.events.events import (
@@ -151,7 +152,7 @@ class BaseGameState(ABC):
         """Reset all state variables for a new simulation.
 
         Clears the board, resets win tracking, free spin counts, and
-        prepares a new book for event recording.
+        prepares a new book for event recording with format versioning.
         """
         self.temp_wins = []
         self.board: Board = [
@@ -161,7 +162,17 @@ class BaseGameState(ABC):
         self.top_symbols = None
         self.bottom_symbols = None
         self.book_id = self.sim + 1
-        self.book = Book(self.book_id, self.criteria)
+
+        # Create OutputFormatter from config for format versioning
+        formatter = OutputFormatter(
+            output_mode=self.config.output_mode,
+            include_losing_boards=self.config.include_losing_boards,
+            compress_positions=self.config.compress_positions,
+            compress_symbols=self.config.compress_symbols,
+            skip_implicit_events=self.config.skip_implicit_events,
+        )
+
+        self.book = Book(self.book_id, self.criteria, formatter)
         self.win_data = {
             "totalWin": 0,
             "wins": [],

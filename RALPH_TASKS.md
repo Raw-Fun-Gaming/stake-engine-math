@@ -710,6 +710,21 @@ _Claude will update this section as work progresses_
 - Ready to begin autonomous execution
 - Starting with Phase 3.1: Compress Books Format
 
+#### 2026-01-15 - Phase 3.1 Progress
+**Tasks 3.1.1-3.1.3 Complete ✅**
+- ✅ Created OutputFormatter class (280 lines, comprehensive)
+- ✅ Implemented compact symbol serialization ({"name": "L5"} → "L5")
+- ✅ Implemented compact position serialization ({reel, row} → [reel, row])
+- ✅ Added 21 unit tests, all passing
+- ✅ Integrated with Config class (5 new config options)
+- ✅ Updated reveal_event() to use OutputFormatter
+- ✅ Updated trigger_free_spins_event() to format positions
+- ✅ Verified 61% size savings on board formatting
+- ✅ Committed to git (commit 14edbfa)
+
+**Current Task: 3.1.4 - Skip Losing Boards (already implemented in formatter)**
+**Next: 3.1.5 - Add format versioning to books files**
+
 ---
 
 **Last Updated**: 2026-01-15

@@ -18,7 +18,8 @@
       "Bash(black:*)",
       "Bash(git restore:*)",
       "Bash(python:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(git commit:*)"
     ]
   }
 }

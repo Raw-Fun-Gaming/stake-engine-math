@@ -7,7 +7,10 @@ for a single simulation round (spin).
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Any
+from typing import Any, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from src.output.output_formatter import OutputFormatter
 
 
 class Book:
@@ -25,12 +28,13 @@ class Book:
         freegame_wins: Total wins from free spins
     """
 
-    def __init__(self, book_id: int, criteria: str) -> None:
+    def __init__(self, book_id: int, criteria: str, formatter: OutputFormatter | None = None) -> None:
         """Initialize simulation book.
 
         Args:
             book_id: Unique identifier for this simulation
             criteria: Simulation criteria/mode
+            formatter: Optional OutputFormatter for format versioning
         """
         self.id: int = book_id
         self.payout_multiplier: float = 0.0
@@ -38,6 +42,7 @@ class Book:
         self.criteria: str = criteria
         self.basegame_wins: float = 0.0
         self.freegame_wins: float = 0.0
+        self.formatter: OutputFormatter | None = formatter
 
     def add_event(self, event: dict[str, Any]) -> None:
         """Append event to book.
@@ -64,7 +69,8 @@ class Book:
         with standardized field names for the RGS.
 
         Returns:
-            Dictionary with id, payoutMultiplier, events, criteria, and win totals
+            Dictionary with id, payoutMultiplier, events, criteria, win totals,
+            and format version (if formatter is set)
         """
         json_book: dict[str, Any] = {
             "id": self.id,
@@ -74,4 +80,9 @@ class Book:
             "baseGameWins": self.basegame_wins,
             "freeGameWins": self.freegame_wins,
         }
+
+        # Add format version if formatter is available
+        if self.formatter:
+            json_book["formatVersion"] = self.formatter.get_format_version()
+
         return json_book
