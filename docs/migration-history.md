@@ -6,6 +6,53 @@ This document chronicles the major architectural improvements and optimizations 
 
 ---
 
+## Why This Fork Exists
+
+This repository is a **developer-focused fork** of the original Stake Engine Math SDK. It has been cleaned up and refactored to provide maximum value to external developers and contributors.
+
+### What Was Removed from the Original
+
+**1. Stake Engine Deployment Infrastructure (`uploads/` folder)**
+- AWS S3 upload scripts requiring Stake Engine credentials
+- Internal deployment workflows not useful to developers
+- Security risk: `.env` file with credential placeholders
+- **Rationale**: External developers don't have access to Stake's AWS infrastructure, and uploading to S3 is a deployment concern, not part of the core SDK functionality (simulating slot games and generating books files)
+
+**2. Documentation Website Source (former `docs/` folder in original)**
+- Static site generation files for `stakeengine.github.io/math-sdk`
+- MkDocs/Jekyll configuration for hosting official documentation
+- **Rationale**: The generated website is maintained separately. This repo focuses on the SDK code, not website infrastructure. The `docs/` folder now contains developer-focused markdown guides instead.
+
+**3. Personal Developer Tools**
+- `manage_extensions.sh` - Personal VS Code extension manager
+- `.nojekyll` - GitHub Pages configuration (not needed)
+- `.ralph-instructions` - Internal task tracking
+- **Rationale**: These are personal workflow tools, not project infrastructure
+
+**4. Unused Dependencies**
+- `boto3`, `botocore`, `s3transfer` - AWS SDK (only needed for uploads)
+- `jmespath`, `python-dotenv` - Used only by removed upload scripts
+- **Rationale**: Reduces installation size and removes dependencies with no value to developers
+
+### What This Fork Focuses On
+
+✅ **Core SDK Functionality**: Game simulation, win calculation, books generation
+✅ **Developer Experience**: Clear documentation, examples, testing tools
+✅ **Code Quality**: Type hints, docstrings, modern Python practices
+✅ **Performance**: Optimized simulations, compact output formats
+✅ **Extensibility**: Easy to create new games, modify existing ones
+
+### Result
+
+A **cleaner, more focused SDK** that:
+- Is easier to understand and contribute to
+- Has no unnecessary dependencies
+- Focuses purely on slot game mathematics
+- Removes confusion about "internal only" vs "public" features
+- Maintains all core functionality needed by developers
+
+---
+
 ## Overview
 
 The SDK underwent a comprehensive refactoring program (January 2026) that transformed the codebase from a complex 6-layer inheritance hierarchy to a streamlined 2-layer architecture, while adding significant output optimization features.

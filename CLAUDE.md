@@ -399,7 +399,6 @@ The `game_optimization.py` file configures optimization per betmode:
 
 - **numpy**: Array operations, statistics
 - **zstandard**: Compression for books files
-- **boto3**: AWS S3 uploads (optional)
 - **xlsxwriter**: Excel PAR sheet export
 - **pytest**: Testing framework
 - **rust_decimal, rayon, serde_json**: Rust optimization dependencies

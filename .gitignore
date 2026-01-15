@@ -21,20 +21,4 @@ __pycache__
 
 /env
 *.env
-*.DS_Store
-
-**/site/*
-
-# Ralph agent files
-@AGENT.md
-@fix_plan.md
-PROMPT.md
-.call_count
-.circuit_breaker_history
-.circuit_breaker_state
-.exit_signals
-.last_reset
-.ralph_session
-logs/
-progress.json
-status.json
+*.DS_Storelogs/

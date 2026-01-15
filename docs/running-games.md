@@ -57,9 +57,6 @@ run_format_checks = True  # Validate output against RGS requirements
 
 # Generate analytics (PAR sheets, statistics)
 run_game_analytics = False
-
-# Upload to AWS S3
-upload_to_aws = False
 ```
 
 ## Output Files (Books)

@@ -199,8 +199,7 @@ OptimizationExecution(
     betmodes=["base"],           # Betmodes to optimize
     run_sims=False,              # Use existing books (set True to regenerate)
     run_optimization=True,       # Enable optimization
-    optimization_setup=optimization_setup,
-    upload_to_aws=False
+    optimization_setup=optimization_setup
 )
 ```
 
