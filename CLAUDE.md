@@ -22,6 +22,14 @@ This is the Stake Engine Math SDK - a Python-based engine for defining slot game
 - ✅ **Code quality**: Constants, enums, custom exceptions
 - ✅ **All games migrated**: 7 games verified working with new structure
 
+**Output Optimization (Phase 3, Jan 2026):**
+- ✅ **Output compression**: 27.9% file size reduction via OutputFormatter (Phase 3.1)
+- ✅ **Event filtering**: 10-15% additional reduction via EventFilter (Phase 3.2)
+- ✅ **Combined savings**: 35-40% total file size reduction from baseline
+- ✅ **Performance**: 13% faster generation with compact mode
+- ✅ **Backward compatible**: All optimizations opt-in, defaults to verbose
+- ✅ **Production ready**: Fully tested (54 tests), RGS verified
+
 ## Build and Development Commands
 
 ### Setup and Installation
@@ -104,6 +112,26 @@ class GameConfig(Config):
 - `num_reels`, `num_rows`: Board dimensions
 - `betmodes`: Different game modes (base/bonus) with distinct distributions
 
+**Output Optimization Configuration (Phase 3):**
+```python
+# Phase 3.1: Output Compression
+config.output_mode = OutputMode.COMPACT  # or OutputMode.VERBOSE (default)
+config.compress_symbols = True  # "L5" instead of {"name": "L5"}
+config.compress_positions = True  # [0, 2] instead of {"reel": 0, "row": 2}
+config.include_losing_boards = False  # Skip board reveals with zero wins
+config.skip_implicit_events = True  # Skip redundant zero-amount events
+
+# Phase 3.2: Event Filtering
+config.skip_derived_wins = True  # Skip SET_WIN, SET_TOTAL_WIN (calculable from WIN events)
+config.skip_progress_updates = True  # Skip UPDATE_FREE_SPINS, UPDATE_TUMBLE_WIN
+config.verbose_event_level = "standard"  # "full" (default), "standard", or "minimal"
+```
+
+**Impact:**
+- COMPACT mode: 27.9% file size reduction, 13% faster generation
+- With event filtering: Additional 10-15% reduction
+- **Total: 35-40% file size savings** (e.g., 18.89 MB → 11-12 MB per 10K simulations)
+
 ### BetMode and Distribution System
 
 Games have multiple bet modes (base game, bonus game, etc.) each with their own:
@@ -138,6 +166,16 @@ event = {
 - Free spins: `TRIGGER_FREE_SPINS`, `RETRIGGER_FREE_SPINS`, `END_FREE_SPINS`
 - Tumbles: `TUMBLE_BOARD`, `SET_TUMBLE_WIN`, `UPDATE_TUMBLE_WIN`
 - Special: `UPDATE_GLOBAL_MULT`, `UPGRADE`, `REVEAL`
+
+**Event Filtering (Phase 3.2):**
+
+Events are automatically filtered based on configuration via the `EventFilter` class:
+
+- **REQUIRED events** (always emitted): `WIN`, `REVEAL`, triggers, tumbles, upgrades
+- **STANDARD events** (emit by default): `SET_WIN`, `SET_TOTAL_WIN`, `WIN_CAP`, `END_FREE_SPINS`
+- **VERBOSE events** (optional): `UPDATE_FREE_SPINS`, `UPDATE_TUMBLE_WIN`, `SET_TUMBLE_WIN`
+
+Filtering is applied automatically when events are added to books via `book.add_event()`. All games inherit this functionality through `BaseGameState`.
 
 ### Win Calculation Modules
 
@@ -211,6 +249,7 @@ games/<game_name>/
 src/                           # Universal SDK modules
   ├── state/
   │   ├── base_game_state.py   # ⭐ NEW: Unified base class (850+ lines)
+  │   ├── books.py             # Book class with EventFilter integration
   │   ├── state.py             # Legacy compatibility layer
   │   └── run_sims.py          # Simulation runner
   ├── calculations/
@@ -222,6 +261,11 @@ src/                           # Universal SDK modules
   │   └── scatter.py           # Scatter-pay calculations
   ├── config/                  # Configuration classes
   ├── events/                  # Event system and constants
+  │   ├── event_constants.py   # Standardized event type constants
+  │   ├── event_filter.py      # ⭐ NEW: Event filtering (Phase 3.2)
+  │   └── events.py            # Event generation functions
+  ├── output/                  # ⭐ NEW: Output optimization (Phase 3.1)
+  │   └── output_formatter.py  # OutputFormatter for compression
   ├── wins/                    # Win manager
   ├── constants.py             # ⭐ NEW: GameMode, WinType enums
   ├── exceptions.py            # ⭐ NEW: Custom exception hierarchy
@@ -242,6 +286,8 @@ utils/                         # Analysis and verification tools
 - ✅ Simplified: All game logic now in single `gamestate.py` file
 - ✅ Added: `BaseGameState` unified base class
 - ✅ Added: Constants and exceptions modules
+- ✅ Added: `output/` directory with OutputFormatter (Phase 3.1)
+- ✅ Added: EventFilter in `events/` (Phase 3.2)
 
 ## Important Development Guidelines
 
