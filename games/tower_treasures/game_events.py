@@ -48,13 +48,13 @@ def send_multiplier_info_event(
     board_multiplier: int,
     multiplier_info: dict,
     base_win: float,
-    updatedWin: float,
+    updated_win: float,
 ):
-    multiplier_info, winInfo = {}, {}
-    multiplier_info["positions"] = []
+    mult_info, win_info = {}, {}
+    mult_info["positions"] = []
     if game_state.config.include_padding:
         for m in range(len(multiplier_info)):
-            multiplier_info["positions"].append(
+            mult_info["positions"].append(
                 {
                     "reel": multiplier_info[m]["reel"],
                     "row": multiplier_info[m]["row"] + 1,
@@ -63,7 +63,7 @@ def send_multiplier_info_event(
             )
     else:
         for m in range(len(multiplier_info)):
-            multiplier_info["positions"].append(
+            mult_info["positions"].append(
                 {
                     "reel": multiplier_info[m]["reel"],
                     "row": multiplier_info[m]["row"],
@@ -71,16 +71,16 @@ def send_multiplier_info_event(
                 }
             )
 
-    winInfo["tumbleWin"] = int(round(min(base_win, game_state.config.win_cap) * 100))
-    winInfo["boardMult"] = board_multiplier
-    winInfo["totalWin"] = int(round(min(updatedWin, game_state.config.win_cap) * 100))
+    win_info["tumbleWin"] = int(round(min(base_win, game_state.config.win_cap) * 100))
+    win_info["boardMult"] = board_multiplier
+    win_info["totalWin"] = int(round(min(updated_win, game_state.config.win_cap) * 100))
 
-    assert round(updatedWin, 1) == round(base_win * board_multiplier, 1)
+    assert round(updated_win, 1) == round(base_win * board_multiplier, 1)
     # Game-specific event type for board multiplier information
     event = {
         "index": len(game_state.book.events),
         "type": "boardMultiplierInfo",
-        "multInfo": multiplier_info,
-        "winInfo": winInfo,
+        "multInfo": mult_info,
+        "winInfo": win_info,
     }
     game_state.book.add_event(event)
