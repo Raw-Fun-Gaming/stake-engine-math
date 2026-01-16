@@ -5,10 +5,6 @@ from copy import deepcopy
 from src.events.event_constants import EventConstants
 from src.events.events import json_ready_sym
 
-# Use standardized event constants
-NEW_EXP_WILDS = EventConstants.NEW_EXPANDING_WILD.value
-UPDATE_EXP_WILDS = EventConstants.UPDATE_EXPANDING_WILD.value
-NEW_STICKY_SYMS = EventConstants.NEW_STICKY_SYMBOL.value
 # Game-specific event types
 WIN_DATA = "winInfo"
 PRIZE_WIN_DATA = "prizeWinInfo"
@@ -23,7 +19,7 @@ def new_expanding_wild_event(game_state) -> None:
 
     event = {
         "index": len(game_state.book.events),
-        "type": NEW_EXP_WILDS,
+        "type": EventConstants.NEW_EXPANDING_WILD.value,
         "newWilds": new_exp_wilds,
     }
     game_state.book.add_event(event)
@@ -41,7 +37,7 @@ def update_expanding_wild_event(game_state) -> None:
 
     event = {
         "index": len(game_state.book.events),
-        "type": UPDATE_EXP_WILDS,
+        "type": EventConstants.UPDATE_EXPANDING_WILD.value,
         "existingWilds": wild_event,
     }
     game_state.book.add_event(event)
@@ -56,7 +52,7 @@ def new_sticky_event(game_state, new_sticky_syms: list):
 
     event = {
         "index": len(game_state.book.events),
-        "type": NEW_STICKY_SYMS,
+        "type": EventConstants.NEW_STICKY_SYMBOL.value,
         "newPrizes": new_sticky_syms,
     }
     game_state.book.add_event(event)
