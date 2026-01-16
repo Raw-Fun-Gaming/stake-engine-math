@@ -42,9 +42,9 @@ class EventFilter:
         EventConstants.TUMBLE_BOARD.value,
         EventConstants.UPDATE_GLOBAL_MULTIPLIER.value,
         EventConstants.UPGRADE.value,
-        EventConstants.NEW_EXPANDING_WILD.value,
-        EventConstants.UPDATE_EXPANDING_WILD.value,
-        EventConstants.NEW_STICKY_SYMBOL.value,
+        EventConstants.REVEAL_EXPANDING_WILDS.value,
+        EventConstants.UPDATE_EXPANDING_WILDS.value,
+        EventConstants.ADD_STICKY_SYMBOLS.value,
         # SET_FINAL_WIN moved to STANDARD (contextually required)
     }
 

@@ -15,7 +15,7 @@ def new_expanding_wild_event(game_state) -> None:
 
     event = {
         "index": len(game_state.book.events),
-        "type": EventConstants.NEW_EXPANDING_WILD.value,
+        "type": EventConstants.REVEAL_EXPANDING_WILDS.value,
         "newWilds": new_exp_wilds,
     }
     game_state.book.add_event(event)
@@ -33,7 +33,7 @@ def update_expanding_wild_event(game_state) -> None:
 
     event = {
         "index": len(game_state.book.events),
-        "type": EventConstants.UPDATE_EXPANDING_WILD.value,
+        "type": EventConstants.UPDATE_EXPANDING_WILDS.value,
         "existingWilds": wild_event,
     }
     game_state.book.add_event(event)
@@ -48,7 +48,7 @@ def new_sticky_event(game_state, new_sticky_syms: list):
 
     event = {
         "index": len(game_state.book.events),
-        "type": EventConstants.NEW_STICKY_SYMBOL.value,
+        "type": EventConstants.ADD_STICKY_SYMBOLS.value,
         "newPrizes": new_sticky_syms,
     }
     game_state.book.add_event(event)

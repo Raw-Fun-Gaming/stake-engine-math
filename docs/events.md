@@ -49,9 +49,9 @@ event_type = "win"
 - `EventConstants.UPDATE_GLOBAL_MULTIPLIER` - Global multiplier change
 - `EventConstants.UPGRADE` - Symbol upgrade
 - `EventConstants.REVEAL` - Reveal hidden symbols
-- `EventConstants.NEW_EXPANDING_WILD` - New expanding wild symbols appear
-- `EventConstants.UPDATE_EXPANDING_WILD` - Existing expanding wilds updated
-- `EventConstants.NEW_STICKY_SYMBOL` - New sticky symbols applied
+- `EventConstants.REVEAL_EXPANDING_WILDS` - Reveal new expanding wild symbols
+- `EventConstants.UPDATE_EXPANDING_WILDS` - Update existing expanding wilds
+- `EventConstants.ADD_STICKY_SYMBOLS` - Add new sticky symbols
 
 ## Creating Events
 
