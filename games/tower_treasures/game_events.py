@@ -1,9 +1,10 @@
 from copy import deepcopy
 
+from src.calculations.symbol import Symbol
 from src.events.event_constants import EventConstants
 
 
-def json_ready_sym(symbol: object, special_attributes: list[str] | None = None):
+def json_ready_sym(symbol: Symbol, special_attributes: list[str] | None = None):
     """Converts a symbol to dictionary/JSON format."""
     assert special_attributes is not None
     print_sym = {"name": symbol.name}
