@@ -41,6 +41,7 @@ class EventFilter:
         EventConstants.RETRIGGER_FREE_SPINS.value,
         EventConstants.TUMBLE_BOARD.value,
         EventConstants.UPDATE_GLOBAL_MULTIPLIER.value,
+        EventConstants.UPDATE_BOARD_MULTIPLIER.value,
         EventConstants.UPGRADE.value,
         EventConstants.REVEAL_EXPANDING_WILDS.value,
         EventConstants.UPDATE_EXPANDING_WILDS.value,

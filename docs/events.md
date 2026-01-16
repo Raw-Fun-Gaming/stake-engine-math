@@ -47,6 +47,7 @@ event_type = "win"
 
 **Special Symbols**
 - `EventConstants.UPDATE_GLOBAL_MULTIPLIER` - Global multiplier change
+- `EventConstants.UPDATE_BOARD_MULTIPLIER` - Board multiplier information
 - `EventConstants.UPGRADE` - Symbol upgrade
 - `EventConstants.REVEAL` - Reveal hidden symbols
 - `EventConstants.REVEAL_EXPANDING_WILDS` - Reveal new expanding wild symbols

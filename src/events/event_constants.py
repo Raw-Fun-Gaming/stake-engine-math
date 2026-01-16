@@ -29,6 +29,7 @@ class EventConstants(Enum):
 
     # Special symbol events
     UPDATE_GLOBAL_MULTIPLIER = "updateGlobalMultiplier"
+    UPDATE_BOARD_MULTIPLIER = "updateBoardMultiplier"
     UPGRADE = "upgrade"
     REVEAL_EXPANDING_WILDS = "revealExpandingWilds"
     UPDATE_EXPANDING_WILDS = "updateExpandingWilds"
