@@ -17,10 +17,10 @@ class HitRateCalculations:
     def initialize_file(self) -> None:
         """Initialize force files and lookup tables."""
         force_file = os.path.join(
-            PATH_TO_GAMES, self.game_id, "library", "forces", f"force_record_{self.mode}.json"
+            PATH_TO_GAMES, self.game_id, "build", "forces", f"force_record_{self.mode}.json"
         )
         lut_file = os.path.join(
-            PATH_TO_GAMES, self.game_id, "library", "publish_files", f"lookUpTable_{self.mode}_0.csv"
+            PATH_TO_GAMES, self.game_id, "build", "publish_files", f"lookUpTable_{self.mode}_0.csv"
         )
         with open(force_file, "r", encoding="UTF-8") as f:
             file_dict = json.load(f)
@@ -132,7 +132,7 @@ def construct_symbol_probabilities(config, modes_to_analyse: list) -> type:
     """Find hit-rates of all symbol combinations."""
     check_file = []
     for mode in modes_to_analyse:
-        force_file = os.path.join(config.library_path, "forces", f"force_record_{mode}.json")
+        force_file = os.path.join(config.build_path, "forces", f"force_record_{mode}.json")
         check_file.append(os.path.isfile(force_file))
     if not all(check_file):
         raise RuntimeError("Force File Does Not Exist.")
@@ -148,7 +148,7 @@ def construct_custom_key_probabilities(config, modes_to_analyse, custom_search) 
     """Analyze win information from user defined search keys."""
     check_file = []
     for mode in modes_to_analyse:
-        force_file = os.path.join(config.library_path, "forces", f"force_record_{mode}.json")
+        force_file = os.path.join(config.build_path, "forces", f"force_record_{mode}.json")
         check_file.append(os.path.isfile(force_file))
     if not all(check_file):
         raise RuntimeError("Force File Does Not Exist.")

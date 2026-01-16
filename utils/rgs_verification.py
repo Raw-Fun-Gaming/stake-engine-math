@@ -256,7 +256,7 @@ def execute_all_tests(config, excluded_modes=[]):
             setattr(StatsObject, "name", name)
             mode_stats.append(StatsObject)
 
-    fname = f"Games/{config.game_id}/library/stats_summary.json"
+    fname = f"Games/{config.game_id}/build/stats_summary.json"
     write_all_stats(mode_stats, fname)
 
 

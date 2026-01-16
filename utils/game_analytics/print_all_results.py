@@ -22,7 +22,7 @@ class PrintJSON:
     def setup_json(self):
         """Create new JSON format file for storing PAR sheet results."""
         json_path = os.path.join(
-            self.game_info.libraryPath, "statistics_summary.json")
+            self.game_info.buildPath, "statistics_summary.json")
         self.json_object = open(json_path, "w", encoding="UTF-8")
 
     def print_info(self):
@@ -59,7 +59,7 @@ class PrintXLSX:
         self.stat_file_name = os.path.join(
             PATH_TO_GAMES,
             str(self.game_info.game_id),
-            "library",
+            "build",
             f"{self.game_info.game_id}_full_statistics.xlsx",
         )
         self.workbook = xlsxwriter.Workbook(self.stat_file_name)

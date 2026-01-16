@@ -40,7 +40,7 @@ class GameInformation:
         self.config_path = game_state.output_files.configs["paths"]["be_config"]
         self.math_config_path = game_state.output_files.configs["paths"]["math_config"]
         self.load_config()
-        self.libraryPath = game_state.output_files.library_path
+        self.buildPath = game_state.output_files.build_path
         self.lutPath = game_state.output_files.lookup_path
         self.finalLUTPath = game_state.output_files.final_lookup_path
 

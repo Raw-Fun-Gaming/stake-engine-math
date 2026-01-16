@@ -22,16 +22,16 @@ class OutputFiles:
 
     def setup_output_directories(self):
         """Entrypoint for saving all output files."""
-        self.library_path = os.path.join(
-            PATH_TO_GAMES, str(self.game_config.game_id), "library"
+        self.build_path = os.path.join(
+            PATH_TO_GAMES, str(self.game_config.game_id), "build"
         )
-        self.temp_path = os.path.join(self.library_path, "temp_multi_threaded_files")
-        self.config_path = os.path.join(self.library_path, "configs")
-        self.force_path = os.path.join(self.library_path, "forces")
-        self.book_path = os.path.join(self.library_path, "books")
-        self.lookup_path = os.path.join(self.library_path, "lookup_tables")
-        self.publish_path = os.path.join(self.library_path, "publish_files")
-        self.optimization_path = os.path.join(self.library_path, "optimization_files")
+        self.temp_path = os.path.join(self.build_path, "temp_multi_threaded_files")
+        self.config_path = os.path.join(self.build_path, "configs")
+        self.force_path = os.path.join(self.build_path, "forces")
+        self.book_path = os.path.join(self.build_path, "books")
+        self.lookup_path = os.path.join(self.build_path, "lookup_tables")
+        self.publish_path = os.path.join(self.build_path, "publish_files")
+        self.optimization_path = os.path.join(self.build_path, "optimization_files")
         self.index_config_path = self.publish_path  # Required RGS files
         self.compressed_path = self.publish_path  # Required RGS files
         self.final_lookup_path = self.publish_path  # Required RGS files
@@ -40,7 +40,7 @@ class OutputFiles:
         )
 
         all_paths = [
-            "library_path",
+            "build_path",
             "book_path",
             "compressed_path",
             "lookup_path",

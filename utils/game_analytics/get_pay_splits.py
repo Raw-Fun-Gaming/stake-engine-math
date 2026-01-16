@@ -146,12 +146,12 @@ def return_hit_rates(all_mode_distributions, total_weight, win_ranges, mode_cost
 def return_all_filepaths(game_id: str, mode: str):
     """Return file files required for PAR sheet generation."""
     lut_path = os.path.join(
-        PATH_TO_GAMES, game_id, "library", "publish_files", f"lookUpTable_{mode}_0.csv"
+        PATH_TO_GAMES, game_id, "build", "publish_files", f"lookUpTable_{mode}_0.csv"
     )
     split_path = os.path.join(
         PATH_TO_GAMES,
         game_id,
-        "library",
+        "build",
         "lookup_tables",
         f"lookUpTableSegmented_{mode}.csv",
     )

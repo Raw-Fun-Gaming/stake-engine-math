@@ -153,7 +153,7 @@ class Config:
 
         # Path attributes (set by construct_paths)
         self.reels_path: str = ""
-        self.library_path: str = ""
+        self.build_path: str = ""
         self.publish_path: str = ""
 
     def get_win_level(self, win_amount: float, win_level_key: str) -> int:
@@ -299,13 +299,13 @@ class Config:
 
         Sets up paths for:
         - reels_path: Reel strip configurations
-        - library_path: Simulation output directory
+        - build_path: Build output directory (simulation results, configs, etc.)
         - publish_path: Published/final output files
         """
         self.reels_path = os.path.join(PATH_TO_GAMES, self.game_id, "reels")
-        self.library_path = os.path.join(PATH_TO_GAMES, self.game_id, "library")
+        self.build_path = os.path.join(PATH_TO_GAMES, self.game_id, "build")
         self.publish_path = os.path.join(
-            PATH_TO_GAMES, self.game_id, "library", "publish_files"
+            PATH_TO_GAMES, self.game_id, "build", "publish_files"
         )
 
     def check_folder_exists(self, folder_path: str) -> None:

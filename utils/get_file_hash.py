@@ -3,12 +3,12 @@ Obtain and compare file hash using SHA256
     Args:
     -f input arbitrary number of filepaths separated by whitespace
     Example:
-    python3 get_file_hash.py -f '../games/template_ways/library/lookup_tables/lookUpTable_base.csv'
+    python3 get_file_hash.py -f '../games/template_ways/build/lookup_tables/lookUpTable_base.csv'
 
     -d specify a file directory and hash all files that do not end in .py
     [optional] -l the layer depth of the directory search, default to 1
     Example:
-    python3 get_file_hash.py -d '../games/template_ways/library/lookup_tables/' -l 1
+    python3 get_file_hash.py -d '../games/template_ways/build/lookup_tables/' -l 1
 """
 
 import argparse

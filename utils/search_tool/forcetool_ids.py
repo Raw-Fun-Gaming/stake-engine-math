@@ -40,7 +40,7 @@ class ForceTool:
 
     def get_force_file_name(self):
         "Get force-file path."
-        return os.path.join(self.config.library_path, "forces", f"force_record_{self.target_mode}.json")
+        return os.path.join(self.config.build_path, "forces", f"force_record_{self.target_mode}.json")
 
     def load_force_file(self):
         "Load JSON format force file."
@@ -50,7 +50,7 @@ class ForceTool:
 
     def print_search_results(self, search_criteria, simulation_ids: List, filename: str, game_mode: str):
         """Record"""
-        base_path = os.path.join(self.config.library_path, "forces")
+        base_path = os.path.join(self.config.build_path, "forces")
         if not (os.path.exists(base_path)):
             os.mkdir(base_path)
 
@@ -130,7 +130,7 @@ class ForceTool:
 
         if lookup_name is None:
             lookup_name = os.path.join(
-                self.config.library_path, "lookup_tables", f"lookUpTable_{self.target_mode}.csv"
+                self.config.build_path, "lookup_tables", f"lookUpTable_{self.target_mode}.csv"
             )
 
         recorded_ids = []
