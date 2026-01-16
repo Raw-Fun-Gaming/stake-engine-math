@@ -221,7 +221,7 @@ class GameState(Tumble):
 
         Extends base update_free_spin with custom counter increment order.
         """
-        self.fs += 1
+        self.free_spin_count += 1
         update_free_spins_event(self)
         self.win_manager.reset_spin_win()
         self.tumble_win_multiplier = 0
@@ -270,7 +270,7 @@ class GameState(Tumble):
         accumulate and create larger wins.
         """
         self.reset_free_spin()
-        while self.fs < self.tot_fs:
+        while self.free_spin_count < self.total_free_spins:
             self.update_free_spin()
             self.draw_board()
             update_grid_multiplier_event(self)

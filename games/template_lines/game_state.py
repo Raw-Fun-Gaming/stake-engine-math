@@ -115,7 +115,7 @@ class GameState(Board):
         Loops through all free spins, evaluating wins and checking for retriggers.
         """
         self.reset_free_spin()
-        while self.fs < self.tot_fs:
+        while self.free_spin_count < self.total_free_spins:
             self.update_free_spin()
             self.draw_board()
 

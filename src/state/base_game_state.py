@@ -84,8 +84,8 @@ class BaseGameState(ABC):
         book: Current simulation book
         board: Current board state
         game_type: Current game mode (base/free_spin)
-        fs: Current free spin count
-        tot_fs: Total free spins awarded
+        free_spin_count: Current free spin count
+        total_free_spins: Total free spins awarded
     """
 
     def __init__(self, config: Config) -> None:
@@ -186,8 +186,8 @@ class BaseGameState(ABC):
         self.win_manager.reset_end_round_wins()
         self.global_multiplier = 1.0
         self.final_win = 0.0
-        self.tot_fs = 0  # TODO: Rename to total_free_spins
-        self.fs = 0  # TODO: Rename to free_spin_count
+        self.total_free_spins = 0
+        self.free_spin_count = 0
         self.wincap_triggered = False
         self.triggered_free_game = False
         self.game_type = self.config.base_game_type  # type: ignore[attr-defined]
@@ -210,7 +210,7 @@ class BaseGameState(ABC):
         Sets up free spin tracking and resets spin-specific wins.
         """
         self.triggered_free_game = True
-        self.fs = 0
+        self.free_spin_count = 0
         self.game_type = self.config.free_game_type  # type: ignore[attr-defined]
         self.win_manager.reset_spin_win()
 
@@ -584,7 +584,7 @@ class BaseGameState(ABC):
         Args:
             scatter_key: Key for scatter symbols in special_syms_on_board
         """
-        self.tot_fs = self.config.free_spin_triggers[self.game_type][
+        self.total_free_spins = self.config.free_spin_triggers[self.game_type][
             self.count_special_symbols(scatter_key)
         ]
         if self.game_type == self.config.base_game_type:
@@ -603,7 +603,7 @@ class BaseGameState(ABC):
         Args:
             scatter_key: Key for scatter symbols in special_syms_on_board
         """
-        self.tot_fs += self.config.free_spin_triggers[self.game_type][
+        self.total_free_spins += self.config.free_spin_triggers[self.game_type][
             self.count_special_symbols(scatter_key)
         ]
         trigger_free_spins_event(self, free_game_trigger=True, base_game_trigger=False)
@@ -611,7 +611,7 @@ class BaseGameState(ABC):
     def update_free_spin(self) -> None:
         """Called before a new reveal during free game."""
         update_free_spins_event(self)
-        self.fs += 1
+        self.free_spin_count += 1
         self.win_manager.reset_spin_win()
         self.win_data = {}
 

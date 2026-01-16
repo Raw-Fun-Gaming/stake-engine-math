@@ -143,8 +143,8 @@ class GeneralGameState(ABC):
         self.win_manager.reset_end_round_wins()
         self.global_multiplier = 1.0
         self.final_win = 0.0
-        self.tot_fs = 0  # TODO: Rename to total_free_spins
-        self.fs = 0  # TODO: Rename to free_spin_count
+        self.total_free_spins = 0
+        self.free_spin_count = 0
         self.wincap_triggered = False
         self.triggered_free_game = False
         self.game_type = self.config.base_game_type  # type: ignore[attr-defined]
@@ -167,7 +167,7 @@ class GeneralGameState(ABC):
         Sets up free spin tracking and resets spin-specific wins.
         """
         self.triggered_free_game = True
-        self.fs = 0
+        self.free_spin_count = 0
         self.game_type = self.config.free_game_type  # type: ignore[attr-defined]
         self.win_manager.reset_spin_win()
 

@@ -97,8 +97,8 @@ class GameState(Board):
 
     def reset_super_spin(self) -> None:
         """Initialize super_spin mode state."""
-        self.tot_fs = 3
-        self.fs = 0
+        self.total_free_spins = 3
+        self.free_spin_count = 0
         self.sticky_symbols = []
         self.existing_sticky_symbols = []
 
@@ -301,7 +301,9 @@ class GameState(Board):
         self.expanding_wilds = []
         self.avaliable_reels = [i for i in range(self.config.num_reels)]
 
-        while self.fs < self.tot_fs and not self.wincap_triggered:
+        while (
+            self.free_spin_count < self.total_free_spins and not self.wincap_triggered
+        ):
             self.update_free_spin()
             self.draw_board(emit_event=False)
 
@@ -348,7 +350,7 @@ class GameState(Board):
         self.repeat = False
         self.reset_super_spin()
 
-        while self.fs < self.tot_fs:
+        while self.free_spin_count < self.total_free_spins:
             self.update_free_spin()
             self.create_board_reelstrips()
 
@@ -359,7 +361,7 @@ class GameState(Board):
             elif (
                 self.criteria.upper() == "wincap"
                 and self.win_manager.running_bet_win < 0.95 * self.config.win_cap
-                and self.fs <= 1
+                and self.free_spin_count <= 1
             ):
                 while len(self.special_syms_on_board["prize"]) == 0:
                     self.create_board_reelstrips()
@@ -371,7 +373,7 @@ class GameState(Board):
             new_sticky_symbols = self.check_for_new_prize()
             if len(new_sticky_symbols) > 0:
                 new_sticky_event(self, new_sticky_symbols)
-                self.fs = 0  # Reset respins
+                self.free_spin_count = 0  # Reset respins
                 update_free_spins_event(self)
 
         # Calculate final prize win

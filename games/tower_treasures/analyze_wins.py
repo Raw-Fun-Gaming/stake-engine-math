@@ -35,7 +35,7 @@ def analyze_wins(filename):
     total_wins = 0
     total_spins = 0
     spins_with_wins = 0
-    spins_with_wins_no_fs = 0  # Spins with wins excluding free spin triggers
+    spins_with_wins_no_free_spins = 0  # Spins with wins excluding free spin triggers
 
     with open(filename, "r") as f:
         content = f.read()
@@ -79,7 +79,7 @@ def analyze_wins(filename):
                 if has_win:
                     spins_with_wins += 1
                     if not has_free_spin_trigger:
-                        spins_with_wins_no_fs += 1
+                        spins_with_wins_no_free_spins += 1
         else:
             print("Error: JSON content is not an array")
             return None, 0, 0, 0, 0
@@ -140,7 +140,7 @@ def analyze_wins(filename):
                     if has_win:
                         spins_with_wins += 1
                         if not has_free_spin_trigger:
-                            spins_with_wins_no_fs += 1
+                            spins_with_wins_no_free_spins += 1
 
             except json.JSONDecodeError as e:
                 print(f"Error parsing JSON object {i}: {e}")
@@ -152,7 +152,7 @@ def analyze_wins(filename):
         f"Spins with wins: {spins_with_wins} ({(spins_with_wins/total_spins*100):.1f}%)"
     )
     print(
-        f"Spins with wins (excluding free spin triggers): {spins_with_wins_no_fs} ({(spins_with_wins_no_fs/total_spins*100):.1f}%)"
+        f"Spins with wins (excluding free spin triggers): {spins_with_wins_no_free_spins} ({(spins_with_wins_no_free_spins/total_spins*100):.1f}%)"
     )
     print(f"Total individual wins found: {total_wins}")
     print(f"Symbol breakdown:")
@@ -162,7 +162,13 @@ def analyze_wins(filename):
         percentage = (count / total_wins * 100) if total_wins > 0 else 0
         print(f"  {symbol}: {count} wins ({percentage:.1f}%)")
 
-    return symbol_wins, total_wins, total_spins, spins_with_wins, spins_with_wins_no_fs
+    return (
+        symbol_wins,
+        total_wins,
+        total_spins,
+        spins_with_wins,
+        spins_with_wins_no_free_spins,
+    )
 
 
 if __name__ == "__main__":

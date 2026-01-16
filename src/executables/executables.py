@@ -73,7 +73,7 @@ class Executables(Conditions, Tumble):
 
     def update_free_spin_amount(self, scatter_key: str = "scatter") -> None:
         """Set initial number of spins for a free game and transmit event."""
-        self.tot_fs = self.config.free_spin_triggers[self.game_type][
+        self.total_free_spins = self.config.free_spin_triggers[self.game_type][
             self.count_special_symbols(scatter_key)
         ]
         if self.game_type == self.config.base_game_type:
@@ -88,7 +88,7 @@ class Executables(Conditions, Tumble):
 
     def update_free_spin_retrigger_amount(self, scatter_key: str = "scatter") -> None:
         """Update total free_spin amount on retrigger."""
-        self.tot_fs += self.config.free_spin_triggers[self.game_type][
+        self.total_free_spins += self.config.free_spin_triggers[self.game_type][
             self.count_special_symbols(scatter_key)
         ]
         trigger_free_spins_event(self, free_game_trigger=True, base_game_trigger=False)
@@ -96,7 +96,7 @@ class Executables(Conditions, Tumble):
     def update_free_spin(self) -> None:
         """Called before a new reveal during free game."""
         update_free_spins_event(self)
-        self.fs += 1
+        self.free_spin_count += 1
         self.win_manager.reset_spin_win()
         self.win_data = {}
 

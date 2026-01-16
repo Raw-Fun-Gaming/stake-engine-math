@@ -135,18 +135,20 @@ def trigger_free_spins_event(
         event = {
             "index": len(game_state.book.events),
             "type": EventConstants.TRIGGER_FREE_SPINS.value,
-            "total": game_state.tot_fs,
+            "total": game_state.total_free_spins,
             "positions": formatted_positions,
         }
     elif free_game_trigger:
         event = {
             "index": len(game_state.book.events),
             "type": EventConstants.RETRIGGER_FREE_SPINS.value,
-            "total": game_state.tot_fs,
+            "total": game_state.total_free_spins,
             "positions": formatted_positions,
         }
 
-    assert game_state.tot_fs > 0, "total free game (game_state.tot_fs) must be >0"
+    assert (
+        game_state.total_free_spins > 0
+    ), "total free game (game_state.total_free_spins) must be >0"
     game_state.book.add_event(event)
 
 
@@ -372,8 +374,8 @@ def update_free_spins_event(game_state: Any) -> None:
     event: dict[str, Any] = {
         "index": len(game_state.book.events),
         "type": EventConstants.UPDATE_FREE_SPINS.value,
-        "amount": int(game_state.fs),
-        "total": int(game_state.tot_fs),
+        "amount": int(game_state.free_spin_count),
+        "total": int(game_state.total_free_spins),
     }
     game_state.book.add_event(event)
 

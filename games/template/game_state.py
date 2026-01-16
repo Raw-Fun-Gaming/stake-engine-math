@@ -98,7 +98,7 @@ class GameState(Board):
         Add your free spin logic here.
         """
         self.reset_free_spin()
-        while self.fs < self.tot_fs:
+        while self.free_spin_count < self.total_free_spins:
             self.update_free_spin()
 
             # Add your free spin logic here:

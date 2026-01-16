@@ -320,7 +320,7 @@ class GameState(Board):
         Args:
             scatter_key: Key for scatter symbol type
         """
-        self.tot_fs = self.count_special_symbols(scatter_key) * 2
+        self.total_free_spins = self.count_special_symbols(scatter_key) * 2
         if self.game_type == self.config.base_game_type:
             base_game_trigger, free_game_trigger = True, False
         else:
@@ -336,10 +336,10 @@ class GameState(Board):
 
         Resets global multiplier to 1 for each new free spin.
         """
-        self.fs += 1
+        self.free_spin_count += 1
 
         # Initialize sticky symbols tracking only on the very first free spin
-        if self.fs == 1 and not hasattr(self, "sticky_symbols"):
+        if self.free_spin_count == 1 and not hasattr(self, "sticky_symbols"):
             self.initialize_sticky_symbols()
 
         update_free_spins_event(self)
@@ -417,7 +417,7 @@ class GameState(Board):
         Free spins feature sticky upgraded symbols that persist across spins.
         """
         self.reset_free_spin()
-        while self.fs < self.tot_fs:
+        while self.free_spin_count < self.total_free_spins:
             self.update_free_spin()
             self.draw_board()
 

@@ -117,7 +117,7 @@ class GameState(Board):
         Free spins can retrigger if scatter condition is met again.
         """
         self.reset_free_spin()
-        while self.fs < self.tot_fs:
+        while self.free_spin_count < self.total_free_spins:
             self.update_free_spin()
             self.draw_board(emit_event=True)
 
