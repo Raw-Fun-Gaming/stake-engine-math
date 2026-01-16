@@ -5,10 +5,6 @@ from copy import deepcopy
 from src.events.event_constants import EventConstants
 from src.events.events import json_ready_sym
 
-# Game-specific event types
-WIN_DATA = "winInfo"
-PRIZE_WIN_DATA = "prizeWinInfo"
-
 
 def new_expanding_wild_event(game_state) -> None:
     """Passed after reveal event"""
@@ -75,9 +71,11 @@ def win_info_prize_event(game_state, include_padding_index=True):
                 {"reel": w["reel"], "row": w["row"], "prize": int(100 * w["value"])}
             )
 
+    # Game-specific event type (not standard EventConstants.WIN)
+    # Custom format for prize-based game mode
     event = {
         "index": len(game_state.book.events),
-        "type": PRIZE_WIN_DATA,
+        "type": "prizeWinInfo",
         "totalWin": int(
             round(
                 min(game_state.win_data["totalWin"], game_state.config.win_cap) * 100, 0
