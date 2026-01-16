@@ -152,7 +152,7 @@ def run_spin(self):
             self.calculate_wins()
 
     # 4. Check for feature triggers
-    if self.check_fs_condition():
+    if self.check_free_spin_condition():
         self.book.add_event(construct_event(
             event_type=EventConstants.TRIGGER_FREE_SPINS.value,
             details={"count": 10}

@@ -200,7 +200,7 @@ Each game now uses a single consolidated file with clear sections:
 
 **Planned Changes:**
 - Rename abbreviated variables: `fs` → `free_spin_count`, `tot_fs` → `total_free_spins`
-- Rename unclear methods: `check_fs_condition()` → `has_free_spin_trigger()`
+- Rename unclear methods: `check_free_spin_condition()` → `has_free_spin_trigger()`
 - Rename generic classes: `GeneralGameState` → `BaseGameState` (✅ done)
 - Consistent configuration keys
 

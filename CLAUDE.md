@@ -495,7 +495,7 @@ def assign_mult_property(self, symbol):
 
 **Checking win conditions:**
 ```python
-if self.check_fs_condition() and self.check_free_spin_entry():
+if self.check_free_spin_condition() and self.check_free_spin_entry():
     self.run_free_spin_from_base()
 ```
 

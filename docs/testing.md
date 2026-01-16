@@ -134,7 +134,7 @@ def test_free_spin_trigger(game_state):
     ]
 
     # Check trigger condition
-    assert game_state.check_fs_condition() == True
+    assert game_state.check_free_spin_condition() == True
 
     # Run spin and check events
     book = game_state.run_spin()

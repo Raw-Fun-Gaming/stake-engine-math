@@ -90,7 +90,7 @@ class GeneralGameState(ABC):
         }
         self.reset_seed()
         self.reset_book()
-        self.reset_fs_spin()
+        self.reset_free_spin()
 
     def create_symbol_map(self) -> None:
         """Construct all valid symbols from config file (from pay-table and special symbols)."""
@@ -143,8 +143,8 @@ class GeneralGameState(ABC):
         self.win_manager.reset_end_round_wins()
         self.global_multiplier = 1.0
         self.final_win = 0.0
-        self.tot_fs = 0  # TODO: Rename to total_free_spins in Phase 2
-        self.fs = 0  # TODO: Rename to free_spin_count in Phase 2
+        self.tot_fs = 0  # TODO: Rename to total_free_spins
+        self.fs = 0  # TODO: Rename to free_spin_count
         self.wincap_triggered = False
         self.triggered_free_game = False
         self.game_type = self.config.base_game_type  # type: ignore[attr-defined]
@@ -160,7 +160,7 @@ class GeneralGameState(ABC):
         random.seed(sim + 1)
         self.sim = sim
 
-    def reset_fs_spin(self) -> None:
+    def reset_free_spin(self) -> None:
         """Reset state for free spin mode.
 
         Called when transitioning from base game to free spins.

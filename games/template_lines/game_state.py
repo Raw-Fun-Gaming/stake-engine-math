@@ -101,7 +101,7 @@ class GameState(Board):
             self.evaluate_lines_board()
 
             self.win_manager.update_game_type_wins(self.game_type)
-            if self.check_fs_condition():
+            if self.check_free_spin_condition():
                 self.run_free_spin_from_base()
 
             self.evaluate_final_win()
@@ -114,15 +114,15 @@ class GameState(Board):
 
         Loops through all free spins, evaluating wins and checking for retriggers.
         """
-        self.reset_fs_spin()
+        self.reset_free_spin()
         while self.fs < self.tot_fs:
             self.update_free_spin()
             self.draw_board()
 
             self.evaluate_lines_board()
 
-            if self.check_fs_condition():
-                self.update_fs_retrigger_amt()
+            if self.check_free_spin_condition():
+                self.update_free_spin_retrigger_amount()
 
             self.win_manager.update_game_type_wins(self.game_type)
 

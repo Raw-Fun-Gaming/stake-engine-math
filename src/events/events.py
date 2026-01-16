@@ -367,7 +367,7 @@ def update_free_spins_event(game_state: Any) -> None:
     and total free spins awarded.
 
     Args:
-        game_state: Current game state with fs and tot_fs counters
+        game_state: Current game state with free spin counters
     """
     event: dict[str, Any] = {
         "index": len(game_state.book.events),

@@ -84,7 +84,7 @@ class BaseGameState(ABC):
         book: Current simulation book
         board: Current board state
         game_type: Current game mode (base/free_spin)
-        fs: Current free spin number
+        fs: Current free spin count
         tot_fs: Total free spins awarded
     """
 
@@ -115,7 +115,7 @@ class BaseGameState(ABC):
         }
         self.reset_seed()
         self.reset_book()
-        self.reset_fs_spin()
+        self.reset_free_spin()
 
     # =========================================================================
     # CORE INFRASTRUCTURE (from GeneralGameState)
@@ -186,8 +186,8 @@ class BaseGameState(ABC):
         self.win_manager.reset_end_round_wins()
         self.global_multiplier = 1.0
         self.final_win = 0.0
-        self.tot_fs = 0  # TODO: Rename to total_free_spins in Phase 2
-        self.fs = 0  # TODO: Rename to free_spin_count in Phase 2
+        self.tot_fs = 0  # TODO: Rename to total_free_spins
+        self.fs = 0  # TODO: Rename to free_spin_count
         self.wincap_triggered = False
         self.triggered_free_game = False
         self.game_type = self.config.base_game_type  # type: ignore[attr-defined]
@@ -203,7 +203,7 @@ class BaseGameState(ABC):
         random.seed(sim + 1)
         self.sim = sim
 
-    def reset_fs_spin(self) -> None:
+    def reset_free_spin(self) -> None:
         """Reset state for free spin mode.
 
         Called when transitioning from base game to free spins.
@@ -531,8 +531,8 @@ class BaseGameState(ABC):
             return True
         return False
 
-    def check_fs_condition(self, scatter_key: str = "scatter") -> bool:
-        """Check if there are enough active scatters to trigger fs.
+    def check_free_spin_condition(self, scatter_key: str = "scatter") -> bool:
+        """Check if there are enough active scatters to trigger free spins.
 
         Args:
             scatter_key: Key for scatter symbols in special_syms_on_board
@@ -563,7 +563,7 @@ class BaseGameState(ABC):
         return False
 
     def run_free_spin_from_base(self, scatter_key: str = "scatter") -> None:
-        """Trigger the free_spin function and update total fs amount.
+        """Trigger the free_spin function and update total free spin amount.
 
         Args:
             scatter_key: Key for scatter symbols in special_syms_on_board
@@ -597,7 +597,7 @@ class BaseGameState(ABC):
             free_game_trigger=free_game_trigger,
         )
 
-    def update_fs_retrigger_amt(self, scatter_key: str = "scatter") -> None:
+    def update_free_spin_retrigger_amount(self, scatter_key: str = "scatter") -> None:
         """Update total free_spin amount on retrigger.
 
         Args:

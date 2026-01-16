@@ -42,8 +42,8 @@ class Executables(Conditions, Tumble):
             return True
         return False
 
-    def check_fs_condition(self, scatter_key: str = "scatter") -> bool:
-        """Check if there are enough active scatters to trigger fs."""
+    def check_free_spin_condition(self, scatter_key: str = "scatter") -> bool:
+        """Check if there are enough active scatters to trigger free spins."""
         if self.count_special_symbols(scatter_key) >= min(
             self.config.free_spin_triggers[self.game_type].keys()
         ) and not (self.repeat):
@@ -60,7 +60,7 @@ class Executables(Conditions, Tumble):
         return False
 
     def run_free_spin_from_base(self, scatter_key: str = "scatter") -> None:
-        """Trigger the free_spin function and update total fs amount."""
+        """Trigger the free_spin function and update total free spin amount."""
         self.record(
             {
                 "kind": self.count_special_symbols(scatter_key),
@@ -86,7 +86,7 @@ class Executables(Conditions, Tumble):
             free_game_trigger=free_game_trigger,
         )
 
-    def update_fs_retrigger_amt(self, scatter_key: str = "scatter") -> None:
+    def update_free_spin_retrigger_amount(self, scatter_key: str = "scatter") -> None:
         """Update total free_spin amount on retrigger."""
         self.tot_fs += self.config.free_spin_triggers[self.game_type][
             self.count_special_symbols(scatter_key)

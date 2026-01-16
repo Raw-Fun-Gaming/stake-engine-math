@@ -85,7 +85,7 @@ class GameState(Board):
             # Add your game logic here:
             # 1. Draw board: self.draw_board()
             # 2. Evaluate wins: self.evaluate_lines_board() / get_clusters_update_wins() / etc.
-            # 3. Check free spin triggers: if self.check_fs_condition() and self.check_free_spin_entry()
+            # 3. Check free spin triggers: if self.check_free_spin_condition() and self.check_free_spin_entry()
             # 4. Update win manager: self.win_manager.update_game_type_wins(self.game_type)
 
             self.evaluate_final_win()
@@ -97,7 +97,7 @@ class GameState(Board):
 
         Add your free spin logic here.
         """
-        self.reset_fs_spin()
+        self.reset_free_spin()
         while self.fs < self.tot_fs:
             self.update_free_spin()
 

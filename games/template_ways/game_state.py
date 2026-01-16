@@ -103,7 +103,7 @@ class GameState(Board):
             self.win_manager.update_game_type_wins(self.game_type)
 
             # Check scatter condition and trigger free spins
-            if self.check_fs_condition() and self.check_free_spin_entry():
+            if self.check_free_spin_condition() and self.check_free_spin_entry():
                 self.run_free_spin_from_base()
 
             self.evaluate_final_win()
@@ -116,15 +116,15 @@ class GameState(Board):
 
         Free spins can retrigger if scatter condition is met again.
         """
-        self.reset_fs_spin()
+        self.reset_free_spin()
         while self.fs < self.tot_fs:
             self.update_free_spin()
             self.draw_board(emit_event=True)
 
             self.evaluate_ways_board()
 
-            if self.check_fs_condition():
-                self.update_fs_retrigger_amt()
+            if self.check_free_spin_condition():
+                self.update_free_spin_retrigger_amount()
 
             self.win_manager.update_game_type_wins(self.game_type)
 

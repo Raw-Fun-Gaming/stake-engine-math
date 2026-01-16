@@ -283,7 +283,7 @@ class GameState(Board):
                 Lines.emit_linewin_events(self)
 
                 self.win_manager.update_game_type_wins(self.game_type)
-                if self.check_fs_condition() and self.check_free_spin_entry():
+                if self.check_free_spin_condition() and self.check_free_spin_entry():
                     self.run_free_spin_from_base()
 
                 self.evaluate_final_win()
@@ -297,7 +297,7 @@ class GameState(Board):
         Free spins feature expanding wilds that persist across spins
         and gain new multipliers each spin.
         """
-        self.reset_fs_spin()
+        self.reset_free_spin()
         self.expanding_wilds = []
         self.avaliable_reels = [i for i in range(self.config.num_reels)]
 
