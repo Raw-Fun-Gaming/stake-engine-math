@@ -1,6 +1,3 @@
-BOARD_MULT_INFO = "boardMultiplierInfo"
-
-
 def send_multiplier_info_event(
     game_state,
     board_multiplier: int,
@@ -34,9 +31,10 @@ def send_multiplier_info_event(
     winInfo["totalWin"] = int(round(min(updatedWin, game_state.config.win_cap) * 100))
 
     assert round(updatedWin, 1) == round(base_win * board_multiplier, 1)
+    # Game-specific event type for board multiplier information
     event = {
         "index": len(game_state.book.events),
-        "type": BOARD_MULT_INFO,
+        "type": "boardMultiplierInfo",
         "multInfo": multiplier_info,
         "winInfo": winInfo,
     }
