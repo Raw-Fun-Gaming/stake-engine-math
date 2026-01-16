@@ -1,13 +1,13 @@
 """Classes for setting up and verifying inputs for game optimization."""
 
-from typing import List, Tuple, Union
+from typing import Any, List, Tuple, Union
 from warnings import warn
 
 
 class ConstructScaling:
     """Verify valid inputs for applying scaling conditions."""
 
-    def __init__(self, all_scaling: List[Tuple]):
+    def __init__(self, all_scaling: list[dict[str, Any]]):
         for scaling in all_scaling:
             for cond in ["criteria", "scale_factor", "win_range", "probability"]:
                 assert cond in scaling.keys()
