@@ -5,9 +5,11 @@ from copy import deepcopy
 from src.events.event_constants import EventConstants
 from src.events.events import json_ready_sym
 
-NEW_EXP_WILDS = "newExpandingWilds"
-UPDATE_EXP_WILDS = "updateExpandingWilds"
-NEW_STICKY_SYMS = "newStickySymbols"
+# Use standardized event constants
+NEW_EXP_WILDS = EventConstants.NEW_EXPANDING_WILD.value
+UPDATE_EXP_WILDS = EventConstants.UPDATE_EXPANDING_WILD.value
+NEW_STICKY_SYMS = EventConstants.NEW_STICKY_SYMBOL.value
+# Game-specific event types
 WIN_DATA = "winInfo"
 PRIZE_WIN_DATA = "prizeWinInfo"
 

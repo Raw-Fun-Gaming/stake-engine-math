@@ -298,13 +298,13 @@ event = {
 - Win events: `WIN`, `SET_FINAL_WIN`, `SET_WIN`, `SET_TOTAL_WIN`, `WIN_CAP`
 - Free spins: `TRIGGER_FREE_SPINS`, `RETRIGGER_FREE_SPINS`, `END_FREE_SPINS`
 - Tumbles: `TUMBLE_BOARD`, `SET_TUMBLE_WIN`, `UPDATE_TUMBLE_WIN`
-- Special: `UPDATE_GLOBAL_MULTIPLIER`, `UPGRADE`, `REVEAL`
+- Special symbols: `UPDATE_GLOBAL_MULTIPLIER`, `UPGRADE`, `REVEAL`, `NEW_EXPANDING_WILD`, `UPDATE_EXPANDING_WILD`, `NEW_STICKY_SYMBOL`
 
 **Event Filtering (Phase 3.2):**
 
 Events are automatically filtered based on configuration via the `EventFilter` class:
 
-- **REQUIRED events** (always emitted): `WIN`, `REVEAL`, triggers, tumbles, upgrades
+- **REQUIRED events** (always emitted): `WIN`, `REVEAL`, triggers, tumbles, upgrades, expanding wilds, sticky symbols
 - **STANDARD events** (emit by default): `SET_WIN`, `SET_TOTAL_WIN`, `WIN_CAP`, `END_FREE_SPINS`
 - **VERBOSE events** (optional): `UPDATE_FREE_SPINS`, `UPDATE_TUMBLE_WIN`, `SET_TUMBLE_WIN`
 

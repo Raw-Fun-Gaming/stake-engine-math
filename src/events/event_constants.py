@@ -30,3 +30,6 @@ class EventConstants(Enum):
     # Special symbol events
     UPDATE_GLOBAL_MULTIPLIER = "updateGlobalMultiplier"
     UPGRADE = "upgrade"
+    NEW_EXPANDING_WILD = "newExpandingWilds"
+    UPDATE_EXPANDING_WILD = "updateExpandingWilds"
+    NEW_STICKY_SYMBOL = "newStickySymbols"

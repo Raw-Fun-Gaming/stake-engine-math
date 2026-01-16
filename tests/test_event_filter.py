@@ -166,8 +166,8 @@ class TestEventFilter:
             is False
         )
 
-        # SET_FINAL_WIN with win_cap flag should be included
-        event_data = {"amount": 100, "win_cap": True}
+        # SET_FINAL_WIN with winCap flag should be included
+        event_data = {"amount": 100, "winCap": True}
         assert (
             filter.should_include_event(EventConstants.SET_FINAL_WIN.value, event_data)
             is True

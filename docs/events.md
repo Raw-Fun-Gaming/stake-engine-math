@@ -45,10 +45,13 @@ event_type = "win"
 - `EventConstants.SET_TUMBLE_WIN` - Win from tumble
 - `EventConstants.UPDATE_TUMBLE_WIN` - Update tumble win
 
-**Special**
+**Special Symbols**
 - `EventConstants.UPDATE_GLOBAL_MULTIPLIER` - Global multiplier change
 - `EventConstants.UPGRADE` - Symbol upgrade
 - `EventConstants.REVEAL` - Reveal hidden symbols
+- `EventConstants.NEW_EXPANDING_WILD` - New expanding wild symbols appear
+- `EventConstants.UPDATE_EXPANDING_WILD` - Existing expanding wilds updated
+- `EventConstants.NEW_STICKY_SYMBOL` - New sticky symbols applied
 
 ## Creating Events
 
