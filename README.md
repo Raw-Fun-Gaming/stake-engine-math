@@ -1,5 +1,12 @@
 # Stake Engine Math SDK
 
+[![Release](https://img.shields.io/github/v/release/Raw-Fun-Gaming/stake-engine-math?style=flat-square&color=blue)](https://github.com/Raw-Fun-Gaming/stake-engine-math/releases/latest)
+[![Python Version](https://img.shields.io/badge/python-3.12+-blue?style=flat-square&logo=python&logoColor=white)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/github/license/Raw-Fun-Gaming/stake-engine-math?style=flat-square)](LICENSE)
+[![Tests](https://img.shields.io/badge/tests-54%20passing-success?style=flat-square&logo=pytest)](tests/)
+[![Code Style](https://img.shields.io/badge/code%20style-black-black?style=flat-square)](https://github.com/psf/black)
+[![Type Checked](https://img.shields.io/badge/type%20checked-mypy-blue?style=flat-square)](https://mypy-lang.org/)
+
 The Math SDK is a Python-based engine for defining game rules, simulating outcomes, and optimizing win distributions. It generates all necessary backend and configuration files, lookup tables, and simulation results.
 
 ## 🎉 Major Architecture Refactoring & Optimization (January 2026)
