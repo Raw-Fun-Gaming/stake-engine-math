@@ -24,8 +24,8 @@ class WinManager:
         cumulative_base_wins: Total base game wins across all simulations
         cumulative_free_wins: Total free game wins across all simulations
         running_bet_win: Current simulation's total win amount
-        basegame_wins: Current simulation's base game wins
-        freegame_wins: Current simulation's free game wins
+        base_game_wins: Current simulation's base game wins
+        free_game_wins: Current simulation's free game wins
         spin_win: Current reveal/spin win amount
         tumble_win: Current tumble win amount
     """
@@ -49,14 +49,14 @@ class WinManager:
         self.running_bet_win: float = 0.0
 
         # Controls wins for a specific simulation number
-        self.basegame_wins: float = 0.0
-        self.freegame_wins: float = 0.0
+        self.base_game_wins: float = 0.0
+        self.free_game_wins: float = 0.0
 
         # Controls wins for all actions within a 'reveal' event
         self.spin_win: float = 0.0
         self.tumble_win: float = 0.0
 
-    def update_spinwin(self, win_amount: float) -> None:
+    def update_spin_win(self, win_amount: float) -> None:
         """Update win-value associated with a given reveal.
 
         Adds the win amount to both the current spin win and the running bet win.
@@ -84,27 +84,27 @@ class WinManager:
         """Reset wins for a given reveal to zero."""
         self.spin_win = 0.0
 
-    def update_gametype_wins(self, gametype: str) -> None:
+    def update_game_type_wins(self, game_type: str) -> None:
         """Assign current spin wins to a specific game type.
 
-        Adds the current spin_win to either basegame_wins or freegame_wins
-        depending on the gametype.
+        Adds the current spin_win to either base_game_wins or free_game_wins
+        depending on the game_type.
 
         Args:
-            gametype: Game mode name (should match base_game_mode or free_game_mode)
+            game_type: Game mode name (should match base_game_mode or free_game_mode)
 
         Raises:
-            RuntimeError: If gametype doesn't match either game mode
+            RuntimeError: If game_type doesn't match either game mode
         """
-        if self.base_game_mode.lower() == gametype.lower():
-            self.basegame_wins += self.spin_win
-        elif self.free_game_mode.lower() == gametype.lower():
-            self.freegame_wins += self.spin_win
+        if self.base_game_mode.lower() == game_type.lower():
+            self.base_game_wins += self.spin_win
+        elif self.free_game_mode.lower() == game_type.lower():
+            self.free_game_wins += self.spin_win
         else:
             raise SimulationError(
-                f"Invalid gametype '{gametype}'. "
-                f"Valid gametypes are: '{self.base_game_mode}' (base) or '{self.free_game_mode}' (free). "
-                f"Check that your game state's 'gametype' attribute is set correctly."
+                f"Invalid game_type '{game_type}'. "
+                f"Valid game_types are: '{self.base_game_mode}' (base) or '{self.free_game_mode}' (free). "
+                f"Check that your game state's 'game_type' attribute is set correctly."
             )
 
     def update_end_round_wins(self) -> None:
@@ -113,9 +113,9 @@ class WinManager:
         Adds the current simulation's base and free game wins to the
         cumulative totals across all simulations.
         """
-        self.total_cumulative_wins += self.basegame_wins + self.freegame_wins
-        self.cumulative_base_wins += self.basegame_wins
-        self.cumulative_free_wins += self.freegame_wins
+        self.total_cumulative_wins += self.base_game_wins + self.free_game_wins
+        self.cumulative_base_wins += self.base_game_wins
+        self.cumulative_free_wins += self.free_game_wins
 
     def reset_end_round_wins(self) -> None:
         """Reset all wins at end of game round/simulation.
@@ -123,8 +123,8 @@ class WinManager:
         Clears all per-simulation and per-spin win amounts back to zero,
         ready for the next simulation.
         """
-        self.basegame_wins = 0.0
-        self.freegame_wins = 0.0
+        self.base_game_wins = 0.0
+        self.free_game_wins = 0.0
 
         self.running_bet_win = 0.0
         self.spin_win = 0.0

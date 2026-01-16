@@ -51,7 +51,7 @@ def profile_with_cprofile(game_name: str, num_sims: int) -> dict[str, Any]:
     # Run simulations (simplified - adjust based on game structure)
     try:
         from game_config import GameConfig
-        from gamestate import GameState
+        from game_state import GameState
 
         from src.state.run_sims import create_books
 
@@ -135,7 +135,7 @@ def profile_memory(game_name: str, num_sims: int) -> dict[str, Any]:
 
     try:
         from game_config import GameConfig
-        from gamestate import GameState
+        from game_state import GameState
 
         from src.state.run_sims import create_books
 
@@ -199,7 +199,9 @@ def main() -> dict[str, Any]:
     """Run performance profiling and save results."""
     parser = argparse.ArgumentParser(description="Profile game simulation performance")
     parser.add_argument(
-        "--game", default="0_0_lines", help="Game name to profile (default: 0_0_lines)"
+        "--game",
+        default="template_lines",
+        help="Game name to profile (default: template_lines)",
     )
     parser.add_argument(
         "--sims", type=int, default=1000, help="Number of simulations (default: 1000)"

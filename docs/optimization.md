@@ -41,7 +41,7 @@ from src.write_data.optimization_setup import OptimizationSetup, ConstructCondit
 
 optimization_setup = OptimizationSetup(
     setup_dict={
-        "base": {  # Betmode name
+        "base": {  # Bet mode name
             "conditions": {...},
             "scaling": {...},
             "parameters": {...}
@@ -57,13 +57,13 @@ Define target metrics for different game phases:
 ```python
 "conditions": {
     # Base game conditions
-    "basegame": ConstructConditions(
+    "base_game": ConstructConditions(
         hr=3.5,      # Target hit rate (% of spins with wins)
         rtp=0.59     # Target RTP contribution from base game
     ).return_dict(),
 
     # Free game conditions
-    "freegame": ConstructConditions(
+    "free_game": ConstructConditions(
         rtp=0.37,    # Target RTP contribution from free games
         hr=200,      # Target hit rate (per 10k spins)
         search_conditions={"symbol": "scatter"}  # Trigger condition
@@ -80,7 +80,7 @@ Define target metrics for different game phases:
 - **`average_win`** (float, optional): Target average win when feature hits
 - **`search_conditions`** (dict, optional): Conditions to identify the feature
   - `{"symbol": "scatter"}` - Look for scatter symbol
-  - `{"event_type": "trigger_free_spins"}` - Look for specific event
+  - `{"event_type": "triggerFreeSpins"}` - Look for specific event
 
 ### Scaling
 
@@ -141,13 +141,13 @@ optimization_setup = OptimizationSetup(
         "base": {
             "conditions": {
                 # Base game: 3.5% hit rate, contributes 59% RTP
-                "basegame": ConstructConditions(
+                "base_game": ConstructConditions(
                     hr=3.5,
                     rtp=0.59
                 ).return_dict(),
 
                 # Free spins: triggers 200 times per 10k spins, contributes 37% RTP
-                "freegame": ConstructConditions(
+                "free_game": ConstructConditions(
                     rtp=0.37,
                     hr=200,
                     search_conditions={"symbol": "scatter"}
@@ -189,14 +189,14 @@ Edit `games/<game_name>/run.py`:
 from src.write_data.optimization_execution import OptimizationExecution
 
 # Load game and config
-gamestate = GameState()
+game_state = GameState()
 from games.my_game.game_optimization import optimization_setup
 
 # Run optimization
 OptimizationExecution(
     game_id="my_game",
-    gamestate=gamestate,
-    betmodes=["base"],           # Betmodes to optimize
+    game_state=game_state,
+    bet_modes=["base"],           # Bet modes to optimize
     run_sims=False,              # Use existing books (set True to regenerate)
     run_optimization=True,       # Enable optimization
     optimization_setup=optimization_setup
@@ -211,10 +211,11 @@ make run GAME=my_game
 ### Method 2: Separate Optimization Run
 
 1. Generate books first:
-```python
-# run.py - first pass
-run_sims = True
-run_optimization = False
+```toml
+# run_config.toml - first pass
+[pipeline]
+run_sims = true
+run_optimization = false
 ```
 
 ```bash
@@ -222,10 +223,11 @@ make run GAME=my_game
 ```
 
 2. Then optimize:
-```python
-# run.py - second pass
-run_sims = False
-run_optimization = True
+```toml
+# run_config.toml - second pass
+[pipeline]
+run_sims = false
+run_optimization = true
 ```
 
 ```bash
@@ -267,8 +269,8 @@ games/<game_name>/
   "achieved_rtp": 0.9698,
   "target_base_hr": 3.5,
   "achieved_base_hr": 3.48,
-  "target_freegame_hr": 200,
-  "achieved_freegame_hr": 198,
+  "target_free_game_hr": 200,
+  "achieved_free_game_hr": 198,
   "generations": 150,
   "best_score": 0.0023
 }
@@ -304,13 +306,13 @@ Optimize different aspects separately:
 
 ```python
 # Stage 1: Base game RTP
-"basegame": ConstructConditions(rtp=0.60).return_dict()
+"base_game": ConstructConditions(rtp=0.60).return_dict()
 
 # Stage 2: Free game frequency
-"freegame": ConstructConditions(hr=200).return_dict()
+"free_game": ConstructConditions(hr=200).return_dict()
 
 # Stage 3: Fine-tune both
-"basegame": ConstructConditions(hr=3.5, rtp=0.59).return_dict()
+"base_game": ConstructConditions(hr=3.5, rtp=0.59).return_dict()
 ```
 
 ### Conditional Scaling
@@ -324,7 +326,7 @@ Different scaling for different game states:
 ]).return_dict()
 
 # In free spins: scale high wins down
-"freespin_scaling": ConstructScaling([
+"free_spin_scaling": ConstructScaling([
     {"min": 50, "max": float('inf'), "scale": 0.8}
 ]).return_dict()
 ```
@@ -341,13 +343,13 @@ search_conditions={"symbol": "scatter", "min_count": 3}
 search_conditions={"min_win": 100}
 
 # Find specific events
-search_conditions={"event_type": "trigger_free_spins"}
+search_conditions={"event_type": "triggerFreeSpins"}
 
 # Combine conditions
 search_conditions={
     "symbol": "M",
     "min_win": 50,
-    "event_type": "update_global_mult"
+    "event_type": "updateGlobalMult"
 }
 ```
 

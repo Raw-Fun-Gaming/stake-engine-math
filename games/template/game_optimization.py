@@ -1,9 +1,9 @@
 """Set conditions/parameters for optimization program program"""
 
 from optimization_program.optimization_config import (
-    ConstructScaling,
-    ConstructParameters,
     ConstructConditions,
+    ConstructParameters,
+    ConstructScaling,
     verify_optimization_input,
 )
 
@@ -18,23 +18,27 @@ class OptimizationSetup:
         self.game_config.opt_params = {
             "base": {
                 "conditions": {
-                    "wincap": ConstructConditions(rtp=0.01, av_win=5000, search_conditions=5000).return_dict(),
-                    "0": ConstructConditions(rtp=0, av_win=0, search_conditions=0).return_dict(),
-                    "freegame": ConstructConditions(
+                    "wincap": ConstructConditions(
+                        rtp=0.01, av_win=5000, search_conditions=5000
+                    ).return_dict(),
+                    "0": ConstructConditions(
+                        rtp=0, av_win=0, search_conditions=0
+                    ).return_dict(),
+                    "free_game": ConstructConditions(
                         rtp=0.37, hr=200, search_conditions={"symbol": "scatter"}
                     ).return_dict(),
-                    "basegame": ConstructConditions(hr=3.5, rtp=0.59).return_dict(),
+                    "base_game": ConstructConditions(hr=3.5, rtp=0.59).return_dict(),
                 },
                 "scaling": ConstructScaling(
                     [
                         {
-                            "criteria": "basegame",
+                            "criteria": "base_game",
                             "scale_factor": 1,
                             "win_range": (1, 1),
                             "probability": 1.0,
                         },
                         {
-                            "criteria": "freegame",
+                            "criteria": "free_game",
                             "scale_factor": 1,
                             "win_range": (1, 1),
                             "probability": 1.0,

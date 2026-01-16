@@ -30,7 +30,7 @@ The codebase has undergone a comprehensive refactoring and optimization (Phases 
 **Before:**
 ```
 games/<game>/
-  ├── gamestate.py
+  ├── game_state.py
   ├── game_override.py
   ├── game_executables.py
   └── game_calculations.py
@@ -39,7 +39,9 @@ games/<game>/
 **After:**
 ```
 games/<game>/
-  └── gamestate.py  # All game logic in one file (~100-400 lines)
+  ├── run_config.toml  # ⭐ NEW: Runtime settings (threads, compression, pipeline)
+  ├── run.py           # Pure execution script (reads from TOML)
+  └── game_state.py     # All game logic in one file (~100-400 lines)
 ```
 
 **Benefits:**
@@ -47,12 +49,59 @@ games/<game>/
 - Easier to debug - no jumping between 4+ files
 - Easier to maintain - changes don't require coordinating across layers
 - Easier to create new games - clear, self-contained template
+- **NEW**: TypeScript-like TOML config - familiar pattern for web developers
 
 See [REFACTOR_PROGRESS_2026-01-15.md](REFACTOR_PROGRESS_2026-01-15.md) and [PHASE3_COMPLETE_2026-01-15.md](PHASE3_COMPLETE_2026-01-15.md) for complete details and [CLAUDE.md](CLAUDE.md) for the updated architecture guide.
 
+### TOML-Based Configuration (NEW!)
+
+Clean separation between game rules and runtime settings:
+
+**run_config.toml** - Edit this to change simulation settings:
+```toml
+[execution]
+num_threads = 10        # Python simulation threads
+compression = false     # Enable zstd compression
+profiling = false       # Enable performance profiling
+
+[simulation]
+base = 10000           # Base game simulations
+bonus = 10000          # Bonus game simulations
+
+[pipeline]
+run_sims = true            # Generate simulation books
+run_optimization = true    # Run Rust optimization
+run_analysis = true        # Generate PAR sheets
+
+target_modes = ["base", "bonus"]
+```
+
+**Running with custom config:**
+```bash
+make run GAME=tower_treasures                    # Uses default run_config.toml
+make run GAME=tower_treasures CONFIG=dev.toml    # Development: fast iteration, small samples
+make run GAME=tower_treasures CONFIG=prod.toml   # Production: 1M simulations, full optimization
+make run GAME=tower_treasures CONFIG=test.toml   # Testing: minimal config for CI/CD
+```
+
+**Multiple Config Files Pattern:**
+
+Games can have multiple TOML files for different use cases:
+
+- `dev.toml` - **Development**: Small simulations (1K), no optimization, fast feedback (~10 seconds)
+- `prod.toml` - **Production**: Large simulations (1M), full optimization, accurate stats (~2 hours)
+- `test.toml` - **Testing**: Minimal simulations (100), for automated tests/CI
+- `run_config.toml` - **Default**: Can be symlinked to dev.toml or prod.toml
+
+**Benefits:**
+- Familiar pattern for TypeScript/JavaScript developers
+- Switch between configs without editing code
+- Version control friendly (track config changes separately)
+- No need to modify Python code to change settings
+
 ### Using Output Optimization (Phase 3)
 
-Enable file size optimization in your game's `run.py`:
+Enable file size optimization in your game's `game_config.py`:
 
 ```python
 from src.output.output_formatter import OutputMode
@@ -159,27 +208,38 @@ source env/bin/activate
 # Run game simulation
 make run GAME=<game_name>
 
-# Example: Run the 0_0_cluster game
-make run GAME=0_0_cluster
+# Example: Run the template_cluster game
+make run GAME=template_cluster
 ```
 
 ## Configuration
 
-The behavior is controlled by settings in each game's `run.py` file:
+The behavior is controlled by settings in each game's `run_config.toml` file:
 
-```python
-# Enable/disable simulation runs
-run_sims = True
+```toml
+# Execution settings
+[execution]
+num_threads = 10        # Python simulation threads
+compression = false     # Enable zstd compression
+profiling = false       # Enable performance profiling
 
-# Number of simulations per betmode
-num_sim_args = {"base": 10000}
+# Simulation counts per bet mode
+[simulation]
+base = 10000           # Base game simulations
+bonus = 10000          # Bonus game simulations (optional)
 
-# Compression settings
-compression = False  # False for readable JSON, True for compressed zstd files
+# Pipeline control
+[pipeline]
+run_sims = true            # Generate simulation books
+run_optimization = false   # Run Rust optimization
+run_analysis = false       # Generate PAR sheets
+run_format_checks = false  # Run RGS verification
 
-# JSON format
-output_regular_json = True  # True for single JSON file, False for JSONL format
+# Target modes for optimization
+target_modes = ["base"]
 ```
+
+**Note**: The `output_regular_json` setting is configured in `game_config.py`, not in TOML.
 
 ## Testing
 

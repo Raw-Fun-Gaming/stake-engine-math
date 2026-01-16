@@ -1,15 +1,18 @@
-import json
 import importlib
-import sys
+import json
 import os
+import sys
 
 from .get_pay_splits import (
-    return_all_filepaths,
-    make_split_win_distribution,
-    return_hit_rates,
     get_unoptimized_hits,
+    make_split_win_distribution,
+    return_all_filepaths,
+    return_hit_rates,
 )
-from .get_symbol_hits import construct_symbol_probabilities, construct_custom_key_probabilities
+from .get_symbol_hits import (
+    construct_custom_key_probabilities,
+    construct_symbol_probabilities,
+)
 
 
 def get_config_class(game_id):
@@ -25,20 +28,28 @@ def get_config_class(game_id):
 class GameInformation:
     """Import game configuration details."""
 
-    def __init__(self, gamestate: object, analysis_ranges=None, modes_to_analyse=None, custom_keys=None):
-        self.game_id = gamestate.config.game_id
+    def __init__(
+        self,
+        game_state: object,
+        analysis_ranges=None,
+        modes_to_analyse=None,
+        custom_keys=None,
+    ):
+        self.game_id = game_state.config.game_id
         self.modes_to_analyse = modes_to_analyse
-        self.config_path = gamestate.output_files.configs["paths"]["be_config"]
-        self.math_config_path = gamestate.output_files.configs["paths"]["math_config"]
+        self.config_path = game_state.output_files.configs["paths"]["be_config"]
+        self.math_config_path = game_state.output_files.configs["paths"]["math_config"]
         self.load_config()
-        self.libraryPath = gamestate.output_files.library_path
-        self.lutPath = gamestate.output_files.lookup_path
-        self.finalLUTPath = gamestate.output_files.final_lookup_path
+        self.libraryPath = game_state.output_files.library_path
+        self.lutPath = game_state.output_files.lookup_path
+        self.finalLUTPath = game_state.output_files.final_lookup_path
 
         if custom_keys is None:
             self.custom_keys = [{}]
         else:
-            assert isinstance(custom_keys, list), "Search keys must be a list of dictionaries."
+            assert isinstance(
+                custom_keys, list
+            ), "Search keys must be a list of dictionaries."
             key_str = []
             for d in custom_keys:
                 key_dict = {}
@@ -67,12 +78,12 @@ class GameInformation:
                 (2000, 3000),
                 (3000, 5000),
                 (5000, 10000),
-                (10000, gamestate.config.wincap + 1),
+                (10000, game_state.config.win_cap + 1),
             ]
-            if gamestate.config.wincap < self.win_ranges[-1][0]:
+            if game_state.config.win_cap < self.win_ranges[-1][0]:
                 restricted_win_ranges = []
                 for wr in list(self.win_ranges):
-                    if gamestate.config.wincap >= wr[0]:
+                    if game_state.config.win_cap >= wr[0]:
                         restricted_win_ranges.append(wr)
                     else:
                         break
@@ -87,7 +98,9 @@ class GameInformation:
 
         self.get_mode_split_hit_rates()
         self.get_symbol_hit_rates(self.modes_to_analyse)
-        self.get_custom_hit_rates(modes_to_analyse=self.modes_to_analyse, custom_search_keys=self.custom_keys)
+        self.get_custom_hit_rates(
+            modes_to_analyse=self.modes_to_analyse, custom_search_keys=self.custom_keys
+        )
         self.get_range_hit_counts()
         print("Successfully loaded PAR-sheet information.")
 
@@ -138,7 +151,7 @@ class GameInformation:
         self.mode_fence_info = mode_fence_info
 
     def get_mode_split_hit_rates(self, modes_to_analyse=None) -> None:
-        """Separate win information depending on gametype."""
+        """Separate win information depending on game_type."""
         if modes_to_analyse is None:
             modes_to_analyse = self.all_modes
         mode_hit_rate_info = {}
@@ -147,10 +160,13 @@ class GameInformation:
             lut_path, split_path = return_all_filepaths(self.game_id, mode)
             sub_modes = list(self.mode_fence_info[mode].keys())
             mode_sorted_distributions, total_mode_weight = make_split_win_distribution(
-                lut_path, split_path, sub_modes, "basegame"
+                lut_path, split_path, sub_modes, "base_game"
             )
             sub_mode_hits, sub_mode_probs, sub_mode_rtp_allocation = return_hit_rates(
-                mode_sorted_distributions, total_mode_weight, self.win_ranges, self.cost_mapping[mode]
+                mode_sorted_distributions,
+                total_mode_weight,
+                self.win_ranges,
+                self.cost_mapping[mode],
             )
 
             mode_hit_rate_info[mode]["all_gameType_hits"] = sub_mode_hits
@@ -169,14 +185,20 @@ class GameInformation:
 
     def get_symbol_hit_rates(self, modes_to_analyse: list) -> None:
         """Extract symbols from config file and get statistics using optimized lookup tables."""
-        self.hr_summary, self.av_win_summary, self.sim_count_summary = construct_symbol_probabilities(
-            self.config, modes_to_analyse
+        self.hr_summary, self.av_win_summary, self.sim_count_summary = (
+            construct_symbol_probabilities(self.config, modes_to_analyse)
         )
 
-    def get_custom_hit_rates(self, modes_to_analyse: list, custom_search_keys: list[dict]) -> None:
+    def get_custom_hit_rates(
+        self, modes_to_analyse: list, custom_search_keys: list[dict]
+    ) -> None:
         """Compute hit rates of user defined search conditions."""
         assert modes_to_analyse is not None, "specify which mode/s to assess"
         assert custom_search_keys is not None
-        self.custom_hr_summary, self.custom_av_win_summary, self.custom_sim_count_summary = (
-            construct_custom_key_probabilities(self.config, modes_to_analyse, custom_search=custom_search_keys)
+        (
+            self.custom_hr_summary,
+            self.custom_av_win_summary,
+            self.custom_sim_count_summary,
+        ) = construct_custom_key_probabilities(
+            self.config, modes_to_analyse, custom_search=custom_search_keys
         )

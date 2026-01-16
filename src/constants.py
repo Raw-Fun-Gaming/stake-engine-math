@@ -41,13 +41,13 @@ class GameMode(str, Enum):
         BASE: Standard base game mode
         FREE_SPIN: Free spin/bonus game mode
         BONUS: Generic bonus game mode
-        SUPER_SPIN: Special superspin/respin mode (e.g., hold-and-spin)
+        SUPER_SPIN: Special super spin/respin mode (e.g., hold-and-spin)
     """
 
-    BASE = "basegame"
-    FREE_SPIN = "freegame"
+    BASE = "base_game"
+    FREE_SPIN = "free_game"
     BONUS = "bonus"
-    SUPER_SPIN = "superspin"
+    SUPER_SPIN = "super_spin"
 
 
 class WinType(str, Enum):

@@ -1,58 +1,86 @@
-[38;5;246m─────┬──────────────────────────────────────────────────────────────────────────[0m
-     [38;5;246m│ [0m[1mSTDIN[0m
-[38;5;246m─────┼──────────────────────────────────────────────────────────────────────────[0m
-[38;5;246m   1[0m [38;5;246m│[0m [38;5;231m"""Main file for generating results for sample lines-pay game."""[0m
-[38;5;246m   2[0m [38;5;246m│[0m 
-[38;5;246m   3[0m [38;5;246m│[0m [38;5;231mfrom game_config import GameConfig[0m
-[38;5;246m   4[0m [38;5;246m│[0m [38;5;231mfrom game_optimization import OptimizationSetup[0m
-[38;5;246m   5[0m [38;5;246m│[0m [38;5;231mfrom gamestate import GameState[0m
-[38;5;246m   6[0m [38;5;246m│[0m 
-[38;5;246m   7[0m [38;5;246m│[0m [38;5;231mfrom optimization_program.run_script import OptimizationExecution[0m
-[38;5;246m   8[0m [38;5;246m│[0m [38;5;231mfrom src.state.run_sims import create_books[0m
-[38;5;246m   9[0m [38;5;246m│[0m [38;5;231mfrom src.write_data.write_configs import generate_configs[0m
-[38;5;246m  10[0m [38;5;246m│[0m 
-[38;5;246m  11[0m [38;5;246m│[0m [38;5;231mif __name__ == "__main__":[0m
-[38;5;246m  12[0m [38;5;246m│[0m 
-[38;5;246m  13[0m [38;5;246m│[0m [38;5;231m    num_threads = 10[0m
-[38;5;246m  14[0m [38;5;246m│[0m [38;5;231m    rust_threads = 20[0m
-[38;5;246m  15[0m [38;5;246m│[0m [38;5;231m    batching_size = 50000[0m
-[38;5;246m  16[0m [38;5;246m│[0m [38;5;231m    compression = False[0m
-[38;5;246m  17[0m [38;5;246m│[0m [38;5;231m    profiling = False[0m
-[38;5;246m  18[0m [38;5;246m│[0m 
-[38;5;246m  19[0m [38;5;246m│[0m [38;5;231m    num_sim_args = {[0m
-[38;5;246m  20[0m [38;5;246m│[0m [38;5;231m        "base": int(1e2),[0m
-[38;5;246m  21[0m [38;5;246m│[0m [38;5;231m    }[0m
-[38;5;246m  22[0m [38;5;246m│[0m 
-[38;5;246m  23[0m [38;5;246m│[0m [38;5;231m    run_conditions = {[0m
-[38;5;246m  24[0m [38;5;246m│[0m [38;5;231m        "run_sims": False,[0m
-[38;5;246m  25[0m [38;5;246m│[0m [38;5;231m        "run_optimization": False,[0m
-[38;5;246m  26[0m [38;5;246m│[0m [38;5;231m        "run_analysis": False,[0m
-[38;5;246m  27[0m [38;5;246m│[0m [38;5;231m    }[0m
-[38;5;246m  28[0m [38;5;246m│[0m [38;5;231m    target_modes = ["base"][0m
-[38;5;246m  29[0m [38;5;246m│[0m 
-[38;5;246m  30[0m [38;5;246m│[0m [38;5;231m    config = GameConfig()[0m
-[38;5;246m  31[0m [38;5;246m│[0m [38;5;231m    gamestate = GameState(config)[0m
-[38;5;246m  32[0m [38;5;246m│[0m [38;5;231m    if run_conditions["run_optimization"] or run_conditions["run_analysis"]:[0m
-[38;5;246m  33[0m [38;5;246m│[0m [38;5;231m        optimization_setup_class = OptimizationSetup(config)[0m
-[38;5;246m  34[0m [38;5;246m│[0m 
-[38;5;246m  35[0m [38;5;246m│[0m [38;5;231m    if run_conditions["run_sims"]:[0m
-[38;5;246m  36[0m [38;5;246m│[0m [38;5;231m        create_books([0m
-[38;5;246m  37[0m [38;5;246m│[0m [38;5;231m            gamestate,[0m
-[38;5;246m  38[0m [38;5;246m│[0m [38;5;231m            config,[0m
-[38;5;246m  39[0m [38;5;246m│[0m [38;5;231m            num_sim_args,[0m
-[38;5;246m  40[0m [38;5;246m│[0m [38;5;231m            batching_size,[0m
-[38;5;246m  41[0m [38;5;246m│[0m [38;5;231m            num_threads,[0m
-[38;5;246m  42[0m [38;5;246m│[0m [38;5;231m            compression,[0m
-[38;5;246m  43[0m [38;5;246m│[0m [38;5;231m            profiling,[0m
-[38;5;246m  44[0m [38;5;246m│[0m [38;5;231m        )[0m
-[38;5;246m  45[0m [38;5;246m│[0m 
-[38;5;246m  46[0m [38;5;246m│[0m [38;5;231m    generate_configs(gamestate)[0m
-[38;5;246m  47[0m [38;5;246m│[0m 
-[38;5;246m  48[0m [38;5;246m│[0m [38;5;231m    if run_conditions["run_optimization"]:[0m
-[38;5;246m  49[0m [38;5;246m│[0m [38;5;231m        OptimizationExecution().run_all_moves(config, target_modes, rust_threads)[0m
-[38;5;246m  50[0m [38;5;246m│[0m [38;5;231m        generate_configs(gamestate)[0m
-[38;5;246m  51[0m [38;5;246m│[0m 
-[38;5;246m  52[0m [38;5;246m│[0m [38;5;231m    if run_conditions["run_analysis"]:[0m
-[38;5;246m  53[0m [38;5;246m│[0m [38;5;231m        # Analytics functionality not implemented in template[0m
-[38;5;246m  54[0m [38;5;246m│[0m [38;5;231m        pass[0m
-[38;5;246m─────┴──────────────────────────────────────────────────────────────────────────[0m
+"""Main file for generating results for template game.
+
+This script uses run_config.toml for execution settings.
+To customize settings, edit run_config.toml instead of modifying this file.
+"""
+
+import sys
+from pathlib import Path
+
+# Add project root to Python path
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
+
+from game_config import GameConfig
+from game_optimization import OptimizationSetup
+from game_state import GameState
+
+from optimization_program.run_script import OptimizationExecution
+from src.config.run_config import RunConfig
+from src.state.run_sims import create_books
+from src.write_data.write_configs import generate_configs
+
+
+def main() -> None:
+    """Run the game pipeline based on run_config.toml settings."""
+    # Load configuration from TOML file
+    run_config = RunConfig.from_toml("run_config.toml")
+
+    # Validate configuration
+    run_config.validate()
+
+    # Print configuration summary
+    print(run_config)
+    print()
+
+    # Initialize game components
+    game_config = GameConfig()
+    game_state = GameState(game_config)
+
+    # Initialize optimization setup if needed
+    if run_config.pipeline.run_optimization or run_config.pipeline.run_analysis:
+        _ = OptimizationSetup(game_config)  # Initializes optimization parameters
+
+    # Run simulation
+    if run_config.pipeline.run_sims:
+        print("Running simulations...")
+        create_books(
+            game_state,
+            game_config,
+            run_config.simulation.to_dict(),
+            run_config.execution.batching_size,
+            run_config.execution.num_threads,
+            run_config.execution.compression,
+            run_config.execution.profiling,
+        )
+        print("Simulations complete.\n")
+
+    # Generate configuration files
+    print("Generating configuration files...")
+    generate_configs(game_state)
+    print("Configuration files generated.\n")
+
+    # Run optimization
+    if run_config.pipeline.run_optimization:
+        print("Running optimization...")
+        OptimizationExecution().run_all_modes(
+            game_config,
+            run_config.target_modes,
+            run_config.execution.rust_threads,
+        )
+        generate_configs(game_state)
+        print("Optimization complete.\n")
+
+    # Run analysis (not implemented in template)
+    if run_config.pipeline.run_analysis:
+        print("Analysis not implemented in template game.\n")
+
+    # Run format checks (not applicable in template)
+    if run_config.pipeline.run_format_checks:
+        print("Format checks not applicable for template game.\n")
+
+    print("Pipeline execution finished successfully!")
+
+
+if __name__ == "__main__":
+    main()

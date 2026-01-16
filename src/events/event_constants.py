@@ -16,7 +16,7 @@ class EventConstants(Enum):
     SET_TOTAL_WIN = "setTotalWin"
     WIN_CAP = "winCap"
 
-    # Freespins events
+    # Free spins events
     UPDATE_FREE_SPINS = "updateFreeSpins"
     TRIGGER_FREE_SPINS = "triggerFreeSpins"
     RETRIGGER_FREE_SPINS = "retriggerFreeSpins"

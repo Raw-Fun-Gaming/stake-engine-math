@@ -2,7 +2,7 @@
     "yaml.schemas": {
         "https://squidfunk.github.io/mkdocs-material/schema.json": "mkdocs.yml"
       },
-      "yaml.customTags": [ 
+      "yaml.customTags": [
         "!ENV scalar",
         "!ENV sequence",
         "!relative scalar",
@@ -14,9 +14,31 @@
     "cSpell.words": [
         "reelset",
         "reelstop",
-        "Reelstrips"
+        "reelstrips",
+        "reelstrip",
+        "buybonus",
+        "tumble",
+        "mult",
+        "payout",
+        "paytable",
+        "payline",
+        "paylines",
+        "winCap",
+        "scatterpay",
+        "neighbours",
+        "JSONL",
+        "zstd",
+        "toml",
+        "tomli",
+        "tomllib",
+        "xlsxwriter",
+        "pyproject",
+        "pytest",
+        "numpy",
+        "mypy",
+        "mkdocs"
     ],
-    
+
     // Performance optimizations for Python project
     "python.terminal.activateEnvironment": false,
     "terminal.integrated.inheritEnv": false,
@@ -25,7 +47,7 @@
     "terminal.integrated.shellIntegration.historySize": 0,
     "terminal.integrated.enablePersistentSessions": false,
     "terminal.integrated.ptyHost.maxIdleTime": 30000,
-    
+
     // Disable web development extensions for this Python project
     "svelte.enable": false,
     "eslint.enable": false,
@@ -33,25 +55,25 @@
     "tailwindCSS.enable": false,
     "postcss.enable": false,
     "css.enable": false,
-    
+
     // Optimize Python-specific settings
     "python.analysis.autoImportCompletions": true,
     "python.analysis.typeCheckingMode": "basic",
     "python.analysis.completeFunctionParens": true,
-    
+
     // Reduce extension overhead
     "extensions.experimental.affinity": {
         "ms-python.python": 1,
         "ms-python.vscode-pylance": 1,
         "ms-python.debugpy": 1
     },
-    
+
     // Disable unnecessary features
     "git.decorations.enabled": false,
     "workbench.settings.enableNaturalLanguageSearch": false,
     "workbench.tips.enabled": false,
     "workbench.startupEditor": "none",
-    
+
     // File watching optimization
     "files.watcherExclude": {
         "**/.git/objects/**": true,
@@ -64,7 +86,7 @@
         "**/*.pyc": true,
         "**/target/**": true
     },
-    
+
     // GitHub Copilot Chat automation settings
     "github.copilot.chat.experimental.codeActions": true,
     "github.copilot.chat.experimental.quickChat": true,
@@ -85,7 +107,7 @@
     "github.copilot.chat.experimental.reduceManagedMode": false,
     "github.copilot.chat.experimental.autoApproveTools": [
         "read_file",
-        "file_search", 
+        "file_search",
         "grep_search",
         "semantic_search",
         "list_dir",

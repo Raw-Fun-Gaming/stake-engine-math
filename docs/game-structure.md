@@ -10,7 +10,7 @@ Each game lives in `games/<game_name>/` with this structure:
 games/<game_name>/
   ├── run.py                    # Main entry point
   ├── game_config.py           # Configuration and BetMode setup
-  ├── gamestate.py             # Game loop (run_spin, run_freespin)
+  ├── game_state.py             # Game loop (run_spin, run_free_spin)
   ├── game_override.py         # Override base State methods
   ├── game_executables.py      # Win calculation logic
   ├── game_optimization.py     # Optimization parameters
@@ -30,7 +30,7 @@ games/<game_name>/
 Games follow this inheritance chain:
 
 ```
-GameState (gamestate.py)
+GameState (game_state.py)
     ↓ inherits from
 GameStateOverride (game_override.py)
     ↓ inherits from
@@ -41,7 +41,7 @@ State (src/state/state.py)
 
 ### Purpose of Each Layer
 
-**`gamestate.py`** - Main game loop
+**`game_state.py`** - Main game loop
 ```python
 class GameState(GameStateOverride):
     def run_spin(self):
@@ -49,9 +49,9 @@ class GameState(GameStateOverride):
         self.draw_board()
         self.calculate_wins()
         if self.check_fs_condition():
-            self.run_freespin_from_base()
+            self.run_free_spin_from_base()
 
-    def run_freespin(self):
+    def run_free_spin(self):
         """Free spin logic"""
         # Free spin specific logic
 ```
@@ -119,7 +119,7 @@ class GameConfig(Config):
         }
 
         # BetModes
-        self.betmodes = {
+        self.bet_modes = {
             "base": BetMode(...),
             "bonus": BetMode(...)
         }
@@ -130,13 +130,13 @@ class GameConfig(Config):
 Each game mode has its own configuration:
 
 ```python
-from src.config.betmode import BetMode
+from src.config.bet_mode import BetMode
 
-self.betmodes = {
+self.bet_modes = {
     "base": BetMode(
         reel_file="reels/base_reels.csv",
         distributions={
-            "mult_values": [2, 3, 5, 10],  # Multiplier values
+            "multiplier_values": [2, 3, 5, 10],  # Multiplier values
             "weights": [50, 30, 15, 5]      # Corresponding weights
         },
         conditions={
@@ -227,7 +227,7 @@ self.win_type = "ways"
 
 2. **Run Simulations**
    - `create_books()` from `src/state/run_sims`
-   - Runs N simulations per betmode
+   - Runs N simulations per bet mode
 
 3. **Single Simulation**
    ```
@@ -239,7 +239,7 @@ self.win_type = "ways"
      ↓
    check_triggers()
      ↓
-   run_freespin() (if triggered)
+   run_free_spin() (if triggered)
      ↓
    store_events()
    ```
@@ -265,7 +265,7 @@ def assign_special_sym_function(self):
 def assign_mult_property(self, symbol):
     """Assign random multiplier to symbol"""
     mult = get_random_outcome(
-        self.get_current_distribution_conditions()["mult_values"][self.gametype]
+        self.get_current_distribution_conditions()["multiplier_values"][self.game_type]
     )
     symbol.assign_attribute({"multiplier": mult})
 ```
@@ -285,7 +285,7 @@ Edit `games/my_new_game/game_config.py`:
 self.game_id = "my_new_game"
 self.game_name = "My New Game"
 self.win_type = "cluster"  # Choose win type
-# ... configure paytable, betmodes, etc.
+# ... configure paytable, bet modes, etc.
 ```
 
 ### 3. Create Reel Strips
@@ -302,7 +302,7 @@ position,symbol,weight
 
 ### 4. Implement Game Logic
 
-Edit `games/my_new_game/gamestate.py`:
+Edit `games/my_new_game/game_state.py`:
 ```python
 def run_spin(self):
     self.draw_board()
@@ -319,7 +319,7 @@ def run_spin(self):
 
 ```bash
 # Small test run
-# Edit run.py: num_sim_args = {"base": 1000}
+# Edit run_config.toml: [simulation] base = 1000
 make run GAME=my_new_game
 
 # Run tests
@@ -360,7 +360,7 @@ class GameExecutables(State):
 ```python
 # ✅ Good - use distributions
 mult = get_random_outcome(
-    self.config.betmodes[self.gametype].distributions["mult_values"]
+    self.config.bet_modes[self.game_type].distributions["multiplier_values"]
 )
 
 # ❌ Bad - hardcoded random

@@ -1,7 +1,7 @@
 # Output Compression Benchmark Results
 
 **Date**: 2026-01-15
-**Test Game**: 0_0_lines (Lines-pay game)
+**Test Game**: template_lines (Lines-pay game)
 **Simulations**: 500 base game spins
 
 ---
@@ -87,7 +87,7 @@ The initial 61% estimate was for **board data only**. The actual 27.9% is for **
 - Events metadata (type, amounts, etc.)
 - Win calculations
 - Game state transitions
-- Book metadata (id, criteria, payoutMultiplier)
+- Book metadata (id, criteria, payout_multiplier)
 
 These non-compressible elements dilute the overall savings.
 
@@ -145,7 +145,7 @@ Phase 3.2 (Event Optimization) could add:
 
 **Environment:**
 - Python 3.13.3
-- Game: 0_0_lines (Lines-pay with free spins)
+- Game: template_lines (Lines-pay with free spins)
 - Threads: 1
 - Batch size: 500
 - Compression: Disabled (measuring raw JSON)

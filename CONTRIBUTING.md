@@ -60,7 +60,7 @@ win_multiplier = 5.0
 fs = 10          # Too abbreviated
 tot_fs = 20      # Inconsistent abbreviation
 sim = 1          # Unclear
-gametype = "base"  # Should be enum
+game_type = "base"  # Should be enum
 bd = draw()      # Too cryptic
 mult = 5.0       # Ambiguous
 ```
@@ -75,7 +75,7 @@ MIN_CLUSTER_SIZE = 5
 # Use enums for related constants
 class GameMode(Enum):
     BASE = "base"
-    FREE_SPIN = "freespin"
+    FREE_SPIN = "free_spin"
     BONUS = "bonus"
 ```
 
@@ -177,7 +177,7 @@ event_constants.py      # Contains EventConstants enum
 #### ✗ Bad
 ```
 state.py           # Too generic
-gamestate.py       # Should be snake_case
+game_state.py       # Should be snake_case
 executables.py     # Unclear purpose
 override.py        # What does it override?
 ```
@@ -188,7 +188,7 @@ override.py        # What does it override?
 ```
 games/
   <game_name>/
-    game_state.py          # Main game implementation (was gamestate.py)
+    game_state.py          # Main game implementation (was game_state.py)
     game_config.py         # Game configuration
     game_optimization.py   # Optimization parameters
     game_events.py         # Custom event generators (optional)
@@ -204,7 +204,7 @@ games/
 self.simulation_id          # Current simulation number (was: sim)
 self.free_spin_count        # Current free spin number (was: fs)
 self.total_free_spins       # Total free spins awarded (was: tot_fs)
-self.game_mode              # Current game mode (was: gametype)
+self.game_mode              # Current game mode (was: game_type)
 self.current_board          # Current board state (was: board)
 self.win_multiplier         # Total win multiplier (was: final_win)
 self.is_win_cap_reached     # Win cap status (was: wincap_triggered)
@@ -324,13 +324,13 @@ class BaseGameState(ABC):
 
     Games should inherit from this class and implement:
         - run_spin(): Main game logic for a single spin
-        - run_freespin(): Free spin game logic
+        - run_free_spin(): Free spin game logic
         - assign_special_sym_function(): Special symbol handlers
 
     Attributes:
         config: Game configuration instance
         simulation_id: Current simulation number
-        game_mode: Current game mode (base, freespin, etc.)
+        game_mode: Current game mode (base, free_spin, etc.)
         current_board: Current board state
 
     Example:
@@ -407,7 +407,7 @@ stake-engine-math/
 │   │   └── scatter.py
 │   ├── config/                   # Configuration classes
 │   │   ├── config.py
-│   │   ├── betmode.py
+│   │   ├── bet_mode.py
 │   │   └── distributions.py
 │   ├── events/                   # Event system
 │   │   ├── event_constants.py
@@ -424,13 +424,13 @@ stake-engine-math/
 ├── games/                        # Individual game implementations
 │   ├── template/                 # Template for new games
 │   ├── tower_treasures/
-│   │   ├── game_state.py        # (was gamestate.py)
+│   │   ├── game_state.py        # (was game_state.py)
 │   │   ├── game_config.py
 │   │   ├── game_optimization.py
 │   │   ├── reels/
 │   │   ├── library/
 │   │   └── tests/
-│   └── 0_0_cluster/
+│   └── template_cluster/
 ├── optimization_program/         # Rust optimization
 │   └── src/
 ├── tests/                        # SDK-wide tests
@@ -473,9 +473,9 @@ tests/
 ├── test_win_manager.py
 ├── test_base_game_state.py
 └── win_calculations/
-    ├── test_clusterpay.py
-    ├── test_linespay.py
-    └── test_wayspay.py
+    ├── test_cluster_pay.py
+    ├── test_lines_pay.py
+    └── test_ways_pay.py
 
 games/tower_treasures/tests/
 ├── test_game_state.py
@@ -647,11 +647,11 @@ self.book.add_event(event)
 
 ### Configuration Access
 ```python
-# Get current betmode
-betmode = self.get_betmode(self.game_mode)
+# Get current bet mode
+bet_mode = self.get_bet_mode(self.game_mode)
 
 # Get distributions
-distributions = betmode.distributions
+distributions = bet_mode.distributions
 
 # Get current distribution conditions
 conditions = self.get_current_distribution_conditions()

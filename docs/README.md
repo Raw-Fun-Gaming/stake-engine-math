@@ -101,10 +101,10 @@ source env/bin/activate
 
 ```bash
 # Run a sample game
-make run GAME=0_0_cluster
+make run GAME=template_cluster
 
 # Books files will be generated in:
-# games/0_0_cluster/library/
+# games/template_cluster/library/
 ```
 
 ---
@@ -115,7 +115,7 @@ make run GAME=0_0_cluster
 Simulation results stored as JSON/JSONL files containing all possible game outcomes:
 - **board**: The reel strip result (symbol grid)
 - **events**: Game events (wins, triggers, multipliers, etc.)
-- **payoutMultiplier**: Total win amount
+- **payout_multiplier**: Total win amount
 
 Books can be generated in two modes:
 - **VERBOSE**: Human-readable with full details (debugging)
@@ -129,7 +129,7 @@ Games have different modes (base game, bonus game) each with their own:
 
 Example:
 ```python
-self.betmodes = {
+self.bet_modes = {
     "base": BetMode(...),
     "bonus": BetMode(...)
 }
@@ -170,7 +170,7 @@ stake-engine-math/
 ├── games/<game_name>/                 # 🎮 Individual games
 │   ├── run.py                         # Main entry point
 │   ├── game_config.py                 # Game configuration
-│   ├── gamestate.py                   # All game logic (Phase 1.3)
+│   ├── game_state.py                   # All game logic (Phase 1.3)
 │   ├── game_optimization.py           # Optimization parameters
 │   ├── reels/                         # Reel strip CSV files
 │   ├── library/                       # Generated books files
@@ -186,7 +186,7 @@ stake-engine-math/
 │   │   └── tumble.py                  # Cascade mechanics
 │   ├── config/                        # Configuration
 │   │   ├── config.py                  # Base Config class
-│   │   └── betmode.py                 # BetMode class
+│   │   └── bet_mode.py                 # BetMode class
 │   ├── events/                        # Event system
 │   │   ├── event_constants.py         # Standardized constants
 │   │   ├── event_filter.py            # Event filtering (Phase 3.2)
@@ -239,8 +239,8 @@ stake-engine-math/
 # Run a game with default settings
 make run GAME=tower_treasures
 
-# Run with custom simulation count (edit run.py)
-# num_sim_args = {"base": 10000}
+# Run with custom simulation count
+# Edit run_config.toml: [simulation] base = 10000
 ```
 
 ### Enable Output Optimization
@@ -295,7 +295,7 @@ make validate GAME=tower_treasures
 make profile GAME=tower_treasures
 
 # Run compression benchmarks
-make benchmark GAME=0_0_lines
+make benchmark GAME=template_lines
 ```
 
 ### Building Optimization
@@ -330,7 +330,7 @@ cp -r games/template games/my_new_game
 # games/my_new_game/game_config.py
 
 # Implement game logic
-# games/my_new_game/gamestate.py
+# games/my_new_game/game_state.py
 
 # Add reel strips
 # games/my_new_game/reels/

@@ -1,6 +1,7 @@
-from src.config.paths import PATH_TO_GAMES
-from collections import defaultdict
 import os
+from collections import defaultdict
+
+from src.config.paths import PATH_TO_GAMES
 
 
 def get_unoptimized_hits(lut_path, all_modes, win_ranges):
@@ -44,7 +45,9 @@ def get_unoptimized_hits(lut_path, all_modes, win_ranges):
     return all_modes_hit_rates, all_modes_range_hits
 
 
-def make_split_win_distribution(lut_file, split_file, all_modes, base_mode_name="basegame"):
+def make_split_win_distribution(
+    lut_file, split_file, all_modes, base_mode_name="base_game"
+):
     """Separate probability information for different game-types."""
     combined_distributions = defaultdict(lambda: defaultdict(float))
     all_modes.append("cumulative")
@@ -77,10 +80,12 @@ def make_split_win_distribution(lut_file, split_file, all_modes, base_mode_name=
                 if mode != base_mode_name and mode != "cumulative":
                     combined_distributions[mode][all_free[idx]] += all_weights[idx]
             if (all_free[idx] != 0) and (all_fences[idx] == base_mode_name):
-                raise ValueError("Non-Zero FreeGame win in baseGame Fence.")
+                raise ValueError("Non-Zero Free Game win in Base Game Fence.")
 
         # Construct cumulative hit-rate data
-        combined_distributions["cumulative"][all_base[idx] + all_free[idx]] += all_weights[idx]
+        combined_distributions["cumulative"][
+            all_base[idx] + all_free[idx]
+        ] += all_weights[idx]
 
     # Sort all dictionaries by payout
     all_sorted_payouts = {}
@@ -118,13 +123,19 @@ def return_hit_rates(all_mode_distributions, total_weight, win_ranges, mode_cost
         for win in mode_wins:
             for win_range in win_ranges:
                 if win >= win_range[0] and win < win_range[1]:
-                    all_mode_probs[mode][win_range] += all_mode_distributions[mode][win] / total_weight
-                    all_mode_rtps[mode][win_range] += win * (all_mode_distributions[mode][win] / total_weight)
+                    all_mode_probs[mode][win_range] += (
+                        all_mode_distributions[mode][win] / total_weight
+                    )
+                    all_mode_rtps[mode][win_range] += win * (
+                        all_mode_distributions[mode][win] / total_weight
+                    )
                     continue
 
         for win_range in win_ranges:
             try:
-                all_mode_hits[mode][win_range] = round((1 / (all_mode_probs[mode][win_range])), 3)
+                all_mode_hits[mode][win_range] = round(
+                    (1 / (all_mode_probs[mode][win_range])), 3
+                )
                 all_mode_rtps[mode][win_range] /= mode_cost
             except ZeroDivisionError:
                 all_mode_hits[mode][win_range] = "NaN"
@@ -134,9 +145,15 @@ def return_hit_rates(all_mode_distributions, total_weight, win_ranges, mode_cost
 
 def return_all_filepaths(game_id: str, mode: str):
     """Return file files required for PAR sheet generation."""
-    lut_path = os.path.join(PATH_TO_GAMES, game_id, "library", "publish_files", f"lookUpTable_{mode}_0.csv")
+    lut_path = os.path.join(
+        PATH_TO_GAMES, game_id, "library", "publish_files", f"lookUpTable_{mode}_0.csv"
+    )
     split_path = os.path.join(
-        PATH_TO_GAMES, game_id, "library", "lookup_tables", f"lookUpTableSegmented_{mode}.csv"
+        PATH_TO_GAMES,
+        game_id,
+        "library",
+        "lookup_tables",
+        f"lookUpTableSegmented_{mode}.csv",
     )
 
     return lut_path, split_path

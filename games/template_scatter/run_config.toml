@@ -1,0 +1,24 @@
+# Run Configuration for template_scatter Game
+
+# Target modes for optimization
+target_modes = ["base", "bonus"]
+
+[execution]
+num_threads = 10
+rust_threads = 20
+batching_size = 50000
+compression = true
+profiling = false
+
+[simulation]
+base = 10000
+bonus = 10000
+
+[pipeline]
+run_sims = true
+run_optimization = true
+run_analysis = true
+run_format_checks = true
+
+[analysis]
+custom_keys = [{ symbol = "scatter" }]

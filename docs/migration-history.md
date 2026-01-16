@@ -26,7 +26,6 @@ This repository is a **developer-focused fork** of the original Stake Engine Mat
 **3. Personal Developer Tools**
 - `manage_extensions.sh` - Personal VS Code extension manager
 - `.nojekyll` - GitHub Pages configuration (not needed)
-- `.ralph-instructions` - Internal task tracking
 - **Rationale**: These are personal workflow tools, not project infrastructure
 
 **4. Unused Dependencies**
@@ -102,7 +101,7 @@ The SDK underwent a comprehensive refactoring program (January 2026) that transf
 1. `src/state/state.py` - Core state machine (20+ methods)
 2. `src/wins/win_manager.py` - Win tracking (8 methods, 8 attributes)
 3. `src/events/events.py` - Event generation (15 functions)
-4. `src/config/betmode.py` - Bet mode configuration (14 methods)
+4. `src/config/bet_mode.py` - Bet mode configuration (14 methods)
 5. `src/config/config.py` - Game configuration (8 methods, 30+ attributes)
 6. `src/calculations/symbol.py` - Symbol handling (13 methods)
 7. `src/calculations/cluster.py` - Cluster-pay algorithm (9 methods)
@@ -141,7 +140,7 @@ GameExecutables (game_executables.py)
   ↑
 GameStateOverride (game_override.py)
   ↑
-GameState (gamestate.py)
+GameState (game_state.py)
 ```
 
 **After Architecture (2 layers):**
@@ -152,7 +151,7 @@ Board (src/calculations/board.py)
   ↑
 [Tumble (src/calculations/tumble.py)]  # Optional for cascade games
   ↑
-GameState (gamestate.py)  # All game logic in one file
+GameState (game_state.py)  # All game logic in one file
 ```
 
 **Work Completed:**
@@ -166,13 +165,13 @@ GameState (gamestate.py)  # All game logic in one file
 - Removed 21 deprecated game files (game_override.py, game_executables.py, game_calculations.py)
 
 **Games Migrated:**
-1. [0_0_lines](../games/0_0_lines/gamestate.py) - Simple line-pay (~130 lines)
-2. [0_0_cluster](../games/0_0_cluster/gamestate.py) - Cluster-pay with grid multipliers (~290 lines)
-3. [0_0_scatter](../games/0_0_scatter/gamestate.py) - Scatter-pay with tumbles (~255 lines)
-4. [0_0_ways](../games/0_0_ways/gamestate.py) - Standard ways-pay (~130 lines)
-5. [0_0_expwilds](../games/0_0_expwilds/gamestate.py) - Expanding wilds with superspin (~390 lines)
-6. [tower_treasures](../games/tower_treasures/gamestate.py) - Cluster-pay with upgrades (~428 lines)
-7. [template](../games/template/gamestate.py) - Minimal template (~108 lines)
+1. [template_lines](../games/template_lines/game_state.py) - Simple line-pay (~130 lines)
+2. [template_cluster](../games/template_cluster/game_state.py) - Cluster-pay with grid multipliers (~290 lines)
+3. [template_scatter](../games/template_scatter/game_state.py) - Scatter-pay with tumbles (~255 lines)
+4. [template_ways](../games/template_ways/game_state.py) - Standard ways-pay (~130 lines)
+5. [template_expanding_wilds](../games/template_expanding_wilds/game_state.py) - Expanding wilds with super_spin (~390 lines)
+6. [tower_treasures](../games/tower_treasures/game_state.py) - Cluster-pay with upgrades (~428 lines)
+7. [template](../games/template/game_state.py) - Minimal template (~108 lines)
 
 **New Game Structure:**
 Each game now uses a single consolidated file with clear sections:
@@ -180,7 +179,7 @@ Each game now uses a single consolidated file with clear sections:
 - **State Management Overrides** - Custom reset/update logic
 - **Game-Specific Mechanics** - Unique gameplay features
 - **Win Evaluation** - Win calculation methods
-- **Main Game Loops** - `run_spin()` and `run_freespin()`
+- **Main Game Loops** - `run_spin()` and `run_free_spin()`
 
 **Impact:**
 - **67% reduction** in inheritance complexity
@@ -332,7 +331,7 @@ Updated supporting tools:
 - [scripts/format_books_json.py](../scripts/format_books_json.py) - Format version detection
 - [utils/rgs_verification.py](../utils/rgs_verification.py) - Format version logging
 
-**Benchmark Results** (500 simulations, 0_0_lines game):
+**Benchmark Results** (500 simulations, template_lines game):
 
 | Metric | Verbose | Compact | Savings |
 |--------|---------|---------|---------|
@@ -491,7 +490,7 @@ Created [scripts/validate_config.py](../scripts/validate_config.py) - CLI tool
 **Features:**
 - List all available games: `python scripts/validate_config.py --list`
 - Validate game configuration: `python scripts/validate_config.py --game tower_treasures`
-- Checks: game_id, paytable, reel files, win_type, betmodes
+- Checks: game_id, paytable, reel files, win_type, bet modes
 - Clear error messages with actionable suggestions
 
 **Integration**: Added `Config.validate_config()` method for runtime validation
@@ -513,7 +512,7 @@ make help                     # Show all available commands
 #### 3. Improved Error Messages
 Enhanced error messages across 12+ files:
 - [src/config/config.py](../src/config/config.py) - Configuration validation errors
-- [src/config/betmode.py](../src/config/betmode.py) - Betmode setup errors
+- [src/config/bet_mode.py](../src/config/bet_mode.py) - Bet mode setup errors
 - [src/calculations/board.py](../src/calculations/board.py) - Board generation errors
 - [src/state/base_game_state.py](../src/state/base_game_state.py) - State machine errors
 - Event generation functions - Event validation errors
@@ -561,11 +560,11 @@ Enhanced error messages across 12+ files:
 ### Verification
 
 **Games Tested:**
-1. ✅ 0_0_lines - Line-pay game
-2. ✅ 0_0_cluster - Cluster-pay game
-3. ✅ 0_0_ways - Ways-pay game
-4. ✅ 0_0_scatter - Scatter-pay game
-5. ✅ 0_0_expwilds - Expanding wilds game
+1. ✅ template_lines - Line-pay game
+2. ✅ template_cluster - Cluster-pay game
+3. ✅ template_ways - Ways-pay game
+4. ✅ template_scatter - Scatter-pay game
+5. ✅ template_expanding_wilds - Expanding wilds game
 6. ✅ tower_treasures - Complex cluster game
 7. ✅ template - Minimal template
 
@@ -644,60 +643,15 @@ Enhanced error messages across 12+ files:
 
 ---
 
-## Migration Guide for Existing Games
-
-### No Changes Required
-
-Games automatically inherit all improvements through the base class. The refactored architecture is fully backward compatible.
-
-### Optional: Enable Output Compression
-
-To enable file size optimization in your game's `game_config.py`:
-
-```python
-from src.output.output_formatter import OutputMode
-
-class GameConfig(Config):
-    def __init__(self):
-        super().__init__()
-
-        # Enable compact output mode (27.9% smaller files)
-        self.output_mode = OutputMode.COMPACT
-        self.compress_symbols = True
-        self.compress_positions = True
-
-        # Enable event filtering (additional 10-15% reduction)
-        self.skip_derived_wins = True
-        self.skip_progress_updates = True
-        self.verbose_event_level = "standard"
-```
-
-### Optional: Adopt New Game Structure
-
-If you have custom game files using the old 4-file structure, you can consolidate:
-
-1. Copy logic from `game_override.py`, `game_executables.py`, `game_calculations.py`
-2. Paste into `gamestate.py` following the template structure:
-   - Special symbol handlers
-   - State management overrides
-   - Game-specific mechanics
-   - Win evaluation
-   - Main game loops (`run_spin()`, `run_freespin()`)
-3. Update imports to use `BaseGameState`, `Board`, or `Tumble`
-4. Remove deprecated files
-5. Test thoroughly
-
-See [games/template/gamestate.py](../games/template/gamestate.py) for the recommended structure.
-
----
-
 ## Key Differences from Fork Origin
+
+**Note**: This is a **heavily refactored fork** with breaking architectural changes. Games from the original repository cannot be easily migrated - they would need to be rewritten to match the new structure. New games should use the [games/template/](../games/template/) as a starting point.
 
 ### Architecture
 
 **Before (Fork Origin):**
 - 6-layer deep inheritance hierarchy
-- 4 separate files per game (gamestate, override, executables, calculations)
+- 4 separate files per game (game_state, override, executables, calculations)
 - Unclear separation of concerns
 - Difficult to trace game flow
 
@@ -766,9 +720,172 @@ See [games/template/gamestate.py](../games/template/gamestate.py) for the recomm
 
 ---
 
+## Phase 6: Configuration System Refactoring (Week 6)
+
+### Phase 6.1: TOML-Based Run Configuration
+
+**Objective**: Separate execution settings from code using TypeScript-like TOML configuration files
+
+**Work Completed:**
+
+#### 1. RunConfig Class
+Created [src/config/run_config.py](../src/config/run_config.py) (335 lines)
+
+**Features:**
+- Dataclass-based configuration with validation
+- TOML file loading with built-in `tomllib` (Python 3.11+)
+- Environment variable support (`CONFIG_FILE`) for Makefile integration
+- Four configuration sections:
+  - `ExecutionConfig`: Threads, compression, profiling
+  - `SimulationConfig`: Simulation counts per game mode
+  - `PipelineConfig`: Execution flags (run_sims, run_optimization, etc.)
+  - `AnalysisConfig`: Custom analytics keys
+- Comprehensive validation with clear error messages
+- `.to_dict()` converter for backward compatibility
+
+#### 2. TOML Configuration Files
+Created `run_config.toml` for all games:
+- [games/template_cluster/run_config.toml](../games/template_cluster/run_config.toml)
+- [games/template_lines/run_config.toml](../games/template_lines/run_config.toml)
+- [games/template_ways/run_config.toml](../games/template_ways/run_config.toml)
+- [games/template_scatter/run_config.toml](../games/template_scatter/run_config.toml)
+- [games/template_expanding_wilds/run_config.toml](../games/template_expanding_wilds/run_config.toml)
+- [games/tower_treasures/run_config.toml](../games/tower_treasures/run_config.toml)
+- [games/template/run_config.toml](../games/template/run_config.toml)
+
+**TOML Format Example:**
+```toml
+[execution]
+num_threads = 10
+compression = false
+profiling = false
+
+[simulation]
+base = 10000
+bonus = 10000
+
+[pipeline]
+run_sims = true
+run_optimization = true
+
+target_modes = ["base", "bonus"]
+```
+
+#### 3. Refactored run.py Files
+Updated all game `run.py` files to pure execution scripts:
+- Load configuration from TOML instead of hardcoded variables
+- Clean `main()` function with clear pipeline stages
+- Progress messages for each stage
+- Fixed `create_stat_sheet()` parameter (uses `game_id` string, not game_state object)
+- Removed unused `optimization_setup_class` variable
+
+**Before (mixed configuration):**
+```python
+if __name__ == "__main__":
+    num_threads = 10
+    compression = False
+    num_sim_args = {"base": int(1e4)}
+    run_conditions = {"run_sims": True}
+    # ... 60 lines of mixed config and logic
+```
+
+**After (pure execution):**
+```python
+def main() -> None:
+    run_config = RunConfig.from_toml("run_config.toml")
+    run_config.validate()
+    # ... clean pipeline execution
+```
+
+#### 4. Makefile Integration
+Updated [Makefile](../Makefile) with CONFIG parameter support:
+
+```bash
+# Default config
+make run GAME=tower_treasures
+
+# Custom config
+make run GAME=tower_treasures CONFIG=prod.toml
+```
+
+**Features:**
+- Passes `CONFIG_FILE` environment variable to Python
+- Auto-detects compression setting from TOML file
+- Smart formatting: only formats books if `compression = false`
+
+#### 5. Documentation Updates
+Updated documentation across the repository:
+- [CLAUDE.md](../CLAUDE.md) - Added "Run Configuration System" section
+- [README.md](../README.md) - Added "TOML-Based Configuration" section
+- File structure diagrams updated to show `run_config.toml`
+- "When Adding a New Game" guide updated with TOML configuration step
+
+**Impact:**
+- **Clean separation of concerns**: Game rules (`game_config.py`) vs runtime settings (`run_config.toml`)
+- **Familiar pattern**: TypeScript/JavaScript developers recognize TOML config pattern
+- **Better DX**: Edit settings without touching Python code
+- **Version control friendly**: Track config changes independently
+- **Multi-environment support**: Easy to create dev.toml, prod.toml, test.toml
+- **Type-safe validation**: Catches configuration errors early with clear messages
+- **Zero breaking changes**: All games migrated, fully backward compatible
+
+**Testing:**
+- ✅ All 7 games + template updated
+- ✅ Configuration loading verified
+- ✅ Validation catches errors (compression + format_checks conflict)
+- ✅ Makefile CONFIG parameter working
+- ✅ Environment variable support working
+
+---
+
+## Phase 6.2: Reel File Naming Refactoring
+
+**Objective**: Replace cryptic reel file names with clear, descriptive names
+
+**Work Completed:**
+
+#### Renamed All Reel Files
+
+**Old naming (cryptic abbreviations):**
+- `BR0.csv` → `base.csv`
+- `FR0.csv` → `free.csv`
+- `WCAP.csv` → `wincap.csv`
+- `FRWCAP.csv` → `free_wincap.csv`
+- `SSR.csv` → `super_spin.csv`
+- `SSWCAP.csv` → `super_spin_wincap.csv`
+
+**Problems with old naming:**
+- Cryptic abbreviations (BR0, FR0) not self-documenting
+- Unnecessary numbering (0) implied multiple variants that never existed
+- Inconsistent patterns (some abbreviate, some combine)
+- Not beginner-friendly
+
+**New naming convention:**
+- **base.csv** - Base game reel strip
+- **free.csv** - Free spin reel strip
+- **wincap.csv** - Win cap reel strip (high-win scenarios)
+- **free_wincap.csv** - Free spin win cap variant
+- **super_spin.csv** - Super spin game mode reel strip
+- **super_spin_wincap.csv** - Super spin win cap variant
+
+**Files Updated:**
+- Renamed 17 reel CSV files across 6 games
+- Updated all `game_config.py` reel mappings
+- Updated all `reel_weights` references in distribution configs
+- Updated documentation in [CLAUDE.md](../CLAUDE.md)
+
+**Impact:**
+- **Self-documenting** - Immediately clear what each reel file is for
+- **Consistent** - All follow same naming pattern
+- **Future-proof** - Easy to add variants like `base_variant_1.csv`
+- **Beginner-friendly** - No need to learn cryptic abbreviations
+- **Breaking change** - But only affects internal codebase (all games migrated)
+
+---
+
 ## Conclusion
 
-The refactoring program successfully transformed the SDK from a complex, hard-to-maintain codebase into a modern, well-documented, high-performance framework. All improvements were made incrementally with continuous testing, zero breaking changes, and full backward compatibility.
+The refactoring program successfully transformed the SDK from a complex, hard-to-maintain codebase into a modern, well-documented, high-performance framework. All improvements were made incrementally with continuous testing, zero breaking changes (within this fork), and full backward compatibility (within this fork).
 
 **Key Achievements:**
 - ✅ Simplified architecture (67% reduction in complexity)
@@ -777,6 +894,8 @@ The refactoring program successfully transformed the SDK from a complex, hard-to
 - ✅ Reduced output size (35-40% file size reduction)
 - ✅ Enhanced code quality (type hints, docstrings, standards)
 - ✅ Better developer experience (tools, validation, errors)
+- ✅ **NEW**: TOML-based configuration system (Phase 6.1)
+- ✅ **NEW**: Descriptive reel file naming (Phase 6.2)
 - ✅ Production ready (54 tests, RGS verified)
 
 The SDK is now positioned for continued growth with a solid foundation for future enhancements.

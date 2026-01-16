@@ -12,13 +12,19 @@ class ConstructScaling:
             for cond in ["criteria", "scale_factor", "win_range", "probability"]:
                 assert cond in scaling.keys()
                 if cond == "criteria":
-                    assert isinstance(scaling[cond], str), "Enter string type for criteria condition"
+                    assert isinstance(
+                        scaling[cond], str
+                    ), "Enter string type for criteria condition"
                 elif cond in ["scale_factor", "probability"]:
-                    assert isinstance(scaling[cond], Union[float, int]), "Enter float/int type for value."
+                    assert isinstance(
+                        scaling[cond], Union[float, int]
+                    ), "Enter float/int type for value."
                     if cond == "probability" and scaling[cond] > 1:
                         warn("probabilities > 1 will have no effect on selection.")
                 elif cond == "win_range":
-                    assert isinstance(scaling[cond], tuple), "Enter tuple for range: (min, max)."
+                    assert isinstance(
+                        scaling[cond], tuple
+                    ), "Enter tuple for range: (min, max)."
                     assert scaling[cond][0] <= scaling[cond][1]
         self.scaling = all_scaling
 
@@ -81,11 +87,18 @@ class ConstructConditions:
             search_range = (search_conditions, search_conditions)
             force_search = {}
         elif isinstance(search_conditions, tuple):
-            assert search_conditions[0] <= search_conditions[1], "Enter (min, max) payout format."
+            assert (
+                search_conditions[0] <= search_conditions[1]
+            ), "Enter (min, max) payout format."
             assert all(
-                [isinstance(search_conditions[0], (float, int)), isinstance(search_conditions[1], (float, int))]
+                [
+                    isinstance(search_conditions[0], (float, int)),
+                    isinstance(search_conditions[1], (float, int)),
+                ]
             ), "Search condition (min,max) entries must be numbers."
-            assert len(search_conditions) == 2, "Search condition length exceeded, enter (min, max) payout format."
+            assert (
+                len(search_conditions) == 2
+            ), "Search condition length exceeded, enter (min, max) payout format."
             search_range = search_conditions
             force_search = {}
         elif isinstance(search_conditions, dict):
@@ -133,13 +146,17 @@ def verify_optimization_input(game_config, opt_dict):
             if bm.get_name() == mode_name:
                 bet = bm
                 break
-        assert bet is not None, "bet_mode name and optimization mode names do not match."
+        assert (
+            bet is not None
+        ), "bet_mode name and optimization mode names do not match."
 
         dist_keys = []
         for dist in bm._distributions:
             dist_keys.append(dist._criteria)
 
-        assert [x in criteria_list for x in dist_keys], "Distribution criteria must match 'conditions' keys"
+        assert [
+            x in criteria_list for x in dist_keys
+        ], "Distribution criteria must match 'conditions' keys"
 
         # Verify optimization segmentation matches target RTP
         bm_rtp = bm.get_rtp()
@@ -148,4 +165,6 @@ def verify_optimization_input(game_config, opt_dict):
         for p in param_conditions:
             param_rtp += p["rtp"]
 
-        assert round(bm_rtp, 5) == round(param_rtp, 5), "Optimization RTP does not match betmode RTP."
+        assert round(bm_rtp, 5) == round(
+            param_rtp, 5
+        ), "Optimization RTP does not match bet mode RTP."

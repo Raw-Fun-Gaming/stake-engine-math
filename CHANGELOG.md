@@ -39,7 +39,7 @@ This release represents a complete architecture overhaul of the SDK, improving m
   - `GeneralGameState` (core simulation infrastructure)
   - `Conditions` (query methods for game state)
   - `Executables` (common game actions)
-- **Simplified game structure**: All game logic now in single `gamestate.py` file per game
+- **Simplified game structure**: All game logic now in single `game_state.py` file per game
 - **Clear section organization**: Special symbols → State management → Mechanics → Win evaluation → Game loops
 
 #### Phase 2: Code Quality
@@ -129,7 +129,7 @@ This release represents a complete architecture overhaul of the SDK, improving m
   - After: BaseGameState → Board/Tumble → GameState
 - **Game file structure**: Consolidated from 4 files to 1 file per game (75% reduction)
   - Removed: `game_override.py`, `game_executables.py`, `game_calculations.py`
-  - Kept: `gamestate.py` (all game logic), `game_config.py`, `run.py`
+  - Kept: `game_state.py` (all game logic), `game_config.py`, `run.py`
 - **Board class**: Now inherits from BaseGameState instead of Executables
 - **Tumble class**: Continues to inherit from Board for cascade mechanics
 
@@ -141,7 +141,7 @@ This release represents a complete architecture overhaul of the SDK, improving m
 
 #### Output Format
 
-- **Books format version**: Added `formatVersion` field ("2.0-compact" or "2.0-verbose")
+- **Books format version**: Added `format_version` field ("2.0-compact" or "2.0-verbose")
 - **Event formatting**: Uses OutputFormatter for consistent serialization
 - **scripts/format_books_json.py**: Updated for format version detection
 - **utils/rgs_verification.py**: Updated for format version logging
@@ -221,16 +221,16 @@ class GameConfig(Config):
 If you have custom game files using the old 4-file structure:
 
 1. Copy your game logic from `game_override.py`, `game_executables.py`, `game_calculations.py`
-2. Paste into `gamestate.py` following the section structure:
+2. Paste into `game_state.py` following the section structure:
    - Special symbol handlers
    - State management overrides
    - Game-specific mechanics
    - Win evaluation
-   - Main game loops (`run_spin()`, `run_freespin()`)
+   - Main game loops (`run_spin()`, `run_free_spin()`)
 3. Update imports to use `BaseGameState`, `Board`, or `Tumble`
 4. Remove the deprecated files
 
-See `games/template/gamestate.py` for the recommended structure.
+See `games/template/game_state.py` for the recommended structure.
 
 ---
 

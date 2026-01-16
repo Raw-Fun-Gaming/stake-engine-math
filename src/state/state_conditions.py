@@ -2,7 +2,7 @@ from src.state.state import GeneralGameState
 
 
 class Conditions(GeneralGameState):
-    """queries current gamestate"""
+    """queries current game_state"""
 
     def in_criteria(self, *args):
         """check is current criteria is within a given list"""
@@ -14,20 +14,20 @@ class Conditions(GeneralGameState):
     def in_mode(self, *args):
         """check if current bet-mode mates a given list"""
         for arg in args:
-            if self.betmode == arg:
+            if self.bet_mode == arg:
                 return True
         return False
 
     def is_wincap(self):
-        """checks if current basegame + freegame wins are >= max-win"""
-        if self.running_bet_win >= self.config.wincap:
+        """checks if current base game + free game wins are >= max-win"""
+        if self.running_bet_win >= self.config.win_cap:
             return True
         return False
 
-    def is_in_gametype(self, *args):
-        """check current gametype against possible list"""
+    def is_in_game_type(self, *args):
+        """check current game_type against possible list"""
         for arg in args:
-            if self.gametype == arg:
+            if self.game_type == arg:
                 return True
         return False
 

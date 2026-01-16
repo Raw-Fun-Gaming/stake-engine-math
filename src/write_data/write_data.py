@@ -1,12 +1,13 @@
 """Handles writing all game game files"""
 
-from collections import defaultdict
-from warnings import warn
-import shutil
-import os
+import ast
 import hashlib
 import json
-import ast
+import os
+import shutil
+from collections import defaultdict
+from warnings import warn
+
 import zstandard as zstd
 
 
@@ -27,9 +28,9 @@ def get_sha_256(file_to_hash: str):
     return sha256_hexRep
 
 
-def make_force_json(gamestate: object):
+def make_force_json(game_state: object):
     """Construct force-file from recorded description keys."""
-    folder_path = gamestate.config.force_path
+    folder_path = game_state.config.force_path
     force_file_path = os.path.join(folder_path, "force.json")
 
     if os.path.isfile(force_file_path) and os.path.getsize(force_file_path) > 0:
@@ -44,7 +45,11 @@ def make_force_json(gamestate: object):
 
     for filename in os.listdir(folder_path):
         file_path = os.path.join(folder_path, filename)
-        if os.path.isfile(file_path) and filename.endswith(".json") and filename.startswith("force_record_"):
+        if (
+            os.path.isfile(file_path)
+            and filename.endswith(".json")
+            and filename.startswith("force_record_")
+        ):
             with open(file_path, mode="r", encoding="UTF-8") as file:
                 data = json.load(file)
 
@@ -74,36 +79,41 @@ def get_force_options(force_results: dict):
     return {key: list(val) for key, val in force_keys.items()}
 
 
-def make_lookup_tables(gamestate: object, name: str):
+def make_lookup_tables(game_state: object, name: str):
     """Write lookup tables for all simulations."""
     file = open(name, "w", encoding="UTF-8")
-    sims = list(gamestate.library.keys())
-    sims.sort()
-    for sim in sims:
-        file.write("{},1,{}\n".format(gamestate.library[sim]["id"], gamestate.library[sim]["payoutMultiplier"]))
-    file.close()
-
-
-def make_lookup_pay_split(gamestate: object, name: str):
-    """Record win values from basegame and freegame types."""
-    file = open(name, "w", encoding="UTF-8")
-    sims = list(gamestate.library.keys())
+    sims = list(game_state.library.keys())
     sims.sort()
     for sim in sims:
         file.write(
-            str(gamestate.library[sim]["id"])
+            "{},1,{}\n".format(
+                game_state.library[sim]["id"],
+                game_state.library[sim]["payoutMultiplier"],
+            )
+        )
+    file.close()
+
+
+def make_lookup_pay_split(game_state: object, name: str):
+    """Record win values from base game and free game types."""
+    file = open(name, "w", encoding="UTF-8")
+    sims = list(game_state.library.keys())
+    sims.sort()
+    for sim in sims:
+        file.write(
+            str(game_state.library[sim]["id"])
             + ","
-            + str(gamestate.library[sim]["criteria"])
+            + str(game_state.library[sim]["criteria"])
             + ","
-            + str(round(gamestate.library[sim]["baseGameWins"], 2))
+            + str(round(game_state.library[sim]["baseGameWins"], 2))
             + ","
-            + str(round(gamestate.library[sim]["freeGameWins"], 2))
+            + str(round(game_state.library[sim]["freeGameWins"], 2))
             + "\n"
         )
     file.close()
 
 
-def write_library_events(gamestate: object, library: list, gametype: str):
+def write_library_events(game_state: object, library: list, game_type: str):
     """Write all unique events within a given mode - with one example application."""
     unique_event = []
     event_items = {}
@@ -113,11 +123,15 @@ def write_library_events(gamestate: object, library: list, gametype: str):
             if lib_event not in unique_event:
                 unique_event.append(lib_event)
                 item_keys = instance.keys()
-                dict_details = {key: instance[key] for key in item_keys if key != "index"}
+                dict_details = {
+                    key: instance[key] for key in item_keys if key != "index"
+                }
                 event_items[lib_event] = dict_details
     json_object = json.dumps(event_items, indent=4)
     with open(
-        os.path.join(gamestate.output_files.config_path, f"event_config_{gametype}.json"),
+        os.path.join(
+            game_state.output_files.config_path, f"event_config_{game_type}.json"
+        ),
         "w",
         encoding="UTF-8",
     ) as f:
@@ -128,30 +142,34 @@ def output_lookup_and_force_files(
     threads: int,
     batching_size: int,
     game_id: str,
-    betmode: str,
-    gamestate: object,
+    bet_mode: str,
+    game_state: object,
     num_sims: int = 1000000,
     compress: bool = True,
 ):
     """Combine temporary lookup tables and force files into a single output."""
-    print("Saving books for ", game_id, "in", betmode)
+    print("Saving books for ", game_id, "in", bet_mode)
     num_repeats = max(int(round(num_sims / threads / batching_size, 0)), 1)
     file_list = []
     for repeat_index in range(num_repeats):
         for thread in range(threads):
             file_list.append(
-                gamestate.output_files.get_temp_multi_thread_name(betmode, thread, repeat_index, compress)
+                game_state.output_files.get_temp_multi_thread_name(
+                    bet_mode, thread, repeat_index, compress
+                )
             )
 
     if compress:
-        temp_book_output_path = os.path.join(gamestate.output_files.book_path, "temp_book_output.json")
+        temp_book_output_path = os.path.join(
+            game_state.output_files.book_path, "temp_book_output.json"
+        )
         with open(temp_book_output_path, "w", encoding="UTF-8") as outfile:
             for fname in file_list:
                 with open(fname, "rb") as infile:
                     decompressed = zstd.ZstdDecompressor().decompress(infile.read())
                     outfile.write(decompressed.decode("UTF-8"))
 
-        final_out = gamestate.output_files.get_final_book_name(betmode, True)
+        final_out = game_state.output_files.get_final_book_name(bet_mode, True)
         with open(temp_book_output_path, "rb") as f_in, open(final_out, "wb") as f_out:
             f_out.write(zstd.ZstdCompressor().compress(f_in.read()))
 
@@ -174,7 +192,7 @@ def output_lookup_and_force_files(
                     except json.JSONDecodeError as e:
                         print(f"Warning: Failed to parse temp file {filename}: {e}")
                         # Try to handle JSONL format as fallback
-                        lines = content.split('\n')
+                        lines = content.split("\n")
                         for line in lines:
                             line = line.strip()
                             if line:
@@ -182,11 +200,13 @@ def output_lookup_and_force_files(
                                     book = json.loads(line)
                                     all_books.append(book)
                                 except json.JSONDecodeError:
-                                    print(f"Warning: Failed to parse line in {filename}: {line[:100]}...")
-        
+                                    print(
+                                        f"Warning: Failed to parse line in {filename}: {line[:100]}..."
+                                    )
+
         # Write the properly merged JSON array
         with open(
-            gamestate.output_files.get_final_book_name(betmode, False),
+            game_state.output_files.get_final_book_name(bet_mode, False),
             "w",
             encoding="UTF-8",
         ) as outfile:
@@ -199,24 +219,32 @@ def output_lookup_and_force_files(
                         if id == 0:
                             outfile.write(file_data[:-1])  # don't write final ']'
                         elif id != len(file_list) - 1:
-                            outfile.write("," + file_data[1:-1])  # don't write first or last '[/]'
+                            outfile.write(
+                                "," + file_data[1:-1]
+                            )  # don't write first or last '[/]'
                         else:
-                            outfile.write("," + file_data[1::])  # dont write first '[', write last ']'
+                            outfile.write(
+                                "," + file_data[1::]
+                            )  # dont write first '[', write last ']'
 
-    print("Saving force files for", game_id, "in", betmode)
+    print("Saving force files for", game_id, "in", bet_mode)
     force_results_dict = {}
     file_list = []
     for repeat_index in range(num_repeats):
         for thread in range(threads):
             file_list.append(
-                gamestate.output_files.get_temp_force_name(betmode, thread, repeat_index),
+                game_state.output_files.get_temp_force_name(
+                    bet_mode, thread, repeat_index
+                ),
             )
 
     for filename in file_list:
         force_chunk = ast.literal_eval(json.load(open(filename, "r", encoding="UTF-8")))
         for key in force_chunk:
             if force_results_dict.get(key) is not None:
-                force_results_dict[key]["timesTriggered"] += force_chunk[key]["timesTriggered"]
+                force_results_dict[key]["timesTriggered"] += force_chunk[key][
+                    "timesTriggered"
+                ]
                 force_results_dict[key]["bookIds"] += force_chunk[key]["bookIds"]
             else:
                 force_results_dict[key] = force_chunk[key]
@@ -234,36 +262,42 @@ def output_lookup_and_force_files(
         force_results_dict_just_for_rob.append(force_dict)
 
     json_object_for_rob = json.dumps(force_results_dict_just_for_rob, indent=4)
-    force_record_path = os.path.join(gamestate.output_files.force_path, f"force_record_{betmode}.json")
+    force_record_path = os.path.join(
+        game_state.output_files.force_path, f"force_record_{bet_mode}.json"
+    )
     with open(force_record_path, "w", encoding="UTF-8") as file:
         file.write(json_object_for_rob)
 
     forceResultKeys = get_force_options(force_results_dict)
-    json_file_path = os.path.join(gamestate.output_files.force_path, "force.json")
+    json_file_path = os.path.join(game_state.output_files.force_path, "force.json")
     try:
         with open(json_file_path, "r", encoding="UTF-8") as file:
             data = json.load(file)
     except FileNotFoundError:
         data = {}
-    data[gamestate.get_current_betmode().get_name()] = forceResultKeys
+    data[game_state.get_current_bet_mode().get_name()] = forceResultKeys
     json_object = json.dumps(data, indent=4)
     with open(json_file_path, "w", encoding="UTF-8") as file:
         file.write(json_object)
 
     weights_plus_wins_file_list = []
     segmented_lut_file_list = []
-    print("Saving LUTs for", game_id, "in", betmode)
+    print("Saving LUTs for", game_id, "in", bet_mode)
     for repeat_index in range(num_repeats):
         for thread in range(threads):
             weights_plus_wins_file_list += [
-                gamestate.output_files.get_temp_lookup_name(betmode, thread, repeat_index)
+                game_state.output_files.get_temp_lookup_name(
+                    bet_mode, thread, repeat_index
+                )
             ]
             segmented_lut_file_list += [
-                gamestate.output_files.get_temp_segmented_name(betmode, thread, repeat_index)
+                game_state.output_files.get_temp_segmented_name(
+                    bet_mode, thread, repeat_index
+                )
             ]
 
     with open(
-        gamestate.output_files.get_final_lookup_name(betmode),
+        game_state.output_files.get_final_lookup_name(bet_mode),
         "w",
         encoding="UTF-8",
     ) as outfile:
@@ -272,13 +306,15 @@ def output_lookup_and_force_files(
                 outfile.write(infile.read())
 
     # Write _0 file if it does not exist
-    if not (os.path.exists(gamestate.output_files.get_optimized_lookup_name(betmode))):
+    if not (
+        os.path.exists(game_state.output_files.get_optimized_lookup_name(bet_mode))
+    ):
         shutil.copy(
-            gamestate.output_files.get_final_lookup_name(betmode),
-            gamestate.output_files.get_optimized_lookup_name(betmode),
+            game_state.output_files.get_final_lookup_name(bet_mode),
+            game_state.output_files.get_optimized_lookup_name(bet_mode),
         )
     with open(
-        gamestate.output_files.get_final_segmented_name(betmode),
+        game_state.output_files.get_final_segmented_name(bet_mode),
         "w",
         encoding="UTF-8",
     ) as outfile:
@@ -287,9 +323,9 @@ def output_lookup_and_force_files(
                 outfile.write(infile.read())
 
 
-def write_json(gamestate, filename: str):
+def write_json(game_state, filename: str):
     """Convert the list of dictionaries to a JSON-encoded string and compress it in chunks."""
-    json_objects = [json.dumps(item) for item in gamestate.library.values()]
+    json_objects = [json.dumps(item) for item in game_state.library.values()]
     combined_data = "\n".join(json_objects) + "\n"
 
     if filename.endswith(".zst"):
@@ -299,16 +335,16 @@ def write_json(gamestate, filename: str):
             f.write(compressed_data)
     else:
         with open(filename, "w", encoding="UTF-8") as f:
-            if not (gamestate.config.output_regular_json):
+            if not (game_state.config.output_regular_json):
                 f.write(combined_data)
             else:
-                j_regular = [item for item in gamestate.library.values()]
+                j_regular = [item for item in game_state.library.values()]
                 f.write(json.dumps(j_regular))
 
 
-def print_recorded_wins(gamestate: object, name: str = ""):
+def print_recorded_wins(game_state: object, name: str = ""):
     """Temporary file generation for wins/recorded results."""
-    json_object = json.dumps(str(gamestate.recorded_events), indent=4)
+    json_object = json.dumps(str(game_state.recorded_events), indent=4)
     file = open(name, "w", encoding="UTF-8")
     file.write(json_object)
     file.close()

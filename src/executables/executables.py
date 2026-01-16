@@ -1,16 +1,16 @@
-from src.state.state_conditions import Conditions
 from src.calculations.tumble import Tumble
 from src.events.events import (
-    win_event,
     end_free_spins_event,
+    set_final_win_event,
+    trigger_free_spins_event,
     tumble_board_event,
+    update_free_spins_event,
+    update_global_mult_event,
     update_tumble_win_event,
     win_cap_event,
-    trigger_free_spins_event,
-    update_free_spins_event,
-    set_final_win_event,
-    update_global_mult_event,
+    win_event,
 )
+from src.state.state_conditions import Conditions
 
 
 class Executables(Conditions, Tumble):
@@ -34,7 +34,9 @@ class Executables(Conditions, Tumble):
 
     def evaluate_wincap(self) -> None:
         """Indicate spin functions should stop once wincap is reached."""
-        if self.win_manager.running_bet_win >= self.config.wincap and not (self.wincap_triggered):
+        if self.win_manager.running_bet_win >= self.config.win_cap and not (
+            self.wincap_triggered
+        ):
             self.wincap_triggered = True
             win_cap_event(self)
             return True
@@ -43,59 +45,67 @@ class Executables(Conditions, Tumble):
     def check_fs_condition(self, scatter_key: str = "scatter") -> bool:
         """Check if there are enough active scatters to trigger fs."""
         if self.count_special_symbols(scatter_key) >= min(
-            self.config.freespin_triggers[self.gametype].keys()
+            self.config.free_spin_triggers[self.game_type].keys()
         ) and not (self.repeat):
             return True
         return False
 
-    def check_freespin_entry(self, scatter_key: str = "scatter") -> bool:
-        """Ensure that betmode criteria is expecting freespin trigger."""
-        if self.get_current_distribution_conditions()["force_freegame"] and len(
+    def check_free_spin_entry(self, scatter_key: str = "scatter") -> bool:
+        """Ensure that bet_mode criteria is expecting free_spin trigger."""
+        if self.get_current_distribution_conditions()["force_free_game"] and len(
             self.special_syms_on_board[scatter_key]
-        ) >= min(self.config.freespin_triggers[self.gametype].keys()):
+        ) >= min(self.config.free_spin_triggers[self.game_type].keys()):
             return True
         self.repeat = True
         return False
 
-    def run_freespin_from_base(self, scatter_key: str = "scatter") -> None:
-        """Trigger the freespin function and update total fs amount."""
+    def run_free_spin_from_base(self, scatter_key: str = "scatter") -> None:
+        """Trigger the free_spin function and update total fs amount."""
         self.record(
             {
                 "kind": self.count_special_symbols(scatter_key),
                 "symbol": scatter_key,
-                "gametype": self.gametype,
+                "game_type": self.game_type,
             }
         )
-        self.update_freespin_amount()
-        self.run_freespin()
+        self.update_free_spin_amount()
+        self.run_free_spin()
 
-    def update_freespin_amount(self, scatter_key: str = "scatter") -> None:
-        """Set initial number of spins for a freegame and transmit event."""
-        self.tot_fs = self.config.freespin_triggers[self.gametype][self.count_special_symbols(scatter_key)]
-        if self.gametype == self.config.basegame_type:
-            basegame_trigger, freegame_trigger = True, False
+    def update_free_spin_amount(self, scatter_key: str = "scatter") -> None:
+        """Set initial number of spins for a free game and transmit event."""
+        self.tot_fs = self.config.free_spin_triggers[self.game_type][
+            self.count_special_symbols(scatter_key)
+        ]
+        if self.game_type == self.config.base_game_type:
+            base_game_trigger, free_game_trigger = True, False
         else:
-            basegame_trigger, freegame_trigger = False, True
-        trigger_free_spins_event(self, basegame_trigger=basegame_trigger, freegame_trigger=freegame_trigger)
+            base_game_trigger, free_game_trigger = False, True
+        trigger_free_spins_event(
+            self,
+            base_game_trigger=base_game_trigger,
+            free_game_trigger=free_game_trigger,
+        )
 
     def update_fs_retrigger_amt(self, scatter_key: str = "scatter") -> None:
-        """Update total freespin amount on retrigger."""
-        self.tot_fs += self.config.freespin_triggers[self.gametype][self.count_special_symbols(scatter_key)]
-        trigger_free_spins_event(self, freegame_trigger=True, basegame_trigger=False)
+        """Update total free_spin amount on retrigger."""
+        self.tot_fs += self.config.free_spin_triggers[self.game_type][
+            self.count_special_symbols(scatter_key)
+        ]
+        trigger_free_spins_event(self, free_game_trigger=True, base_game_trigger=False)
 
-    def update_freespin(self) -> None:
-        """Called before a new reveal during freegame."""
+    def update_free_spin(self) -> None:
+        """Called before a new reveal during free game."""
         update_free_spins_event(self)
         self.fs += 1
         self.win_manager.reset_spin_win()
         self.win_data = {}
 
-    def end_freespin(self) -> None:
-        """Transmit total amount awarded during freegame."""
+    def end_free_spin(self) -> None:
+        """Transmit total amount awarded during free game."""
         end_free_spins_event(self)
 
-    def evaluate_finalwin(self) -> None:
-        """Check base and freespin sums, set payout multiplier."""
+    def evaluate_final_win(self) -> None:
+        """Check base and free_spin sums, set payout multiplier."""
         self.update_final_win()
         set_final_win_event(self)
 

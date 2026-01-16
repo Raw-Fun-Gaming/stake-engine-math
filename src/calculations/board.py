@@ -45,7 +45,7 @@ class Board(BaseGameState):
             bottom_symbols: list[Symbol] = []
         self.refresh_special_syms()
         self.reelstrip_id: str = get_random_outcome(
-            self.get_current_distribution_conditions()["reel_weights"][self.gametype]
+            self.get_current_distribution_conditions()["reel_weights"][self.game_type]
         )
         self.reelstrip = self.config.reels[self.reelstrip_id]
         anticipation: list[int] = [0] * self.config.num_reels
@@ -89,7 +89,7 @@ class Board(BaseGameState):
                                 if (
                                     board[reel][row].check_attribute("scatter")
                                     and len(self.special_syms_on_board[special_symbol])
-                                    >= self.config.anticipation_triggers[self.gametype]
+                                    >= self.config.anticipation_triggers[self.game_type]
                                     and first_scatter_reel == -1
                                 ):
                                     first_scatter_reel = reel + 1
@@ -183,7 +183,7 @@ class Board(BaseGameState):
                                 if (
                                     board[reel][row].check_attribute("scatter")
                                     and len(self.special_syms_on_board[special_symbol])
-                                    >= self.config.anticipation_triggers[self.gametype]
+                                    >= self.config.anticipation_triggers[self.game_type]
                                     and first_scatter_reel == -1
                                 ):
                                     first_scatter_reel = reel + 1
@@ -297,9 +297,9 @@ class Board(BaseGameState):
     def draw_board(
         self, emit_event: bool = True, trigger_symbol: str = "scatter"
     ) -> None:
-        """Draw a board, optionally forcing scatter triggers based on betmode.
+        """Draw a board, optionally forcing scatter triggers based on bet_mode.
 
-        If betmode specifies force_freegame, forces a specific number of scatter
+        If bet_mode specifies force_free game, forces a specific number of scatter
         symbols. Otherwise, draws random boards until no unwanted triggers occur.
 
         Args:
@@ -307,20 +307,20 @@ class Board(BaseGameState):
             trigger_symbol: Special symbol type to check for triggers (default: "scatter")
         """
         if (
-            self.get_current_distribution_conditions()["force_freegame"]
-            and self.gametype == self.config.basegame_type
+            self.get_current_distribution_conditions()["force_free_game"]
+            and self.game_type == self.config.base_game_type
         ):
             num_scatters: int = get_random_outcome(
                 self.get_current_distribution_conditions()["scatter_triggers"]
             )
             self.force_special_board(trigger_symbol, num_scatters)
         elif (
-            not (self.get_current_distribution_conditions()["force_freegame"])
-            and self.gametype == self.config.basegame_type
+            not (self.get_current_distribution_conditions()["force_free_game"])
+            and self.game_type == self.config.base_game_type
         ):
             self.create_board_reelstrips()
             while self.count_special_symbols(trigger_symbol) >= min(
-                self.config.freespin_triggers[self.gametype].keys()
+                self.config.free_spin_triggers[self.game_type].keys()
             ):
                 self.create_board_reelstrips()
         else:
@@ -363,7 +363,7 @@ class Board(BaseGameState):
             num_force_syms: Number of symbols to force
         """
         reelstrip_id: str = get_random_outcome(
-            self.get_current_distribution_conditions()["reel_weights"][self.gametype]
+            self.get_current_distribution_conditions()["reel_weights"][self.game_type]
         )
         reelstops: list[list[int]] = self.get_syms_on_reel(reelstrip_id, force_criteria)
 

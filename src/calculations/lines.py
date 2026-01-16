@@ -181,49 +181,56 @@ class Lines:
         return return_data
 
     @staticmethod
-    def emit_linewin_events(gamestate: Any) -> None:
+    def emit_linewin_events(game_state: Any) -> None:
         """Emit win events for line wins.
 
         Creates WIN, SET_WIN, and SET_TOTAL_WIN events based on spin results.
         Only emits WIN event if there are actual line wins.
 
         Args:
-            gamestate: Current game state with win_manager and win_data
+            game_state: Current game state with win_manager and win_data
         """
-        if gamestate.win_manager.spin_win > 0:
-            win_event(gamestate)
-            gamestate.evaluate_wincap()
-            set_win_event(gamestate)
-        set_total_win_event(gamestate)
+        if game_state.win_manager.spin_win > 0:
+            win_event(game_state)
+            game_state.evaluate_wincap()
+            set_win_event(game_state)
+        set_total_win_event(game_state)
 
     @staticmethod
-    def record_lines_wins(gamestate: Any) -> None:
+    def record_lines_wins(game_state: Any) -> None:
         """Record line wins to force tracking system for optimization.
 
-        Extracts win description keys (line length, symbol, multiplier, gametype)
-        and records them to the gamestate for distribution optimization.
+        Extracts win description keys (line length, symbol, multiplier, game_type)
+        and records them to the game_state for distribution optimization.
 
         Args:
-            gamestate: Game state instance with win_data and record() method
+            game_state: Game state instance with win_data and record() method
         """
 
-        def record_line(kind: int, symbol: str, mult: int, gametype: str) -> None:
+        def record_line(
+            kind: int, symbol: str, multiplier: int, game_type: str
+        ) -> None:
             """Record a single line win to force file.
 
             Args:
                 kind: Number of symbols in the winning line
                 symbol: Winning symbol name
-                mult: Applied multiplier value
-                gametype: Game mode (base/bonus)
+                multiplier: Applied multiplier value
+                game_type: Game mode (base/bonus)
             """
-            gamestate.record(
-                {"kind": kind, "symbol": symbol, "mult": mult, "gametype": gametype}
+            game_state.record(
+                {
+                    "kind": kind,
+                    "symbol": symbol,
+                    "multiplier": multiplier,
+                    "game_type": game_type,
+                }
             )
 
-        for win in gamestate.win_data["wins"]:
+        for win in game_state.win_data["wins"]:
             record_line(
                 len(win["positions"]),
                 win["symbol"],
                 win["meta"]["multiplier"],
-                gamestate.gametype,
+                game_state.game_type,
             )

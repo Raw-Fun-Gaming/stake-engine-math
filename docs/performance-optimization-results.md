@@ -1,7 +1,7 @@
 # Phase 5.1: Performance Optimization Results
 
 **Date**: 2026-01-15
-**Game**: 0_0_lines
+**Game**: template_lines
 **Test Size**: 1,000 simulations
 
 ---

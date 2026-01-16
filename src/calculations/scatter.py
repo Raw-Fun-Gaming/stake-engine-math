@@ -159,23 +159,23 @@ class Scatter:
         return return_data
 
     @staticmethod
-    def record_scatter_wins(gamestate: Any) -> None:
+    def record_scatter_wins(game_state: Any) -> None:
         """Record scatter wins to force tracking system for optimization.
 
-        Extracts win description keys (symbol count, symbol, total multiplier, gametype)
-        and records them to the gamestate for distribution optimization.
+        Extracts win description keys (symbol count, symbol, total multiplier, game_type)
+        and records them to the game_state for distribution optimization.
 
         Args:
-            gamestate: Game state instance with win_data and record() method
+            game_state: Game state instance with win_data and record() method
         """
-        for win in gamestate.win_data["wins"]:
-            gamestate.record(
+        for win in game_state.win_data["wins"]:
+            game_state.record(
                 {
                     "kind": len(win["positions"]),
                     "symbol": win["symbol"],
                     "totalMult": int(
                         win["meta"]["globalMult"] + win["meta"]["clusterMult"]
                     ),
-                    "gametype": gamestate.gametype,
+                    "game_type": game_state.game_type,
                 }
             )

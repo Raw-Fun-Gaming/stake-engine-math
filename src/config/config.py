@@ -9,7 +9,7 @@ from __future__ import annotations
 import os
 from typing import Any
 
-from src.config.betmode import BetMode
+from src.config.bet_mode import BetMode
 from src.config.paths import PATH_TO_GAMES
 from src.exceptions import GameConfigError, ReelStripError
 from src.output.output_formatter import OutputMode
@@ -34,10 +34,10 @@ class Config:
         num_rows: Number of rows per reel (can be int or list[int])
         paytable: Symbol payout table {(count, symbol): multiplier}
         special_symbols: Special symbol configurations
-        basegame_type: Base game mode name
-        freegame_type: Free game mode name
+        base_game_type: Base game mode name
+        free_game_type: Free game mode name
         include_padding: Whether to include padding symbols in display
-        freespin_triggers: Free spin trigger requirements
+        free_spin_triggers: Free spin trigger requirements
         bet_modes: List of BetMode configurations
         win_levels: Win level thresholds for different contexts
         reels: Reel strip configurations
@@ -56,7 +56,7 @@ class Config:
         """Initialize configuration with default values."""
         # Game identification
         self.rtp: float = 0.97
-        self.game_id: str = "0_0_asample"
+        self.game_id: str = "template_sample"
         self.provider_name: str = "sample_provider"
         self.provider_number: int = 1
         self.game_name: str = "sample_lines"
@@ -70,7 +70,7 @@ class Config:
         self.compress_positions: bool = False  # Use [reel, row] instead of {reel, row}
         self.compress_symbols: bool = False  # Use "L5" instead of {"name": "L5"}
         self.skip_implicit_events: bool = (
-            False  # Skip redundant events (e.g., setFinalWin with 0)
+            False  # Skip redundant events (e.g., set_final_win with 0)
         )
 
         # Event filtering options (Phase 3.2: Event Optimization)
@@ -82,12 +82,12 @@ class Config:
         )
         self.verbose_event_level: str = "full"  # "full", "standard", "minimal"
 
-        if self.game_id != "0_0_sample":
+        if self.game_id != "template_sample":
             self.construct_paths()
 
         # Win information
         self.min_denomination: float = 0.1
-        self.wincap: float = 5000
+        self.win_cap: float = 5000
 
         # Game details
         self.num_reels: int = 5  # TODO: Rename from 'reels' in Phase 2
@@ -103,13 +103,13 @@ class Config:
         self.all_valid_sym_names: set[str] = set()
 
         # Define special Symbols properties - list all possible symbol states during game-play
-        self.basegame_type: str = "basegame"
-        self.freegame_type: str = "freegame"
+        self.base_game_type: str = "base_game"
+        self.free_game_type: str = "free_game"
 
         self.include_padding: bool = True
 
         # Define the number of scatter-symbols required to award free-spins
-        self.freespin_triggers: dict[str, int] = {}
+        self.free_spin_triggers: dict[str, dict[int, int]] = {}
 
         # Static game files
         self.reel_location: str = ""
@@ -134,8 +134,8 @@ class Config:
                 6: (15.0, 30.0),
                 7: (30.0, 50.0),
                 8: (50.0, 100.0),
-                9: (100.0, self.wincap),
-                10: (self.wincap, float("inf")),
+                9: (100.0, self.win_cap),
+                10: (self.win_cap, float("inf")),
             },
             "endFeature": {
                 1: (0.0, 1.0),
@@ -146,8 +146,8 @@ class Config:
                 6: (50.0, 100.0),
                 7: (100.0, 500.0),
                 8: (500.0, 2000.0),
-                9: (2000.0, self.wincap),
-                10: (self.wincap, float("inf")),
+                9: (2000.0, self.win_cap),
+                10: (self.win_cap, float("inf")),
             },
         }
 
@@ -156,12 +156,12 @@ class Config:
         self.library_path: str = ""
         self.publish_path: str = ""
 
-    def get_win_level(self, win_amount: float, winlevel_key: str) -> int:
+    def get_win_level(self, win_amount: float, win_level_key: str) -> int:
         """Determine win level tier based on win amount.
 
         Args:
             win_amount: Win amount multiplier
-            winlevel_key: Key for win level configuration ("standard", "endFeature", etc.)
+            win_level_key: Key for win level configuration ("standard", "endFeature", etc.)
 
         Returns:
             Integer win level (1-10)
@@ -169,13 +169,13 @@ class Config:
         Raises:
             RuntimeError: If win_amount doesn't fall within any level range
         """
-        if winlevel_key not in self.win_levels:
+        if win_level_key not in self.win_levels:
             raise GameConfigError(
-                f"Win level key '{winlevel_key}' not found in win_levels configuration. "
+                f"Win level key '{win_level_key}' not found in win_levels configuration. "
                 f"Available keys: {list(self.win_levels.keys())}. "
                 f"Add this key to self.win_levels in your game_config.py."
             )
-        levels = self.win_levels[winlevel_key]
+        levels = self.win_levels[win_level_key]
         for idx, pair in levels.items():
             if win_amount >= pair[0] and win_amount < pair[1]:
                 return idx
@@ -184,7 +184,7 @@ class Config:
             [f"Level {k}: [{v[0]}, {v[1]})" for k, v in levels.items()]
         )
         raise GameConfigError(
-            f"Win amount {win_amount} does not fall within any win level range for '{winlevel_key}'. "
+            f"Win amount {win_amount} does not fall within any win level range for '{win_level_key}'. "
             f"Configured ranges: {ranges_str}. "
             f"Check that win_levels covers all possible win amounts including edge cases."
         )
@@ -379,7 +379,7 @@ class Config:
         errors: list[str] = []
 
         # Check game identification
-        if not self.game_id or self.game_id == "0_0_asample":
+        if not self.game_id or self.game_id == "template_sample":
             errors.append(
                 "game_id not set. Define a unique game_id in your game_config.py."
             )
@@ -392,8 +392,8 @@ class Config:
             )
 
         # Check win cap
-        if self.wincap <= 0:
-            errors.append(f"wincap must be positive, got {self.wincap}.")
+        if self.win_cap <= 0:
+            errors.append(f"wincap must be positive, got {self.win_cap}.")
 
         # Check board dimensions
         if self.num_reels <= 0:

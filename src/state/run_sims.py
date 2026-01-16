@@ -1,17 +1,17 @@
-import time
-import random
-from multiprocessing import Process, Manager
-import cProfile
-from warnings import warn
-import shutil
 import asyncio
+import cProfile
+import random
+import shutil
+import time
+from multiprocessing import Manager, Process
 from typing import Dict
+from warnings import warn
 
 from src.write_data.write_data import output_lookup_and_force_files
 
 
 def create_books(
-    gamestate: object,
+    game_state: object,
     config: object,
     num_sim_args: dict,
     batch_size: int,
@@ -31,20 +31,22 @@ def create_books(
         warn("Generating large number of uncompressed books!")
 
     if profiling and threads > 1:
-        raise RuntimeError("Multithread profiling not supported, threads must = 1 with profiling enabled")
+        raise RuntimeError(
+            "Multithread profiling not supported, threads must = 1 with profiling enabled"
+        )
 
     startTime = time.time()
     print("\nCreating books...")
-    for betmode_name in num_sim_args:
-        if num_sim_args[betmode_name] > 0:
-            gamestate.betmode = betmode_name
+    for bet_mode_name in num_sim_args:
+        if num_sim_args[bet_mode_name] > 0:
+            game_state.bet_mode = bet_mode_name
             run_multi_process_sims(
                 threads,
                 batch_size,
                 config.game_id,
-                betmode_name,
-                gamestate,
-                num_sims=num_sim_args[betmode_name],
+                bet_mode_name,
+                game_state,
+                num_sims=num_sim_args[bet_mode_name],
                 compress=compress,
                 write_event_list=config.write_event_list,
                 profiling=profiling,
@@ -53,23 +55,27 @@ def create_books(
                 threads,
                 batch_size,
                 config.game_id,
-                betmode_name,
-                gamestate,
-                num_sims=num_sim_args[betmode_name],
+                bet_mode_name,
+                game_state,
+                num_sims=num_sim_args[bet_mode_name],
                 compress=compress,
             )  # , write_event_list=config.write_event_list)
-    shutil.rmtree(gamestate.output_files.temp_path)
+    shutil.rmtree(game_state.output_files.temp_path)
     print("\nFinished creating books in", time.time() - startTime, "seconds.\n")
 
 
-def get_sim_splits(gamestate: object, num_sims: int, betmode_name: str) -> Dict[str, int]:
+def get_sim_splits(
+    game_state: object, num_sims: int, bet_mode_name: str
+) -> Dict[str, int]:
     """Ensure assignment of criteria to all simulations numbers."""
-    betmode_distributions = gamestate.get_betmode(betmode_name).get_distributions()
-    num_sims_criteria = {d._criteria: max(int(num_sims * d._quota), 1) for d in betmode_distributions}
+    bet_mode_distributions = game_state.get_bet_mode(bet_mode_name).get_distributions()
+    num_sims_criteria = {
+        d._criteria: max(int(num_sims * d._quota), 1) for d in bet_mode_distributions
+    }
     total_sims = sum(num_sims_criteria.values())
     reduce_sims = total_sims > num_sims
-    listedCriteria = [d._criteria for d in betmode_distributions]
-    criteria_weights = [d._quota for d in betmode_distributions]
+    listedCriteria = [d._criteria for d in bet_mode_distributions]
+    criteria_weights = [d._quota for d in bet_mode_distributions]
     random.seed(0)
     while sum(num_sims_criteria.values()) != num_sims:
         c = random.choices(listedCriteria, criteria_weights)[0]
@@ -83,16 +89,18 @@ def get_sim_splits(gamestate: object, num_sims: int, betmode_name: str) -> Dict[
 
 def assign_sim_criteria(num_sims_criteria: Dict[str, int], sims: int) -> Dict[int, str]:
     """Assign criteria randomly to simulations based on quota defined in config."""
-    simAllocation = [criteria for criteria, count in num_sims_criteria.items() for _ in range(count)]
+    simAllocation = [
+        criteria for criteria, count in num_sims_criteria.items() for _ in range(count)
+    ]
     random.shuffle(simAllocation)
     return {i: simAllocation[i] for i in range(min(sims, len(simAllocation)))}
 
 
 async def profile_and_visualize(
     game_id,
-    gamestate,
-    all_betmode_configs,
-    betmode,
+    game_state,
+    all_bet_mode_configs,
+    bet_mode,
     sim_allocation,
     threads,
     num_repeats,
@@ -102,9 +110,9 @@ async def profile_and_visualize(
     write_event_list,
 ):
     """Create flame-graph, automatically opens output on localhost."""
-    output_string = f"games/{game_id}/simulationProfile_{betmode}.prof"
+    output_string = f"games/{game_id}/simulationProfile_{bet_mode}.prof"
     cProfile.runctx(
-        "gamestate.run_sims(all_betmode_configs, betmode, sim_allocation, threads, num_repeats, sims_per_thread, 0, repeat, compress, write_event_list)",
+        "game_state.run_sims(all_bet_mode_configs, bet_mode, sim_allocation, threads, num_repeats, sims_per_thread, 0, repeat, compress, write_event_list)",
         globals(),
         locals(),
         output_string,
@@ -116,31 +124,31 @@ def run_multi_process_sims(
     threads: int,
     batching_size: int,
     game_id: str,
-    betmode: str,
-    gamestate: object,
+    bet_mode: str,
+    game_state: object,
     num_sims: int = 1000000,
     compress: bool = True,
     write_event_list: bool = False,
     profiling: bool = False,
 ):
     """Setup multiprocessing manager for running all game-mode simulations."""
-    print("\nCreating books for", game_id, "in", betmode)
+    print("\nCreating books for", game_id, "in", bet_mode)
     num_repeats = max(int(round(num_sims / threads / batching_size, 0)), 1)
     sims_per_thread = int(num_sims / threads / num_repeats)
-    num_sims_criteria = get_sim_splits(gamestate, num_sims, betmode)
+    num_sims_criteria = get_sim_splits(game_state, num_sims, bet_mode)
     sim_allocation = assign_sim_criteria(num_sims_criteria, num_sims)
     for repeat in range(num_repeats):
         print("Batch", repeat + 1, "of", num_repeats)
         processes = []
         manager = Manager()
-        all_betmode_configs = manager.list()
+        all_bet_mode_configs = manager.list()
         if profiling:
             asyncio.run(
                 profile_and_visualize(
                     game_id=game_id,
-                    gamestate=gamestate,
-                    all_betmode_configs=all_betmode_configs,
-                    betmode=betmode,
+                    game_state=game_state,
+                    all_bet_mode_configs=all_bet_mode_configs,
+                    bet_mode=bet_mode,
                     sim_allocation=sim_allocation,
                     threads=threads,
                     num_repeats=num_repeats,
@@ -151,9 +159,9 @@ def run_multi_process_sims(
                 )
             )
         elif threads == 1:
-            gamestate.run_sims(
-                all_betmode_configs,
-                betmode,
+            game_state.run_sims(
+                all_bet_mode_configs,
+                bet_mode,
                 sim_allocation,
                 threads,
                 num_repeats,
@@ -166,10 +174,10 @@ def run_multi_process_sims(
         else:
             for thread in range(threads):
                 process = Process(
-                    target=gamestate.run_sims,
+                    target=game_state.run_sims,
                     args=(
-                        all_betmode_configs,
-                        betmode,
+                        all_bet_mode_configs,
+                        bet_mode,
                         sim_allocation,
                         threads,
                         num_repeats,
@@ -187,5 +195,5 @@ def run_multi_process_sims(
             for process in processes:
                 process.join()
             print("Finished joining threads.")
-            gamestate.combine(all_betmode_configs, betmode)
-            gamestate.get_betmode(betmode).lock_force_keys()
+            game_state.combine(all_bet_mode_configs, bet_mode)
+            game_state.get_bet_mode(bet_mode).lock_force_keys()

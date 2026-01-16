@@ -1,7 +1,7 @@
 """Set and verify simulation parameters."""
 
-from typing import Union
 import json
+from typing import Union
 
 
 class Distribution:
@@ -10,13 +10,16 @@ class Distribution:
     def __init__(
         self,
         criteria: str = None,
-        quota: int = 0,
+        quota: float = 0.0,
         win_criteria: Union[float, None] = None,
         conditions: dict = {},
         required_distribution_conditions: list = [
             "reel_weights",
         ],
-        default_distribution_conditions: dict = {"force_wincap": False, "force_freegame": False},
+        default_distribution_conditions: dict = {
+            "force_wincap": False,
+            "force_free_game": False,
+        },
     ):
 
         assert quota > 0, "non-zero quota value must be assigned"
@@ -32,7 +35,9 @@ class Distribution:
         """Enforce required conditions for distribution setup."""
         condition_keys = list(conditions.keys())
         for rk in self._required_distribution_conditions:
-            assert rk in condition_keys, f"condition missing required key: {rk}\n condition_keys"
+            assert (
+                rk in condition_keys
+            ), f"condition missing required key: {rk}\n condition_keys"
 
         for rk in list(self._default_distribution_conditions.keys()):
             if rk not in condition_keys:

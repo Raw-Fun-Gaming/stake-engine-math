@@ -155,7 +155,7 @@ def run_spin(self):
             event_type=EventConstants.TRIGGER_FREE_SPINS.value,
             details={"count": 10}
         ))
-        self.run_freespin_from_base()
+        self.run_free_spin_from_base()
 
     # 5. Set final win
     self.book.add_event(construct_event(
@@ -295,14 +295,14 @@ Events appear in books as:
       }
     },
     {
-      "type": "trigger_free_spins",
+      "type": "triggerFreeSpins",
       "details": {
         "count": 10,
         "scatter_positions": [[1, 0], [2, 1], [3, 2]]
       }
     },
     {
-      "type": "set_final_win",
+      "type": "setFinalWin",
       "amount": 5.0
     }
   ],
@@ -331,7 +331,7 @@ events.forEach(event => {
 
     case 'trigger_free_spins':
       playTriggerAnimation();
-      showFreeSpinCount(event.details.count);
+      show_free_spin_count(event.details.count);
       break;
 
     case 'tumble_board':
@@ -347,7 +347,7 @@ events.forEach(event => {
 ### Print Events
 
 ```python
-# In gamestate.py
+# In game_state.py
 def run_spin(self):
     # ... game logic ...
 

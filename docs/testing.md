@@ -73,37 +73,37 @@ games/<game_name>/tests/
 # games/my_game/tests/test_basic.py
 
 import pytest
-from games.my_game.gamestate import GameState
+from games.my_game.game_state import GameState
 
 @pytest.fixture
-def gamestate():
-    """Create a fresh gamestate for each test"""
+def game_state():
+    """Create a fresh game_state for each test"""
     gs = GameState()
     return gs
 
-def test_game_initialization(gamestate):
+def test_game_initialization(game_state):
     """Test that game initializes correctly"""
-    assert gamestate.config.game_id == "my_game"
-    assert gamestate.config.num_reels == 5
-    assert gamestate.config.num_rows == 3
+    assert game_state.config.game_id == "my_game"
+    assert game_state.config.num_reels == 5
+    assert game_state.config.num_rows == 3
 
-def test_board_draw(gamestate):
+def test_board_draw(game_state):
     """Test that board is drawn correctly"""
-    gamestate.draw_board()
+    game_state.draw_board()
 
     # Check board dimensions
-    assert len(gamestate.board) == gamestate.config.num_reels
-    assert len(gamestate.board[0]) == gamestate.config.num_rows
+    assert len(game_state.board) == game_state.config.num_reels
+    assert len(game_state.board[0]) == game_state.config.num_rows
 
     # Check all positions have symbols
-    for reel in gamestate.board:
+    for reel in game_state.board:
         for symbol in reel:
-            assert symbol in gamestate.config.all_symbols
+            assert symbol in game_state.config.all_symbols
 
-def test_win_calculation(gamestate):
+def test_win_calculation(game_state):
     """Test basic win calculation"""
     # Set a known board state
-    gamestate.board = [
+    game_state.board = [
         ["A", "K", "Q"],
         ["A", "K", "J"],
         ["A", "Q", "J"],
@@ -111,10 +111,10 @@ def test_win_calculation(gamestate):
         ["K", "Q", "J"]
     ]
 
-    gamestate.calculate_wins()
+    game_state.calculate_wins()
 
     # Check that wins were calculated
-    assert gamestate.book.get_total_win() > 0
+    assert game_state.book.get_total_win() > 0
 ```
 
 ### Testing Specific Mechanics
@@ -122,10 +122,10 @@ def test_win_calculation(gamestate):
 #### Test Feature Triggers
 
 ```python
-def test_free_spin_trigger(gamestate):
+def test_free_spin_trigger(game_state):
     """Test that free spins trigger correctly"""
     # Create board with 3+ scatters
-    gamestate.board = [
+    game_state.board = [
         ["S", "K", "Q"],  # Scatter
         ["A", "S", "J"],  # Scatter
         ["A", "Q", "S"],  # Scatter
@@ -134,21 +134,21 @@ def test_free_spin_trigger(gamestate):
     ]
 
     # Check trigger condition
-    assert gamestate.check_fs_condition() == True
+    assert game_state.check_fs_condition() == True
 
     # Run spin and check events
-    book = gamestate.run_spin()
+    book = game_state.run_spin()
     event_types = [e["type"] for e in book.events]
-    assert "trigger_free_spins" in event_types
+    assert "triggerFreeSpins" in event_types
 ```
 
 #### Test Special Symbols
 
 ```python
-def test_multiplier_symbol(gamestate):
+def test_multiplier_symbol(game_state):
     """Test that multiplier symbols are assigned correctly"""
     # Create board with multiplier symbol
-    gamestate.board = [
+    game_state.board = [
         ["M", "A", "A"],  # M = multiplier symbol
         ["A", "A", "A"],
         ["A", "A", "A"],
@@ -157,10 +157,10 @@ def test_multiplier_symbol(gamestate):
     ]
 
     # Process special symbols
-    gamestate.process_special_symbols()
+    game_state.process_special_symbols()
 
     # Check that multiplier was assigned
-    mult_symbol = gamestate.board[0][0]
+    mult_symbol = game_state.board[0][0]
     assert hasattr(mult_symbol, "attributes")
     assert "multiplier" in mult_symbol.attributes
     assert mult_symbol.attributes["multiplier"] > 1
@@ -169,10 +169,10 @@ def test_multiplier_symbol(gamestate):
 #### Test Win Calculations
 
 ```python
-def test_cluster_win(gamestate):
+def test_cluster_win(game_state):
     """Test cluster win calculation"""
     # Create board with cluster
-    gamestate.board = [
+    game_state.board = [
         ["A", "A", "K"],
         ["A", "A", "K"],
         ["K", "K", "K"],
@@ -180,27 +180,27 @@ def test_cluster_win(gamestate):
         ["Q", "Q", "Q"]
     ]
 
-    gamestate.calculate_wins()
+    game_state.calculate_wins()
 
     # Check that cluster was detected
-    assert len(gamestate.book.winning_clusters) > 0
+    assert len(game_state.book.winning_clusters) > 0
 
     # Check win amount
-    total_win = gamestate.book.get_total_win()
+    total_win = game_state.book.get_total_win()
     assert total_win > 0
 
     # Verify win is from 'A' cluster
-    winning_symbols = [c["symbol"] for c in gamestate.book.winning_clusters]
+    winning_symbols = [c["symbol"] for c in game_state.book.winning_clusters]
     assert "A" in winning_symbols
 ```
 
 #### Test Tumble Mechanics
 
 ```python
-def test_tumble_cascade(gamestate):
+def test_tumble_cascade(game_state):
     """Test that tumbles work correctly"""
     # Create board with winning cluster
-    gamestate.board = [
+    game_state.board = [
         ["A", "A", "A"],
         ["A", "A", "K"],
         ["K", "K", "Q"],
@@ -208,15 +208,15 @@ def test_tumble_cascade(gamestate):
         ["J", "J", "10"]
     ]
 
-    initial_win = gamestate.calculate_wins()
+    initial_win = game_state.calculate_wins()
     assert initial_win > 0
 
     # Perform tumble
-    gamestate.tumble_board()
+    game_state.tumble_board()
 
     # Check that winning symbols were removed
     # (specific logic depends on your tumble implementation)
-    assert gamestate.board != [
+    assert game_state.board != [
         ["A", "A", "A"],
         ["A", "A", "K"],
         ["K", "K", "Q"],
@@ -230,13 +230,13 @@ def test_tumble_cascade(gamestate):
 Force files allow testing specific scenarios:
 
 ```python
-def test_specific_outcome(gamestate):
+def test_specific_outcome(game_state):
     """Test a specific forced outcome"""
     # Load force file
-    gamestate.load_force_file("tests/force_files/big_win.json")
+    game_state.load_force_file("tests/force_files/big_win.json")
 
     # Run spin with forced outcome
-    book = gamestate.run_spin()
+    book = game_state.run_spin()
 
     # Verify expected outcome
     assert book.get_total_win() > 100  # Big win threshold
@@ -259,11 +259,11 @@ import pytest
     # Test case 3: Large cluster
     ([["A", "A", "A"], ["A", "A", "A"], ["A", "A", "K"], ["A", "K", "K"], ["K", "K", "Q"]], 50.0),
 ])
-def test_cluster_sizes(gamestate, board, expected_win):
+def test_cluster_sizes(game_state, board, expected_win):
     """Test different cluster sizes"""
-    gamestate.board = board
-    gamestate.calculate_wins()
-    assert abs(gamestate.book.get_total_win() - expected_win) < 0.01
+    game_state.board = board
+    game_state.calculate_wins()
+    assert abs(game_state.book.get_total_win() - expected_win) < 0.01
 ```
 
 ## Test Fixtures
@@ -276,25 +276,25 @@ Create `conftest.py` in the tests directory:
 # games/my_game/tests/conftest.py
 
 import pytest
-from games.my_game.gamestate import GameState
+from games.my_game.game_state import GameState
 
 @pytest.fixture
-def gamestate():
-    """Fresh gamestate for each test"""
+def game_state():
+    """Fresh game_state for each test"""
     return GameState()
 
 @pytest.fixture
-def base_game_state(gamestate):
+def base_game_state(game_state):
     """Gamestate in base game mode"""
-    gamestate.gametype = "base"
-    return gamestate
+    game_state.game_type = "base"
+    return game_state
 
 @pytest.fixture
-def freespin_game_state(gamestate):
-    """Gamestate in freespin mode"""
-    gamestate.gametype = "bonus"
-    gamestate.in_freespin = True
-    return gamestate
+def free_spin_game_state(game_state):
+    """Gamestate in free_spin mode"""
+    game_state.game_type = "bonus"
+    game_state.in_free_spin = True
+    return game_state
 
 @pytest.fixture
 def sample_winning_board():
@@ -323,13 +323,13 @@ def test_with_fixtures(base_game_state, sample_winning_board):
 
 ```python
 # ✅ Good - focused test
-def test_scatter_detection(gamestate):
+def test_scatter_detection(game_state):
     """Test that scatters are detected"""
-    gamestate.board = create_board_with_scatters(3)
-    assert gamestate.count_scatters() == 3
+    game_state.board = create_board_with_scatters(3)
+    assert game_state.count_scatters() == 3
 
 # ❌ Bad - testing too much
-def test_everything(gamestate):
+def test_everything(game_state):
     """Test scatter detection, wins, and free spins"""
     # Too much in one test
 ```
@@ -338,50 +338,50 @@ def test_everything(gamestate):
 
 ```python
 # ✅ Good
-def test_free_spins_trigger_with_three_scatters(gamestate):
+def test_free_spins_trigger_with_three_scatters(game_state):
     ...
 
 # ❌ Bad
-def test_fs(gamestate):
+def test_fs(game_state):
     ...
 ```
 
 ### 3. Arrange-Act-Assert Pattern
 
 ```python
-def test_multiplier_application(gamestate):
+def test_multiplier_application(game_state):
     # Arrange - setup test conditions
-    gamestate.board = [["A", "A", "A"], ...]
-    gamestate.global_multiplier = 2
+    game_state.board = [["A", "A", "A"], ...]
+    game_state.global_multiplier = 2
 
     # Act - perform action
-    gamestate.calculate_wins()
+    game_state.calculate_wins()
 
     # Assert - verify results
     expected_win = base_win * 2
-    assert gamestate.book.get_total_win() == expected_win
+    assert game_state.book.get_total_win() == expected_win
 ```
 
 ### 4. Test Edge Cases
 
 ```python
-def test_empty_board(gamestate):
+def test_empty_board(game_state):
     """Test behavior with no symbols"""
-    gamestate.board = [[], [], [], [], []]
+    game_state.board = [[], [], [], [], []]
     # Should not crash
-    gamestate.calculate_wins()
+    game_state.calculate_wins()
 
-def test_all_same_symbol(gamestate):
+def test_all_same_symbol(game_state):
     """Test board with all same symbols"""
-    gamestate.board = [["A"] * 3 for _ in range(5)]
-    gamestate.calculate_wins()
-    assert gamestate.book.get_total_win() > 0
+    game_state.board = [["A"] * 3 for _ in range(5)]
+    game_state.calculate_wins()
+    assert game_state.book.get_total_win() > 0
 
-def test_maximum_win(gamestate):
+def test_maximum_win(game_state):
     """Test maximum possible win"""
-    gamestate.board = create_maximum_win_board()
-    gamestate.calculate_wins()
-    assert gamestate.book.get_total_win() <= gamestate.config.max_win
+    game_state.board = create_maximum_win_board()
+    game_state.calculate_wins()
+    assert game_state.book.get_total_win() <= game_state.config.max_win
 ```
 
 ## Continuous Integration
@@ -456,22 +456,22 @@ exclude_lines =
 ### Print Debugging
 
 ```python
-def test_with_debug(gamestate):
-    gamestate.board = [["A", "A", "A"], ...]
+def test_with_debug(game_state):
+    game_state.board = [["A", "A", "A"], ...]
 
     # Print board state
     print("\nBoard:")
-    for reel in gamestate.board:
+    for reel in game_state.board:
         print(reel)
 
-    gamestate.calculate_wins()
+    game_state.calculate_wins()
 
     # Print events
     print("\nEvents:")
-    for event in gamestate.book.events:
+    for event in game_state.book.events:
         print(event)
 
-    assert gamestate.book.get_total_win() > 0
+    assert game_state.book.get_total_win() > 0
 ```
 
 Run with `-s` flag to see prints:
@@ -482,19 +482,19 @@ pytest tests/test_wins.py -s
 ### Interactive Debugging
 
 ```python
-def test_with_breakpoint(gamestate):
-    gamestate.board = [["A", "A", "A"], ...]
+def test_with_breakpoint(game_state):
+    game_state.board = [["A", "A", "A"], ...]
 
     # Python debugger
     import pdb; pdb.set_trace()
 
-    gamestate.calculate_wins()
+    game_state.calculate_wins()
 ```
 
 Run test and interact:
 ```bash
 pytest tests/test_wins.py
-# (Pdb) print(gamestate.board)
+# (Pdb) print(game_state.board)
 # (Pdb) continue
 ```
 

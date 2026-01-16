@@ -27,7 +27,7 @@ from src.write_data.write_data import (
 )
 
 if TYPE_CHECKING:
-    from src.config.betmode import BetMode
+    from src.config.bet_mode import BetMode
     from src.config.config import Config
     from src.config.distributions import Distribution
 
@@ -44,7 +44,7 @@ class GeneralGameState(ABC):
 
     Games should inherit from this class and implement:
         - run_spin(): Main game logic for a single spin
-        - run_freespin(): Free spin game logic
+        - run_free_spin(): Free spin game logic
         - assign_special_sym_function(): Special symbol handlers
 
     Attributes:
@@ -58,7 +58,7 @@ class GeneralGameState(ABC):
         criteria: Current force criteria
         book: Current simulation book
         board: Current board state
-        game_mode: Current game mode (base/freespin)
+        game_mode: Current game mode (base/free_spin)
         free_spin_count: Current free spin number
         total_free_spins: Total free spins awarded
     """
@@ -72,7 +72,7 @@ class GeneralGameState(ABC):
         self.config: Config = config
         self.output_files: OutputFiles = OutputFiles(self.config)
         self.win_manager: WinManager = WinManager(
-            self.config.basegame_type, self.config.freegame_type
+            self.config.base_game_type, self.config.free_game_type
         )
         self.library: dict[int, dict[str, Any]] = {}
         self.recorded_events: dict[tuple[tuple[str, str], ...], dict[str, Any]] = {}
@@ -115,7 +115,7 @@ class GeneralGameState(ABC):
         Example:
             >>> def assign_special_sym_function(self) -> None:
             ...     self.special_symbol_functions = {
-            ...         "M": [self.assign_mult_property],
+            ...         "M": [self.assign_multiplier_property],
             ...         "W": [self.apply_wild_expansion]
             ...     }
         """
@@ -146,8 +146,8 @@ class GeneralGameState(ABC):
         self.tot_fs = 0  # TODO: Rename to total_free_spins in Phase 2
         self.fs = 0  # TODO: Rename to free_spin_count in Phase 2
         self.wincap_triggered = False
-        self.triggered_freegame = False
-        self.gametype = self.config.basegame_type  # type: ignore[attr-defined]
+        self.triggered_free_game = False
+        self.game_type = self.config.base_game_type  # type: ignore[attr-defined]
         self.repeat = False
         self.anticipation = [0] * self.config.num_reels  # type: ignore[attr-defined]
 
@@ -166,39 +166,39 @@ class GeneralGameState(ABC):
         Called when transitioning from base game to free spins.
         Sets up free spin tracking and resets spin-specific wins.
         """
-        self.triggered_freegame = True
+        self.triggered_free_game = True
         self.fs = 0
-        self.gametype = self.config.freegame_type  # type: ignore[attr-defined]
+        self.game_type = self.config.free_game_type  # type: ignore[attr-defined]
         self.win_manager.reset_spin_win()
 
-    def get_betmode(self, mode_name: str) -> Optional[BetMode]:
-        """Get betmode by name.
+    def get_bet_mode(self, mode_name: str) -> Optional[BetMode]:
+        """Get bet_mode by name.
 
         Args:
-            mode_name: Name of the betmode (e.g., "base", "bonus")
+            mode_name: Name of the bet_mode (e.g., "base", "bonus")
 
         Returns:
             BetMode object if found, None otherwise
         """
-        for betmode in self.config.bet_modes:
-            if betmode.get_name() == mode_name:
-                return betmode  # type: ignore[return-value]
-        print("\nWarning: betmode couldn't be retrieved\n")
+        for bet_mode in self.config.bet_modes:
+            if bet_mode.get_name() == mode_name:
+                return bet_mode  # type: ignore[return-value]
+        print("\nWarning: bet_mode couldn't be retrieved\n")
         return None
 
-    def get_current_betmode(self) -> Optional[BetMode]:
-        """Get the currently active betmode.
+    def get_current_bet_mode(self) -> Optional[BetMode]:
+        """Get the currently active bet_mode.
 
         Returns:
             Current BetMode object if found, None otherwise
         """
-        for betmode in self.config.bet_modes:
-            if betmode.get_name() == self.betmode:
-                return betmode  # type: ignore[return-value]
+        for bet_mode in self.config.bet_modes:
+            if bet_mode.get_name() == self.bet_mode:
+                return bet_mode  # type: ignore[return-value]
         return None
 
-    def get_current_betmode_distributions(self) -> Distribution:
-        """Get the current betmode's distribution for the active criteria.
+    def get_current_bet_mode_distributions(self) -> Distribution:
+        """Get the current bet_mode's distribution for the active criteria.
 
         Returns:
             Distribution object matching current criteria
@@ -206,10 +206,10 @@ class GeneralGameState(ABC):
         Raises:
             RuntimeError: If criteria distribution cannot be found
         """
-        current_betmode = self.get_current_betmode()
-        if current_betmode is None:
-            raise RuntimeError("Could not locate current betmode.")
-        dist = current_betmode.get_distributions()  # type: ignore[attr-defined]
+        current_bet_mode = self.get_current_bet_mode()
+        if current_bet_mode is None:
+            raise RuntimeError("Could not locate current bet_mode.")
+        dist = current_bet_mode.get_distributions()  # type: ignore[attr-defined]
         for c in dist:
             if c._criteria == self.criteria:
                 return c  # type: ignore[return-value]
@@ -219,18 +219,18 @@ class GeneralGameState(ABC):
         """Get distribution conditions for the current criteria.
 
         Returns:
-            Dictionary of distribution conditions (force_freegame, win_criteria, etc.)
+            Dictionary of distribution conditions (force_free game, win_criteria, etc.)
 
         Raises:
-            RuntimeError: If betmode conditions cannot be found
+            RuntimeError: If bet_mode conditions cannot be found
         """
-        betmode = self.get_betmode(self.betmode)
-        if betmode is None:
-            raise RuntimeError("Could not locate betmode")
-        for d in betmode.get_distributions():  # type: ignore[attr-defined]
+        bet_mode = self.get_bet_mode(self.bet_mode)
+        if bet_mode is None:
+            raise RuntimeError("Could not locate bet_mode")
+        for d in bet_mode.get_distributions():  # type: ignore[attr-defined]
             if d._criteria == self.criteria:
                 return d._conditions  # type: ignore[return-value]
-        raise RuntimeError("Could not locate betmode conditions")
+        raise RuntimeError("Could not locate bet_mode conditions")
 
     def record(self, description: dict[str, Any]) -> None:
         """Record an event for force distribution tracking.
@@ -241,54 +241,54 @@ class GeneralGameState(ABC):
 
         Args:
             description: Event description dict, e.g.,
-                {"kind": "trigger", "symbol": "scatter", "gametype": "basegame"}
+                {"kind": "trigger", "symbol": "scatter", "game_type": "base_game"}
 
         Example:
             >>> self.record({
             ...     "symbol": "scatter",
             ...     "count": 3,
-            ...     "gametype": "basegame"
+            ...     "game_type": "base_game"
             ... })
         """
-        dstr: dict[str, str] = {}
+        description_str: dict[str, str] = {}
         for k, v in description.items():
-            dstr[str(k)] = str(v)
-        self.temp_wins.append(dstr)
+            description_str[str(k)] = str(v)
+        self.temp_wins.append(description_str)
         self.temp_wins.append(self.book_id)
 
     def check_force_keys(self, description: tuple[tuple[str, str], ...]) -> None:
-        """Check and append unique force-key parameters to betmode.
+        """Check and append unique force-key parameters to bet_mode.
 
         Args:
             description: Tuple of key-value pairs representing force keys
         """
-        current_betmode = self.get_current_betmode()
-        if current_betmode is None:
+        current_bet_mode = self.get_current_bet_mode()
+        if current_bet_mode is None:
             return
-        current_mode_force_keys = current_betmode.get_force_keys()  # type: ignore[attr-defined]
+        current_mode_force_keys = current_bet_mode.get_force_keys()  # type: ignore[attr-defined]
         for keyValue in description:
             if keyValue[0] not in current_mode_force_keys:
-                current_betmode.add_force_key(keyValue[0])  # type: ignore[attr-defined]
+                current_bet_mode.add_force_key(keyValue[0])  # type: ignore[attr-defined]
 
-    def combine(self, modes: list[list[BetMode]], betmode_name: str) -> None:
+    def combine(self, modes: list[list[BetMode]], bet_mode_name: str) -> None:
         """Combine force record keys across multiple mode configurations.
 
         Args:
-            modes: List of betmode configuration lists
-            betmode_name: Name of the betmode to combine keys for
+            modes: List of bet_mode configuration lists
+            bet_mode_name: Name of the bet_mode to combine keys for
         """
         for modeConfig in modes:
-            for betmode in modeConfig:
-                if betmode.get_name() == betmode_name:
+            for bet_mode in modeConfig:
+                if bet_mode.get_name() == bet_mode_name:
                     break
-            force_keys = betmode.get_force_keys()  # type: ignore[attr-defined]
-            target_betmode = self.get_betmode(betmode_name)
-            if target_betmode is None:
+            force_keys = bet_mode.get_force_keys()  # type: ignore[attr-defined]
+            target_bet_mode = self.get_bet_mode(bet_mode_name)
+            if target_bet_mode is None:
                 continue
             for key in force_keys:
-                target_force_keys = target_betmode.get_force_keys()  # type: ignore[attr-defined]
+                target_force_keys = target_bet_mode.get_force_keys()  # type: ignore[attr-defined]
                 if key not in target_force_keys:
-                    target_betmode.add_force_key(key)  # type: ignore[attr-defined]
+                    target_bet_mode.add_force_key(key)  # type: ignore[attr-defined]
 
     def imprint_wins(self) -> None:
         """Record all tracked events to library and update win statistics.
@@ -324,26 +324,26 @@ class GeneralGameState(ABC):
         Raises:
             AssertionError: If win totals don't match between win_manager and book
         """
-        final = round(min(self.win_manager.running_bet_win, self.config.wincap), 2)
-        basewin = round(min(self.win_manager.basegame_wins, self.config.wincap), 2)
-        freewin = round(min(self.win_manager.freegame_wins, self.config.wincap), 2)
+        final = round(min(self.win_manager.running_bet_win, self.config.win_cap), 2)
+        base_win = round(min(self.win_manager.base_game_wins, self.config.win_cap), 2)
+        free_win = round(min(self.win_manager.free_game_wins, self.config.win_cap), 2)
 
         self.final_win = final
         self.book.payout_multiplier = self.final_win
-        self.book.basegame_wins = basewin
-        self.book.freegame_wins = freewin
+        self.book.base_game_wins = base_win
+        self.book.free_game_wins = free_win
 
         assert min(
-            round(self.win_manager.basegame_wins + self.win_manager.freegame_wins, 2),
-            self.config.wincap,
+            round(self.win_manager.base_game_wins + self.win_manager.free_game_wins, 2),
+            self.config.win_cap,
         ) == round(
-            min(self.win_manager.running_bet_win, self.config.wincap), 2
+            min(self.win_manager.running_bet_win, self.config.win_cap), 2
         ), "Base + Free game payout mismatch!"
         assert min(
-            round(self.book.basegame_wins + self.book.freegame_wins, 2),
-            self.config.wincap,
+            round(self.book.base_game_wins + self.book.free_game_wins, 2),
+            self.config.win_cap,
         ) == min(
-            round(self.book.payout_multiplier, 2), round(self.config.wincap, 2)
+            round(self.book.payout_multiplier, 2), round(self.config.win_cap, 2)
         ), "Base + Free game payout mismatch!"
 
     def check_repeat(self) -> None:
@@ -351,15 +351,15 @@ class GeneralGameState(ABC):
 
         Sets repeat flag if:
         - Win criteria is defined but not met
-        - force_freegame is true but free game wasn't triggered
+        - force_free_game is true but free game wasn't triggered
         """
         if self.repeat is False:
-            win_criteria = self.get_current_betmode_distributions().get_win_criteria()
+            win_criteria = self.get_current_bet_mode_distributions().get_win_criteria()
             if win_criteria is not None and self.final_win != win_criteria:
                 self.repeat = True
 
             conditions = self.get_current_distribution_conditions()
-            if conditions.get("force_freegame") and not self.triggered_freegame:
+            if conditions.get("force_free_game") and not self.triggered_free_game:
                 self.repeat = True
 
     @abstractmethod
@@ -382,7 +382,7 @@ class GeneralGameState(ABC):
         )
 
     @abstractmethod
-    def run_freespin(self) -> None:
+    def run_free_spin(self) -> None:
         """Run the free spin game mode.
 
         Must be implemented by game-specific subclasses. This method should:
@@ -392,14 +392,14 @@ class GeneralGameState(ABC):
         4. Update win totals
         """
         print(
-            "gamestate requires def run_freespin(), "
-            "currently passing when calling runFreeSpin"
+            "game_state requires def run_free_spin(), "
+            "currently passing when calling run_free_spin"
         )
 
     def run_sims(
         self,
-        betmode_copy_list: list[list[BetMode]],
-        betmode: str,
+        bet_mode_copy_list: list[list[BetMode]],
+        bet_mode: str,
         sim_to_criteria: dict[int, str],
         total_threads: int,
         total_repeats: int,
@@ -416,8 +416,8 @@ class GeneralGameState(ABC):
         threads finish.
 
         Args:
-            betmode_copy_list: List to append betmode configurations to
-            betmode: Name of the betmode being simulated
+            bet_mode_copy_list: List to append bet_mode configurations to
+            bet_mode: Name of the bet_mode being simulated
             sim_to_criteria: Mapping from simulation ID to force criteria
             total_threads: Total number of parallel threads
             total_repeats: Total number of repeat batches
@@ -432,9 +432,9 @@ class GeneralGameState(ABC):
             Each thread processes a disjoint set of simulation IDs.
         """
         self.win_manager = WinManager(
-            self.config.basegame_type, self.config.freegame_type
+            self.config.base_game_type, self.config.free_game_type
         )
-        self.betmode: str = betmode
+        self.bet_mode: str = bet_mode
         self.num_sims: int = num_sims
 
         # Calculate simulation range for this thread
@@ -447,10 +447,10 @@ class GeneralGameState(ABC):
             self.criteria = sim_to_criteria[sim]
             self.run_spin(sim)
 
-        current_betmode = self.get_current_betmode()
-        if current_betmode is None:
-            raise RuntimeError(f"Could not find betmode: {betmode}")
-        mode_cost = current_betmode.get_cost()
+        current_bet_mode = self.get_current_bet_mode()
+        if current_bet_mode is None:
+            raise RuntimeError(f"Could not find bet_mode: {bet_mode}")
+        mode_cost = current_bet_mode.get_cost()
 
         # Calculate and print RTP statistics
         total_rtp = round(
@@ -465,7 +465,7 @@ class GeneralGameState(ABC):
 
         print(
             f"Thread {thread_index} finished with {total_rtp} RTP. "
-            f"[baseGame: {base_rtp}, freeGame: {free_rtp}]",
+            f"[Base Game: {base_rtp}, Free Game: {free_rtp}]",
             flush=True,
         )
 
@@ -473,24 +473,26 @@ class GeneralGameState(ABC):
         write_json(
             self,
             self.output_files.get_temp_multi_thread_name(
-                betmode, thread_index, repeat_count, compress
+                bet_mode, thread_index, repeat_count, compress
             ),
         )
         print_recorded_wins(
             self,
-            self.output_files.get_temp_force_name(betmode, thread_index, repeat_count),
+            self.output_files.get_temp_force_name(bet_mode, thread_index, repeat_count),
         )
         make_lookup_tables(
             self,
-            self.output_files.get_temp_lookup_name(betmode, thread_index, repeat_count),
+            self.output_files.get_temp_lookup_name(
+                bet_mode, thread_index, repeat_count
+            ),
         )
         make_lookup_pay_split(
             self,
             self.output_files.get_temp_segmented_name(
-                betmode, thread_index, repeat_count
+                bet_mode, thread_index, repeat_count
             ),
         )
 
         if write_event_list:
-            write_library_events(self, list(self.library.values()), betmode)
-        betmode_copy_list.append(self.config.bet_modes)
+            write_library_events(self, list(self.library.values()), bet_mode)
+        bet_mode_copy_list.append(self.config.bet_modes)

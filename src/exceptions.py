@@ -47,7 +47,7 @@ class GameConfigError(GameEngineError):
     - Missing required configuration fields
     - Invalid paytable definitions
     - Incorrect reel strip references
-    - Malformed betmode configurations
+    - Malformed bet_mode configurations
     - Invalid RTP or wincap settings
 
     Example:

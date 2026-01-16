@@ -77,11 +77,11 @@ class Ways:
         for symbol in potential_wins:
             kind: int = 0
             ways: int = 1
-            cumulative_sym_mult: int = 0
+            cumulative_symbol_multiplier: int = 0
             for reel, _ in enumerate(potential_wins[symbol]):
                 if len(potential_wins[symbol][reel]) > 0 or len(wilds[reel]) > 0:
                     kind += 1
-                    mult_enhance: int = 0
+                    multiplier_enhance: int = 0
                     # Note that here multipliers on subsequent reels multiplier (not add, like in lines games)
                     for s in potential_wins[symbol][reel]:
                         if (
@@ -89,25 +89,25 @@ class Ways:
                             and board[s["reel"]][s["row"]].get_attribute(multiplier_key)
                             > 1
                         ):
-                            mult_enhance += board[s["reel"]][s["row"]].get_attribute(
-                                multiplier_key
-                            )
+                            multiplier_enhance += board[s["reel"]][
+                                s["row"]
+                            ].get_attribute(multiplier_key)
                     for s in wilds[reel]:
                         if (
                             board[s["reel"]][s["row"]].check_attribute(multiplier_key)
                             and board[s["reel"]][s["row"]].get_attribute(multiplier_key)
                             > 1
                         ):
-                            mult_enhance += board[s["reel"]][s["row"]].get_attribute(
-                                multiplier_key
-                            )
+                            multiplier_enhance += board[s["reel"]][
+                                s["row"]
+                            ].get_attribute(multiplier_key)
 
                     ways *= (
                         len(potential_wins[symbol][reel])
                         + len(wilds[reel])
-                        + mult_enhance
+                        + multiplier_enhance
                     )
-                    cumulative_sym_mult += mult_enhance
+                    cumulative_symbol_multiplier += multiplier_enhance
                 else:
                     break
 
@@ -133,7 +133,7 @@ class Ways:
                             "ways": ways,
                             "globalMult": multiplier,
                             "winWithoutMult": win,
-                            "symbolMult": cumulative_sym_mult,
+                            "symbolMult": cumulative_symbol_multiplier,
                         },
                     }
                 ]
@@ -142,37 +142,37 @@ class Ways:
         return return_data
 
     @staticmethod
-    def emit_wayswin_events(gamestate: Any) -> None:
+    def emit_wayswin_events(game_state: Any) -> None:
         """Emit win events for ways wins.
 
         Creates WIN, SET_WIN, and SET_TOTAL_WIN events based on spin results.
         Only emits WIN event if there are actual ways wins.
 
         Args:
-            gamestate: Current game state with win_manager and win_data
+            game_state: Current game state with win_manager and win_data
         """
-        if gamestate.win_manager.spin_win > 0:
-            win_event(gamestate)
-            gamestate.evaluate_wincap()
-            set_win_event(gamestate)
-        set_total_win_event(gamestate)
+        if game_state.win_manager.spin_win > 0:
+            win_event(game_state)
+            game_state.evaluate_wincap()
+            set_win_event(game_state)
+        set_total_win_event(game_state)
 
     @staticmethod
-    def record_ways_wins(gamestate: Any) -> None:
+    def record_ways_wins(game_state: Any) -> None:
         """Record ways wins to force tracking system for optimization.
 
-        Extracts win description keys (symbol count, symbol, ways, gametype)
-        and records them to the gamestate for distribution optimization.
+        Extracts win description keys (symbol count, symbol, ways, game_type)
+        and records them to the game_state for distribution optimization.
 
         Args:
-            gamestate: Game state instance with win_data and record() method
+            game_state: Game state instance with win_data and record() method
         """
-        for win in gamestate.win_data["wins"]:
-            gamestate.record(
+        for win in game_state.win_data["wins"]:
+            game_state.record(
                 {
                     "kind": len(win["positions"]),
                     "symbol": win["symbol"],
                     "ways": win["meta"]["ways"],
-                    "gametype": gamestate.gametype,
+                    "game_type": game_state.game_type,
                 }
             )

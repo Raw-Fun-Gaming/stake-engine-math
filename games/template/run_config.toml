@@ -1,0 +1,23 @@
+# Run Configuration for template Game
+
+# Target modes for optimization
+target_modes = ["base"]
+
+[execution]
+num_threads = 10
+rust_threads = 20
+batching_size = 50000
+compression = false
+profiling = false
+
+[simulation]
+base = 100
+
+[pipeline]
+run_sims = false
+run_optimization = false
+run_analysis = false
+run_format_checks = false
+
+[analysis]
+custom_keys = []

@@ -22,7 +22,9 @@ class OutputFiles:
 
     def setup_output_directories(self):
         """Entrypoint for saving all output files."""
-        self.library_path = os.path.join(PATH_TO_GAMES, str(self.game_config.game_id), "library")
+        self.library_path = os.path.join(
+            PATH_TO_GAMES, str(self.game_config.game_id), "library"
+        )
         self.temp_path = os.path.join(self.library_path, "temp_multi_threaded_files")
         self.config_path = os.path.join(self.library_path, "configs")
         self.force_path = os.path.join(self.library_path, "forces")
@@ -33,7 +35,9 @@ class OutputFiles:
         self.index_config_path = self.publish_path  # Required RGS files
         self.compressed_path = self.publish_path  # Required RGS files
         self.final_lookup_path = self.publish_path  # Required RGS files
-        self.optimization_result_path = os.path.join(self.optimization_path, "trial_results")
+        self.optimization_result_path = os.path.join(
+            self.optimization_path, "trial_results"
+        )
 
         all_paths = [
             "library_path",
@@ -63,7 +67,9 @@ class OutputFiles:
             "paths": {
                 "manifest": os.path.join(self.publish_path, "index.json"),
                 "be_config": os.path.join(self.config_path, "config.json"),
-                "fe_config": os.path.join(self.config_path, f"config_fe_{self.game_config.game_id}.json"),
+                "fe_config": os.path.join(
+                    self.config_path, f"config_fe_{self.game_config.game_id}.json"
+                ),
                 "math_config": os.path.join(self.config_path, "math_config.json"),
             },
         }
@@ -86,8 +92,12 @@ class OutputFiles:
                     "books_compressed": books_name + ".jsonl.zst",
                 },
                 "paths": {
-                    "books_uncompressed": os.path.join(self.book_path, books_name + ext_name),
-                    "books_compressed": os.path.join(self.compressed_path, books_name + ".jsonl.zst"),
+                    "books_uncompressed": os.path.join(
+                        self.book_path, books_name + ext_name
+                    ),
+                    "books_compressed": os.path.join(
+                        self.compressed_path, books_name + ".jsonl.zst"
+                    ),
                 },
             }
 
@@ -98,11 +108,15 @@ class OutputFiles:
             self.force[mode.get_name()] = {
                 "folder_dir": self.force_path,
                 "names": {"force_record": f"force_record_{mode.get_name()}.json"},
-                "paths": {"force_record": os.path.join(self.force_path, f"force_record_{mode.get_name()}.json")},
+                "paths": {
+                    "force_record": os.path.join(
+                        self.force_path, f"force_record_{mode.get_name()}.json"
+                    )
+                },
             }
 
     def assign_lookup_details(self):
-        """Lookup tables and gametype win information."""
+        """Lookup tables and game_type win information."""
         self.lookups = defaultdict(dict)
         for mode in self.game_config.bet_modes:
             self.lookups[mode.get_name()] = {
@@ -113,57 +127,76 @@ class OutputFiles:
                     "segmented_id": f"lookUpTableSegmented_{mode.get_name()}.csv",
                 },
                 "paths": {
-                    "base_lookup": os.path.join(self.lookup_path, f"lookUpTable_{mode.get_name()}.csv"),
-                    "optimized_lookup": os.path.join(self.publish_path, f"lookUpTable_{mode.get_name()}_0.csv"),
-                    "segmented_id": os.path.join(self.lookup_path, f"lookUpTableSegmented_{mode.get_name()}.csv"),
+                    "base_lookup": os.path.join(
+                        self.lookup_path, f"lookUpTable_{mode.get_name()}.csv"
+                    ),
+                    "optimized_lookup": os.path.join(
+                        self.publish_path, f"lookUpTable_{mode.get_name()}_0.csv"
+                    ),
+                    "segmented_id": os.path.join(
+                        self.lookup_path, f"lookUpTableSegmented_{mode.get_name()}.csv"
+                    ),
                 },
             }
 
-    def get_temp_multi_thread_name(self, betmode: str, thread_index: int, repeat_count: int, compress: bool):
+    def get_temp_multi_thread_name(
+        self, bet_mode: str, thread_index: int, repeat_count: int, compress: bool
+    ):
         """Naming convention for temp book files."""
         if compress:
-            filename = f"books_{betmode}_{thread_index}_{repeat_count}.jsonl.zst"
+            filename = f"books_{bet_mode}_{thread_index}_{repeat_count}.jsonl.zst"
         elif not (compress) and self.game_config.output_regular_json:
-            filename = f"books_{betmode}_{thread_index}_{repeat_count}.json"
+            filename = f"books_{bet_mode}_{thread_index}_{repeat_count}.json"
         elif not (compress) and not (self.game_config.output_regular_json):
-            filename = f"books_{betmode}_{thread_index}_{repeat_count}.jsonl"
+            filename = f"books_{bet_mode}_{thread_index}_{repeat_count}.jsonl"
         else:
             raise RuntimeError("Error in logic generating book name")
 
         return os.path.join(self.temp_path, filename)
 
-    def get_temp_lookup_name(self, betmode: str, thread_index: int, repeat_count: int):
+    def get_temp_lookup_name(self, bet_mode: str, thread_index: int, repeat_count: int):
         """Naming convention for temp lookup files."""
-        return os.path.join(self.temp_path, f"lookUpTable_{betmode}_{thread_index}_{repeat_count}")
+        return os.path.join(
+            self.temp_path, f"lookUpTable_{bet_mode}_{thread_index}_{repeat_count}"
+        )
 
-    def get_temp_segmented_name(self, betmode: str, thread_index: int, repeat_count: int):
+    def get_temp_segmented_name(
+        self, bet_mode: str, thread_index: int, repeat_count: int
+    ):
         """Naming convention for temp segmented lookup files."""
-        return os.path.join(self.temp_path, f"lookUpTableSegmented_{betmode}_{thread_index}_{repeat_count}")
+        return os.path.join(
+            self.temp_path,
+            f"lookUpTableSegmented_{bet_mode}_{thread_index}_{repeat_count}",
+        )
 
-    def get_temp_force_name(self, betmode: str, thread_index: int, repeat_count: int):
+    def get_temp_force_name(self, bet_mode: str, thread_index: int, repeat_count: int):
         """Naming convention for temp force files."""
-        return os.path.join(self.temp_path, f"force_{betmode}_{thread_index}_{repeat_count}.json")
+        return os.path.join(
+            self.temp_path, f"force_{bet_mode}_{thread_index}_{repeat_count}.json"
+        )
 
-    def get_final_book_name(self, betmode: str, compress: bool):
+    def get_final_book_name(self, bet_mode: str, compress: bool):
         """Returns final simulation books output name."""
         if compress:
-            filename = f"books_{betmode}.jsonl.zst"
+            filename = f"books_{bet_mode}.jsonl.zst"
         elif not (compress) and self.game_config.output_regular_json:
-            filename = f"books_{betmode}.json"
+            filename = f"books_{bet_mode}.json"
         elif not (compress) and not (self.game_config.output_regular_json):
-            filename = f"books_{betmode}.jsonl"
+            filename = f"books_{bet_mode}.jsonl"
         else:
             raise RuntimeError("Logic error in name generation.")
-        return os.path.join(self.compressed_path if compress else self.book_path, filename)
+        return os.path.join(
+            self.compressed_path if compress else self.book_path, filename
+        )
 
-    def get_final_lookup_name(self, betmode: str):
+    def get_final_lookup_name(self, bet_mode: str):
         """Final csv lookup table name."""
-        return os.path.join(self.lookup_path, f"lookUpTable_{betmode}.csv")
+        return os.path.join(self.lookup_path, f"lookUpTable_{bet_mode}.csv")
 
-    def get_optimized_lookup_name(self, betmode: str):
+    def get_optimized_lookup_name(self, bet_mode: str):
         """Optimized lookup table"""
-        return os.path.join(self.publish_path, f"lookUpTable_{betmode}_0.csv")
+        return os.path.join(self.publish_path, f"lookUpTable_{bet_mode}_0.csv")
 
-    def get_final_segmented_name(self, betmode: str):
+    def get_final_segmented_name(self, bet_mode: str):
         """Final csv segmented wins lookup table name."""
-        return os.path.join(self.lookup_path, f"lookUpTableSegmented_{betmode}.csv")
+        return os.path.join(self.lookup_path, f"lookUpTableSegmented_{bet_mode}.csv")

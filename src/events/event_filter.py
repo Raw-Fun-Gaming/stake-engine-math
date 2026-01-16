@@ -184,7 +184,7 @@ class EventFilter:
         # Skip SET_FINAL_WIN if it's the same as SET_TOTAL_WIN (no cap applied)
         if event_type == EventConstants.SET_FINAL_WIN.value:
             # If win_cap field is missing or False, this is redundant
-            if not event_data.get("win_cap"):
+            if not event_data.get("winCap"):
                 return not self.config.skip_implicit_events
 
         # Skip events with zero amounts if configured

@@ -255,9 +255,11 @@ class Cluster:
                                     positions[1]
                                 ].get_attribute(multiplier_key)
                     cluster_mult = max(cluster_mult, 1)
-                    sym_win: float = config.paytable[(syms_in_cluster, sym)]
-                    symwin_mult: float = sym_win * cluster_mult * global_multiplier
-                    total_win += symwin_mult
+                    symbol_win: float = config.paytable[(syms_in_cluster, sym)]
+                    symbol_win_multiplier: float = (
+                        symbol_win * cluster_mult * global_multiplier
+                    )
+                    total_win += symbol_win_multiplier
                     json_positions: list[dict[str, int]] = [
                         {"reel": p[0], "row": p[1]} for p in cluster
                     ]
@@ -269,12 +271,12 @@ class Cluster:
                         {
                             "symbol": sym,
                             "clusterSize": syms_in_cluster,
-                            "win": symwin_mult,
+                            "win": symbol_win_multiplier,
                             "positions": json_positions,
                             "meta": {
                                 "globalMult": global_multiplier,
                                 "clusterMult": cluster_mult,
-                                "winWithoutMult": sym_win,
+                                "winWithoutMult": symbol_win,
                                 "overlay": {
                                     "reel": central_pos[0],
                                     "row": central_pos[1],
@@ -337,21 +339,23 @@ class Cluster:
         return return_data
 
     @staticmethod
-    def record_cluster_wins(gamestate: Any) -> None:
+    def record_cluster_wins(game_state: Any) -> None:
         """Record cluster wins to force tracking system for optimization.
 
-        Extracts win description keys (cluster size, symbol, multiplier, gametype)
-        and records them to the gamestate for distribution optimization.
+        Extracts win description keys (cluster size, symbol, multiplier, game_type)
+        and records them to the game_state for distribution optimization.
 
         Args:
-            gamestate: Game state instance with win_data and record() method
+            game_state: Game state instance with win_data and record() method
         """
-        for win in gamestate.win_data["wins"]:
-            gamestate.record(
+        for win in game_state.win_data["wins"]:
+            game_state.record(
                 {
                     "kind": win["clusterSize"],
                     "symbol": win["symbol"],
-                    "mult": int(win["meta"]["globalMult"] + win["meta"]["clusterMult"]),
-                    "gametype": gamestate.gametype,
+                    "multiplier": int(
+                        win["meta"]["globalMult"] + win["meta"]["clusterMult"]
+                    ),
+                    "game_type": game_state.game_type,
                 }
             )

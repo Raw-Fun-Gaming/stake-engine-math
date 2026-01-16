@@ -7,7 +7,7 @@ for a single simulation round (spin).
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from src.events.event_filter import EventFilter
@@ -25,8 +25,8 @@ class Book:
         payout_multiplier: Final payout multiplier for this spin
         events: List of all events that occurred during the spin
         criteria: Simulation criteria/mode (e.g., "base", "bonus")
-        basegame_wins: Total wins from base game
-        freegame_wins: Total wins from free spins
+        base_game_wins: Total wins from base game
+        free_game_wins: Total wins from free spins
         formatter: Optional OutputFormatter for format versioning
         event_filter: Optional EventFilter for selective event inclusion
     """
@@ -50,8 +50,8 @@ class Book:
         self.payout_multiplier: float = 0.0
         self.events: list[dict[str, Any]] = []
         self.criteria: str = criteria
-        self.basegame_wins: float = 0.0
-        self.freegame_wins: float = 0.0
+        self.base_game_wins: float = 0.0
+        self.free_game_wins: float = 0.0
         self.formatter: OutputFormatter | None = formatter
         self.event_filter: EventFilter | None = event_filter
 
@@ -92,7 +92,7 @@ class Book:
         with standardized field names for the RGS.
 
         Returns:
-            Dictionary with id, payoutMultiplier, events, criteria, win totals,
+            Dictionary with id, payout_multiplier, events, criteria, win totals,
             and format version (if formatter is set)
         """
         json_book: dict[str, Any] = {
@@ -100,12 +100,12 @@ class Book:
             "payoutMultiplier": int(round(self.payout_multiplier * 100, 0)),
             "events": self.events,
             "criteria": self.criteria,
-            "baseGameWins": self.basegame_wins,
-            "freeGameWins": self.freegame_wins,
+            "baseGameWins": self.base_game_wins,
+            "freeGameWins": self.free_game_wins,
         }
 
         # Add format version if formatter is available
         if self.formatter:
-            json_book["formatVersion"] = self.formatter.get_format_version()
+            json_book["format_version"] = self.formatter.get_format_version()
 
         return json_book

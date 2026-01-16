@@ -40,9 +40,20 @@ source env/bin/activate            # Activate virtual environment (macOS/Linux)
 
 ### Running Games
 ```bash
-make run GAME=<game_name>          # Run game simulation (e.g., make run GAME=tower_treasures)
-                                   # Automatically formats JSON output if compression=False
+make run GAME=<game_name>                    # Run game with default run_config.toml
+make run GAME=<game_name> CONFIG=custom.toml # Run game with custom config file
+
+# Direct execution (from game directory)
+cd games/<game_name>
+python run.py                                # Uses run_config.toml
+CONFIG_FILE=custom.toml python run.py        # Uses custom config via env var
 ```
+
+**Configuration Files:**
+- `games/<game_name>/run_config.toml` - Execution settings (threads, compression, pipeline flags)
+- `games/<game_name>/game_config.py` - Game rules and mechanics (paytable, reels, win conditions)
+
+**Important:** Edit `run_config.toml` to change simulation settings, NOT `run.py`. The `run.py` file is now a pure execution script that reads settings from TOML.
 
 ### Testing
 ```bash
@@ -69,7 +80,7 @@ The optimization program reads configuration from `optimization_program/src/setu
 Each game lives in `games/<game_name>/` with a simplified inheritance chain:
 
 ```
-GameState (games/<game_name>/gamestate.py)
+GameState (games/<game_name>/game_state.py)
     ↓ inherits from
 Board (src/calculations/board.py) or Tumble (src/calculations/tumble.py)
     ↓ inherits from
@@ -77,14 +88,14 @@ BaseGameState (src/state/base_game_state.py)
 ```
 
 **Key improvements:**
-- **Single file per game**: All game logic consolidated in `gamestate.py` (~100-400 lines)
+- **Single file per game**: All game logic consolidated in `game_state.py` (~100-400 lines)
 - **Reduced complexity**: Inheritance reduced from 6 layers to 2 layers (67% reduction)
 - **Clear organization**: Game files divided into logical sections:
   - Special symbol handlers
   - State management overrides
   - Game-specific mechanics
   - Win evaluation
-  - Main game loops (`run_spin()`, `run_freespin()`)
+  - Main game loops (`run_spin()`, `run_free_spin()`)
 
 **Base Classes:**
 - `BaseGameState`: Core simulation infrastructure (books, events, state management, common actions)
@@ -110,7 +121,7 @@ class GameConfig(Config):
 - `win_type`: Determines win calculation method (cluster/lines/ways/scatter)
 - `paytable`: Win multipliers for symbol combinations
 - `num_reels`, `num_rows`: Board dimensions
-- `betmodes`: Different game modes (base/bonus) with distinct distributions
+- `bet_modes`: Different game modes (base/bonus) with distinct distributions
 
 **Output Optimization Configuration (Phase 3):**
 ```python
@@ -132,6 +143,107 @@ config.verbose_event_level = "standard"  # "full" (default), "standard", or "min
 - With event filtering: Additional 10-15% reduction
 - **Total: 35-40% file size savings** (e.g., 18.89 MB → 11-12 MB per 10K simulations)
 
+###  Run Configuration System (TOML-based)
+
+**New in Jan 2026:** Clean separation between game rules (`game_config.py`) and execution settings (`run_config.toml`).
+
+Each game has a `run_config.toml` file for runtime settings:
+
+```toml
+[execution]
+num_threads = 10        # Python simulation threads
+rust_threads = 20       # Rust optimization threads
+batching_size = 50000   # Simulations per batch
+compression = false     # Enable zstd compression
+profiling = false       # Enable performance profiling
+
+[simulation]
+base = 10000           # Base game simulations
+bonus = 10000          # Bonus game simulations
+super_spin = 10000      # Super spin simulations (optional)
+
+[pipeline]
+run_sims = true            # Generate simulation books
+run_optimization = true    # Run Rust optimization
+run_analysis = true        # Generate PAR sheets
+run_format_checks = true   # Run RGS verification
+
+target_modes = ["base", "bonus"]
+
+[analysis]
+custom_keys = [{ symbol = "scatter" }]
+```
+
+**Loading configuration:**
+```python
+from src.config.run_config import RunConfig
+
+# Load from default run_config.toml
+config = RunConfig.from_toml()
+
+# Load from custom file
+config = RunConfig.from_toml("dev.toml")     # Development config
+config = RunConfig.from_toml("prod.toml")    # Production config
+config = RunConfig.from_toml("test.toml")    # Testing config
+
+# Use environment variable (Makefile integration)
+# CONFIG_FILE=dev.toml python run.py
+config = RunConfig.from_toml()  # Auto-detects CONFIG_FILE env var
+
+# Access settings
+print(config.execution.num_threads)
+print(config.simulation.base)
+print(config.pipeline.run_sims)
+```
+
+**Multiple Config Files Pattern:**
+
+Games typically have three config files for different workflows:
+
+- **`dev.toml`** - Development: Small simulations (1K), no optimization, fast iteration (~10 seconds)
+  ```toml
+  [simulation]
+  base = 1000
+
+  [pipeline]
+  run_optimization = false  # Skip optimization for speed
+  ```
+
+- **`prod.toml`** - Production: Large simulations (1M+), full optimization, accurate statistics (~2 hours)
+  ```toml
+  [simulation]
+  base = 1000000
+
+  [pipeline]
+  run_optimization = true
+  run_analysis = true
+  compression = true
+  ```
+
+- **`test.toml`** - Testing: Minimal simulations (100), for automated tests and CI/CD (~5 seconds)
+  ```toml
+  [simulation]
+  base = 100
+
+  [pipeline]
+  run_optimization = false
+  run_analysis = false
+  ```
+
+**Usage:**
+```bash
+make run GAME=tower_treasures CONFIG=dev.toml    # Fast development
+make run GAME=tower_treasures CONFIG=prod.toml   # Production run
+make run GAME=tower_treasures CONFIG=test.toml   # Quick test
+```
+
+**Benefits:**
+- TypeScript-like configuration pattern familiar to web developers
+- Easy to edit settings without touching Python code
+- Version control friendly (track config changes separately)
+- Validation and error messages built-in
+- Multiple config files per game (dev/prod/test) for different workflows
+
 ### BetMode and Distribution System
 
 Games have multiple bet modes (base game, bonus game, etc.) each with their own:
@@ -141,9 +253,30 @@ Games have multiple bet modes (base game, bonus game, etc.) each with their own:
 
 The `BetMode` class (defined in `game_config.py`) structures this:
 ```python
-self.betmodes = {
+self.bet_modes = {
     "base": BetMode(...),
     "bonus": BetMode(...)
+}
+```
+
+**Reel File Naming Convention:**
+
+Reel strips are stored as CSV files with descriptive names:
+- `base.csv` - Base game reel strip
+- `free.csv` - Free spin reel strip
+- `wincap.csv` - Win cap reel strip (high-win scenarios)
+- `free_wincap.csv` - Free spin win cap reel strip
+- `super_spin.csv` - Super spin reel strip (special game modes)
+- `super_spin_wincap.csv` - Super spin win cap reel strip
+
+These CSV files contain the reel layout (rows × reels) with symbol names. Game designers can edit them in Excel or any spreadsheet software.
+
+Example reel configuration in `game_config.py`:
+```python
+reels = {
+    "base": "base.csv",
+    "free": "free.csv",
+    "wincap": "wincap.csv"
 }
 ```
 
@@ -198,14 +331,14 @@ Games specify their win type in config and call the appropriate calculation meth
 
 Each simulation:
 - `run_spin()` → Draw board → Calculate wins → Check triggers → Store events
-- Free spins use `run_freespin()` with separate loop
+- Free spins use `run_free_spin()` with separate loop
 
 ### Books and Output Files
 
 Simulation results go to `games/<game_name>/` as "books" files:
-- Format: JSON (if `output_regular_json=True`) or JSONL
-- Compression: zstd (if `compression=True` in `run.py`)
-- Auto-formatting: When `compression=False`, Makefile runs `scripts/format_books_json.py`
+- Format: JSON (if `output_regular_json=True` in `game_config.py`) or JSONL
+- Compression: zstd (if `compression = true` in `run_config.toml`)
+- Auto-formatting: When `compression = false`, Makefile runs `scripts/format_books_json.py`
 
 **The formatter:**
 - Pretty-prints complex objects
@@ -233,14 +366,15 @@ The Rust optimization program (`optimization_program/`) uses genetic algorithms 
 
 ```
 games/<game_name>/
-  ├── run.py                    # Main entry point: simulation, optimization, analysis
+  ├── run.py                    # ⭐ UPDATED: Pure execution script (reads from TOML)
+  ├── run_config.toml          # ⭐ NEW: Runtime settings (threads, compression, pipeline)
   ├── game_config.py           # Game configuration and BetMode setup
-  ├── gamestate.py             # ALL game logic in one file (~100-400 lines)
+  ├── game_state.py             # ALL game logic in one file (~100-400 lines)
   │                            # Sections: special symbols, state management,
   │                            # mechanics, win evaluation, game loops
   ├── game_optimization.py     # Optimization parameters (optional)
   ├── game_events.py           # Custom event generation (optional, rare)
-  ├── reels/                   # Reel strip files (CSV) per betmode
+  ├── reels/                   # Reel strip files (CSV) per bet mode
   ├── library/                 # Game-specific modules (optional, rare)
   └── tests/                   # Game-specific unit tests (optional)
       ├── run_tests.py         # Test runner
@@ -260,6 +394,9 @@ src/                           # Universal SDK modules
   │   ├── ways.py              # Ways-pay calculations
   │   └── scatter.py           # Scatter-pay calculations
   ├── config/                  # Configuration classes
+  │   ├── config.py            # Game config base class
+  │   ├── bet_mode.py           # BetMode configuration
+  │   └── run_config.py        # ⭐ NEW: TOML-based run configuration loader
   ├── events/                  # Event system and constants
   │   ├── event_constants.py   # Standardized event type constants
   │   ├── event_filter.py      # ⭐ NEW: Event filtering (Phase 3.2)
@@ -283,7 +420,7 @@ utils/                         # Analysis and verification tools
 
 **Key Changes from Old Structure:**
 - ❌ Removed: `game_override.py`, `game_executables.py`, `game_calculations.py` per game
-- ✅ Simplified: All game logic now in single `gamestate.py` file
+- ✅ Simplified: All game logic now in single `game_state.py` file
 - ✅ Added: `BaseGameState` unified base class
 - ✅ Added: Constants and exceptions modules
 - ✅ Added: `output/` directory with OutputFormatter (Phase 3.1)
@@ -295,23 +432,32 @@ utils/                         # Analysis and verification tools
 
 1. Copy `games/template/` to `games/<new_game>/`
 2. Update `game_config.py`: Set `game_id`, `game_name`, `win_type`, paytable
-3. Create reel strips in `reels/` directory (CSV format)
-4. Implement game logic in `gamestate.py`:
+3. Create config files for different workflows:
+   - Copy `dev.toml`, `prod.toml`, `test.toml` from template
+   - Adjust simulation counts if needed
+   - `run_config.toml` can symlink to `dev.toml` for default behavior
+4. Create reel strips in `reels/` directory (CSV format)
+5. Implement game logic in `game_state.py`:
    - Add special symbol handlers in the designated section
    - Override state management methods if needed (e.g., `reset_book()`)
    - Implement game-specific mechanics
    - Add win evaluation logic
-   - Complete `run_spin()` and `run_freespin()` methods
-5. Test with small simulation: Set `num_sim_args = {"base": 1000}` in `run.py`
+   - Complete `run_spin()` and `run_free_spin()` methods
+6. Test with: `make run GAME=<new_game> CONFIG=dev.toml` (fast iteration)
 
-**Note**: The new architecture consolidates all game logic in a single `gamestate.py` file. No need for separate `game_override.py`, `game_executables.py`, or `game_calculations.py` files.
+**Config File Strategy:**
+- Start with `dev.toml` for rapid development (1K simulations, ~10 seconds)
+- Use `prod.toml` only when ready for final testing (1M simulations, ~2 hours)
+- Keep `test.toml` for automated tests (100 simulations, ~5 seconds)
+
+**Note**: The new architecture consolidates all game logic in a single `game_state.py` file. No need for separate `game_override.py`, `game_executables.py`, or `game_calculations.py` files. Runtime settings go in TOML config files, not `run.py`.
 
 ### When Modifying Game Logic
 
 - Always use `EventConstants` for event types, never hardcoded strings
-- All game logic is in `gamestate.py` - modify methods in their designated sections
+- All game logic is in `game_state.py` - modify methods in their designated sections
 - Test changes with unit tests: `make unit-test GAME=<game_name>`
-- For win calculation changes, modify the win evaluation section in `gamestate.py`
+- For win calculation changes, modify the win evaluation section in `game_state.py`
 - Follow the section structure from the template for consistency
 
 ### Common Patterns
@@ -337,15 +483,15 @@ def assign_special_sym_function(self):
 
 def assign_mult_property(self, symbol):
     multiplier = get_random_outcome(
-        self.get_current_distribution_conditions()["mult_values"][self.gametype]
+        self.get_current_distribution_conditions()["multiplier_values"][self.game_type]
     )
     symbol.assign_attribute({"multiplier": multiplier})
 ```
 
 **Checking win conditions:**
 ```python
-if self.check_fs_condition() and self.check_freespin_entry():
-    self.run_freespin_from_base()
+if self.check_fs_condition() and self.check_free_spin_entry():
+    self.run_free_spin_from_base()
 ```
 
 ### Testing
@@ -353,11 +499,11 @@ if self.check_fs_condition() and self.check_freespin_entry():
 - **Main tests**: `pytest tests/` - SDK-wide functionality tests
 - **Game unit tests**: Each game can have `tests/` directory with isolated tests
 - **Integration testing**: Run full simulation with `make run GAME=<game>`
-- **RGS verification**: Automatically runs format checks if `run_format_checks=True` in `run.py`
+- **RGS verification**: Automatically runs format checks if `run_format_checks = true` in `run_config.toml`
 
 ### JSON Formatting
 
-When `compression = False` in `run.py`, the Makefile automatically formats books files:
+When `compression = false` in `run_config.toml`, the Makefile automatically formats books files:
 - Script: `scripts/format_books_json.py`
 - Keeps simple objects compact: `{"name": "L1"}`
 - Pretty-prints complex structures for readability
@@ -365,13 +511,13 @@ When `compression = False` in `run.py`, the Makefile automatically formats books
 
 ### Optimization Setup
 
-The `game_optimization.py` file configures optimization per betmode:
+The `game_optimization.py` file configures optimization per bet mode:
 
 ```python
 "base": {
     "conditions": {
-        "basegame": ConstructConditions(hr=3.5, rtp=0.59).return_dict(),
-        "freegame": ConstructConditions(rtp=0.37, hr=200,
+        "base_game": ConstructConditions(hr=3.5, rtp=0.59).return_dict(),
+        "free_game": ConstructConditions(rtp=0.37, hr=200,
                                        search_conditions={"symbol": "scatter"}).return_dict(),
     },
     "scaling": ConstructScaling([...]).return_dict(),
@@ -385,7 +531,7 @@ The `game_optimization.py` file configures optimization per betmode:
 ```
 
 **Before running optimization:**
-- Verify simulation books exist (run with `run_sims=True` first)
+- Verify simulation books exist (run with `run_sims = true` in `run_config.toml` first)
 - Check optimization parameters in `game_optimization.py`
 - Ensure Rust toolchain is installed: `cargo --version`
 

@@ -51,7 +51,7 @@ def validate_game(game_name: str, verbose: bool = False) -> bool:
         return False
 
     # Check required files exist
-    required_files = ["game_config.py", "gamestate.py", "run.py"]
+    required_files = ["game_config.py", "game_state.py", "run.py"]
     missing_files = []
     for file_name in required_files:
         if not (game_path / file_name).exists():
@@ -150,8 +150,8 @@ Examples:
             if game_dir.is_dir() and not game_dir.name.startswith("_"):
                 # Check if it has required files
                 has_config = (game_dir / "game_config.py").exists()
-                has_gamestate = (game_dir / "gamestate.py").exists()
-                status = "ready" if (has_config and has_gamestate) else "incomplete"
+                has_game_state = (game_dir / "game_state.py").exists()
+                status = "ready" if (has_config and has_game_state) else "incomplete"
                 print(f"  {game_dir.name:25} [{status}]")
         return 0
 

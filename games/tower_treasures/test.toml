@@ -1,0 +1,25 @@
+# Test Configuration for tower_treasures Game
+# Minimal configuration for automated testing and CI/CD
+
+# Target modes for optimization
+target_modes = ["base", "bonus"]
+
+[execution]
+num_threads = 2          # Minimal threads for testing
+rust_threads = 4
+batching_size = 5000     # Small batches
+compression = false      # Uncompressed for test inspection
+profiling = false
+
+[simulation]
+base = 100              # Minimal simulations for tests
+bonus = 100
+
+[pipeline]
+run_sims = true         # Generate simulation books
+run_optimization = false # Skip optimization in tests
+run_analysis = false    # Skip analysis in tests
+run_format_checks = true # Verify format
+
+[analysis]
+custom_keys = [{ symbol = "scatter" }]

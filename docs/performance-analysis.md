@@ -1,7 +1,7 @@
 # Performance Analysis & Optimization Opportunities
 
 **Date**: 2026-01-15
-**Game**: 0_0_lines (representative baseline)
+**Game**: template_lines (representative baseline)
 **Simulations**: 1,000
 **Total Time**: 4.899s
 **Speed**: 204.1 sims/second

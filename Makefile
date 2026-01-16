@@ -17,7 +17,8 @@ help:
 	@echo "  make clean                      - Clean up build artifacts"
 	@echo ""
 	@echo "Running Games:"
-	@echo "  make run GAME=<game>            - Run game simulation"
+	@echo "  make run GAME=<game>            - Run game simulation with default run_config.toml"
+	@echo "  make run GAME=<game> CONFIG=<path>  - Run game with custom config file"
 	@echo "  make validate GAME=<game>       - Validate game configuration"
 	@echo "  make list-games                 - List all available games"
 	@echo ""
@@ -59,13 +60,23 @@ run:
 ifndef GAME
 	$(error GAME is not set. Usage: make run GAME=<game_name>)
 endif
-	$(VENV_PY) games/$(GAME)/run.py
-	@echo "Checking compression setting..."
-	@if grep -q "compression = False" games/$(GAME)/run.py; then \
+	@echo "Running $(GAME) simulation..."
+ifdef CONFIG
+	@echo "Using custom config: $(CONFIG)"
+	cd games/$(GAME) && CONFIG_FILE=$(CONFIG) ../../$(VENV_PY) run.py
+else
+	@echo "Using default config: run_config.toml"
+	cd games/$(GAME) && ../../$(VENV_PY) run.py
+endif
+	@echo ""
+	@echo "Checking compression setting in run_config.toml..."
+	@if grep -q "^compression = false" games/$(GAME)/run_config.toml; then \
 		echo "Compression is disabled, formatting books files..."; \
 		$(VENV_PY) scripts/format_books_json.py games/$(GAME) || echo "Warning: Failed to format books files"; \
-	else \
+	elif grep -q "^compression = true" games/$(GAME)/run_config.toml; then \
 		echo "Compression is enabled, skipping formatting."; \
+	else \
+		echo "Could not determine compression setting, skipping formatting."; \
 	fi
 
 test:

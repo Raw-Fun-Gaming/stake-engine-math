@@ -94,7 +94,7 @@ def verify_lookup_format(filename: str) -> list:
             payout = float(payout)
 
             # Payout checks
-            assert payout.is_integer() and payout >= 0, "Payout mult be uint64 format:"
+            assert payout.is_integer() and payout >= 0, "Payout must be uint64 format:"
             if payout > 0:
                 assert (
                     payout >= 10
@@ -117,12 +117,12 @@ def verify_lookup_format(filename: str) -> list:
     return win_distribution, integer_payouts, running_weight_total, min_win, max_win
 
 
-# payout mult value match to lut + length match
-def verify_books_and_payout_mults(books_filename: str) -> list:
+# payout multiplier value match to lut + length match
+def verify_books_and_payout_multipliers(books_filename: str) -> list:
     """Ensure the values written to the books match those in the lookup table exactly.
 
     Supports both format versions:
-    - Legacy (no formatVersion field): Assumed verbose format
+    - Legacy (no format_version field): Assumed verbose format
     - 2.0-verbose: Verbose symbol/position format
     - 2.0-compact: Compact symbol/position format
 
@@ -155,7 +155,7 @@ def verify_books_and_payout_mults(books_filename: str) -> list:
                         raise RuntimeError(f"Missing required key: {key}")
 
                 # Track format versions seen (optional field)
-                format_version = blob.get("formatVersion", "1.0-verbose")
+                format_version = blob.get("format_version", "1.0-verbose")
                 format_versions_seen.add(format_version)
 
                 total_num_events += len(blob["events"])
@@ -246,7 +246,7 @@ def execute_all_tests(config, excluded_modes=[]):
             win_dist, lut_payouts, weights_range, min_win, max_win = (
                 verify_lookup_format(lut_file)
             )
-            book_payouts, num_events = verify_books_and_payout_mults(book_file)
+            book_payouts, num_events = verify_books_and_payout_multipliers(book_file)
 
             compare_payout_values(book_payouts, lut_payouts)
 
@@ -284,6 +284,6 @@ def load_game_config(game_id: str):
 
 if __name__ == "__main__":
 
-    game_id = "0_0_lines"
+    game_id = "template_lines"
     GameConfig = load_game_config(game_id)
     execute_all_tests(GameConfig)

@@ -1,16 +1,19 @@
 from src.state.state import GeneralGameState
 
 
-class GamestateTest(GeneralGameState):
-    """Simple gamestate setup with abstract methods defined."""
+class GameStateTest(GeneralGameState):
+    """Simple game_state setup with abstract methods defined."""
 
     def __init__(self, config):
         self.config = config
 
     def assign_special_sym_function(self):
-        self.special_symbol_functions = {"M": [self.assign_mult_property], "WM": [self.assign_mult_property]}
+        self.special_symbol_functions = {
+            "M": [self.assign_multiplier_property],
+            "WM": [self.assign_multiplier_property],
+        }
 
-    def assign_mult_property(self, symbol) -> dict:
+    def assign_multiplier_property(self, symbol) -> dict:
         symbol.assign_attribute({"multiplier": 3})
 
     def create_symbol(self, name: str) -> object:
@@ -26,7 +29,7 @@ class GamestateTest(GeneralGameState):
     def run_spin(self):
         pass
 
-    def run_freespin(self):
+    def run_free_spin(self):
         pass
 
 

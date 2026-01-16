@@ -71,8 +71,12 @@ class OutputFormatter:
         """
         self.output_mode = output_mode
         self.include_losing_boards = include_losing_boards
-        self.compress_positions = compress_positions if output_mode == OutputMode.COMPACT else False
-        self.compress_symbols = compress_symbols if output_mode == OutputMode.COMPACT else False
+        self.compress_positions = (
+            compress_positions if output_mode == OutputMode.COMPACT else False
+        )
+        self.compress_symbols = (
+            compress_symbols if output_mode == OutputMode.COMPACT else False
+        )
         self.skip_implicit_events = skip_implicit_events
 
         # Auto-enable compression in compact mode
@@ -110,7 +114,10 @@ class OutputFormatter:
             if special_attributes:
                 has_special = False
                 for attr in special_attributes:
-                    if hasattr(symbol, attr) and symbol.get_attribute(attr) is not False:
+                    if (
+                        hasattr(symbol, attr)
+                        and symbol.get_attribute(attr) is not False
+                    ):
                         has_special = True
                         break
 
@@ -191,10 +198,7 @@ class OutputFormatter:
             >>> formatter.format_position_list(positions)
             [[0, 1], [2, 3]]
         """
-        return [
-            self.format_position(pos["reel"], pos["row"])
-            for pos in positions
-        ]
+        return [self.format_position(pos["reel"], pos["row"]) for pos in positions]
 
     def should_include_board_reveal(self, final_win: float) -> bool:
         """Determine if board reveal event should be included.
@@ -232,7 +236,7 @@ class OutputFormatter:
         Examples:
             >>> formatter = OutputFormatter(skip_implicit_events=True)
             >>> formatter.should_include_event("setFinalWin", {"amount": 0})
-            False  # Implicit - can be inferred from payoutMultiplier
+            False  # Implicit - can be inferred from payout_multiplier
 
             >>> formatter.should_include_event("win", {"amount": 10})
             True  # Actual win, must be included
@@ -273,9 +277,7 @@ class OutputFormatter:
         for reel in board:
             formatted_reel: list[str | dict[str, Any]] = []
             for symbol in reel:
-                formatted_reel.append(
-                    self.format_symbol(symbol, special_attributes)
-                )
+                formatted_reel.append(self.format_symbol(symbol, special_attributes))
             formatted_board.append(formatted_reel)
 
         return formatted_board
