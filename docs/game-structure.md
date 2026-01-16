@@ -294,7 +294,7 @@ self.book.add_event(event)
 - **Wins**: `WIN`, `SET_FINAL_WIN`, `SET_WIN`, `SET_TOTAL_WIN`, `WIN_CAP`
 - **Free Spins**: `TRIGGER_FREE_SPINS`, `RETRIGGER_FREE_SPINS`, `END_FREE_SPINS`, `UPDATE_FREE_SPINS`
 - **Tumbles**: `TUMBLE_BOARD`, `SET_TUMBLE_WIN`, `UPDATE_TUMBLE_WIN`
-- **Special**: `UPDATE_GLOBAL_MULT`, `UPGRADE`, `REVEAL`
+- **Special**: `UPDATE_GLOBAL_MULTIPLIER`, `UPGRADE`, `REVEAL`
 
 ### Event Filtering (Phase 3.2)
 

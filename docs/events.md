@@ -46,11 +46,9 @@ event_type = "win"
 - `EventConstants.UPDATE_TUMBLE_WIN` - Update tumble win
 
 **Special**
-- `EventConstants.UPDATE_GLOBAL_MULT` - Global multiplier change
+- `EventConstants.UPDATE_GLOBAL_MULTIPLIER` - Global multiplier change
 - `EventConstants.UPGRADE` - Symbol upgrade
 - `EventConstants.REVEAL` - Reveal hidden symbols
-- `EventConstants.EXPAND_WILD` - Expanding wild
-- `EventConstants.STICKY_SYMBOL` - Sticky symbol applied
 
 ## Creating Events
 
@@ -116,7 +114,7 @@ self.book.add_event(event)
 
 ```python
 event = construct_event(
-    event_type=EventConstants.UPDATE_GLOBAL_MULT.value,
+    event_type=EventConstants.UPDATE_GLOBAL_MULTIPLIER.value,
     details={
         "old_multiplier": 1,
         "new_multiplier": 2,

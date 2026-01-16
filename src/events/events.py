@@ -50,7 +50,8 @@ def reveal_event(game_state: Any) -> None:
         skip_implicit_events=game_state.config.skip_implicit_events,
     )
 
-    # Check if we should skip this reveal (losing board with include_losing_boards=False)
+    # Check if we should skip this reveal (losing board with
+    # include_losing_boards=False)
     # Note: We need to check final win, but at reveal time we don't know it yet
     # So we'll always include reveals and let books writing filter them out if needed
 
@@ -420,14 +421,14 @@ def set_final_win_event(game_state: Any) -> None:
 def update_global_mult_event(game_state: Any) -> None:
     """Increment global multiplier display.
 
-    Creates an UPDATE_GLOBAL_MULT event showing the current multiplier value.
+    Creates an UPDATE_GLOBAL_MULTIPLIER event showing the current multiplier value.
 
     Args:
         game_state: Current game state with global_multiplier
     """
     event: dict[str, Any] = {
         "index": len(game_state.book.events),
-        "type": EventConstants.UPDATE_GLOBAL_MULT.value,
+        "type": EventConstants.UPDATE_GLOBAL_MULTIPLIER.value,
         "globalMult": int(game_state.global_multiplier),
     }
 

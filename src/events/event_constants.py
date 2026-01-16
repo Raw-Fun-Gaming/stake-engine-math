@@ -4,7 +4,7 @@ from enum import Enum
 
 
 class EventConstants(Enum):
-    "Define all standard event 'type' keys."
+    """Define all standard event 'type' keys."""
 
     # Reveal events
     REVEAL = "reveal"
@@ -28,5 +28,5 @@ class EventConstants(Enum):
     UPDATE_TUMBLE_WIN = "updateTumbleWin"
 
     # Special symbol events
-    UPDATE_GLOBAL_MULT = "updateGlobalMult"
+    UPDATE_GLOBAL_MULTIPLIER = "updateGlobalMultiplier"
     UPGRADE = "upgrade"

@@ -40,7 +40,7 @@ class EventFilter:
         EventConstants.TRIGGER_FREE_SPINS.value,
         EventConstants.RETRIGGER_FREE_SPINS.value,
         EventConstants.TUMBLE_BOARD.value,
-        EventConstants.UPDATE_GLOBAL_MULT.value,
+        EventConstants.UPDATE_GLOBAL_MULTIPLIER.value,
         EventConstants.UPGRADE.value,
         # SET_FINAL_WIN moved to STANDARD (contextually required)
     }

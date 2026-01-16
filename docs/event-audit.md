@@ -113,7 +113,7 @@ Based on `src/events/event_constants.py` and `src/events/events.py`:
   - **Optimization**: Could sum WIN events
 
 ### 5. Multiplier Events
-- **UPDATE_GLOBAL_MULT** (`update_global_mult_event()`)
+- **UPDATE_GLOBAL_MULTIPLIER** (`update_global_mult_event()`)
   - **When**: Global multiplier changes
   - **Purpose**: Show multiplier progression
   - **Data**: new_multiplier
@@ -201,7 +201,7 @@ class Config:
 - WIN (individual wins)
 - TRIGGER_FREE_SPINS, RETRIGGER_FREE_SPINS
 - TUMBLE_BOARD
-- UPDATE_GLOBAL_MULT, UPGRADE
+- UPDATE_GLOBAL_MULTIPLIER, UPGRADE
 - SET_FINAL_WIN
 
 **Standard (Emit by Default)**:
