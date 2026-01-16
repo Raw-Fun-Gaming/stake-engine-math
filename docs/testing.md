@@ -342,7 +342,7 @@ def test_free_spins_trigger_with_three_scatters(game_state):
     ...
 
 # ❌ Bad
-def test_fs(game_state):
+def test_free_spins(game_state):
     ...
 ```
 

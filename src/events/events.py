@@ -108,7 +108,7 @@ def trigger_free_spins_event(
         free_game_trigger: True if retriggering during free spins
 
     Raises:
-        AssertionError: If both or neither trigger flags are set, or if tot_fs <= 0
+        AssertionError: If both or neither trigger flags are set, or if total_free_spins <= 0
     """
     assert (
         base_game_trigger != free_game_trigger
