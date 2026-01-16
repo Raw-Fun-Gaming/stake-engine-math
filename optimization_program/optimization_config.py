@@ -69,10 +69,12 @@ class ConstructConditions:
 
     def __init__(
         self,
-        rtp: float = None,
-        av_win: float = None,
-        hr: float = None,
-        search_conditions=None,
+        rtp: float | str | None = None,
+        av_win: float | None = None,
+        hr: float | str | None = None,
+        search_conditions: (
+            float | int | tuple[float | int, float | int] | dict[str, Any] | None
+        ) = None,
     ):
         if rtp is None or rtp == "x":
             assert all(
