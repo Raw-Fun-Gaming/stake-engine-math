@@ -22,3 +22,4 @@ __pycache__
 /env
 *.env
 *.DS_Storelogs/
+site/
