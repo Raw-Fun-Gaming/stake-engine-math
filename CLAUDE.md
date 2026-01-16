@@ -375,7 +375,12 @@ games/<game_name>/
   ├── game_optimization.py     # Optimization parameters (optional)
   ├── game_events.py           # Custom event generation (optional, rare)
   ├── reels/                   # Reel strip files (CSV) per bet mode
-  ├── library/                 # Game-specific modules (optional, rare)
+  ├── build/                   # Build output (generated, gitignored)
+  │   ├── books/               # Simulation results (JSON/JSONL)
+  │   ├── configs/             # Generated config files
+  │   ├── forces/              # Force files for testing
+  │   ├── lookup_tables/       # Lookup tables
+  │   └── optimization_files/  # Optimization results
   └── tests/                   # Game-specific unit tests (optional)
       ├── run_tests.py         # Test runner
       └── test_*.py            # Individual test modules

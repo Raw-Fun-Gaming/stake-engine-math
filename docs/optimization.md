@@ -251,7 +251,7 @@ make run GAME=my_game
 After optimization:
 
 ```
-games/<game_name>/
+games/<game_name>/build/optimization_files/
   ├── optimized_base_probs.csv        # Optimized probabilities
   ├── optimization_report.json        # Detailed statistics
   └── optimization_results/           # Intermediate results

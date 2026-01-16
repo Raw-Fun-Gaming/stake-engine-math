@@ -63,10 +63,10 @@ run_optimization = false   # Run Rust optimization algorithm
 
 ## Output Files (Books)
 
-Books are saved in the game directory:
+Books are saved in the game's build directory:
 
 ```
-games/<game_name>/
+games/<game_name>/build/books/
   ├── <game_name>_base_books.json      # Base game results
   ├── <game_name>_base_probs.csv       # Probability weights
   └── ...
@@ -152,10 +152,10 @@ Formatting JSON output...
 
 ```bash
 # Check generated files
-ls -lh games/template_cluster/*_books.*
+ls -lh games/template_cluster/build/books/*_books.*
 
 # View first entries
-head -n 50 games/template_cluster/0_0_cluster_base_books.json
+head -n 50 games/template_cluster/build/books/template_cluster_base_books.json
 ```
 
 ### 5. Run Tests
@@ -254,7 +254,7 @@ source env/bin/activate
 ### JSON Formatting Issues
 ```bash
 # Manually format
-python scripts/format_books_json.py games/<game_name>/<books_file>.json
+python scripts/format_books_json.py games/<game_name>/build/books/<books_file>.json
 ```
 
 ## Performance Tips
