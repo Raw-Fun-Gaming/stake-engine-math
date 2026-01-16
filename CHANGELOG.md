@@ -5,7 +5,7 @@ All notable changes to the Stake Engine Math SDK will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.0] - 2026-01-15
+## [2.0.0] - 2026-01-16
 
 ### Major Refactoring Release
 
@@ -16,6 +16,9 @@ This release represents a complete architecture overhaul of the SDK, improving m
 - 75% reduction in game file count (4 files → 1 file per game)
 - 35-47% simulation performance improvement
 - 35-40% output file size reduction
+- Modern project structure with `build/` directory
+- Full PEP 8 compliance
+- Comprehensive documentation updates
 - 54 tests passing, production ready
 
 ---
@@ -102,13 +105,35 @@ This release represents a complete architecture overhaul of the SDK, improving m
   - `make clean-books`: Clean generated books files
   - `make help`: Show all available commands
 
+#### Project Structure & Build System
+
+- **build/ directory**: Modern build output structure replacing `library/`
+  - `build/books/`: Simulation results (JSON/JSONL)
+  - `build/configs/`: Generated configuration files
+  - `build/forces/`: Force files for optimization
+  - `build/lookup_tables/`: Lookup tables
+  - `build/optimization_files/`: Optimization results
+- **PEP 8 compliance**: All constants renamed to UPPER_SNAKE_CASE
+  - `ANTE_MAPPING` (was `ANTEMAPPING`)
+  - `IS_BUY_BONUS_MAPPING` (was `ISBUYBONUSMAPPING`)
+  - `IS_FEATURE_MAPPING` (was `ISFEATUREMAPPING`)
+- **Package naming**: Renamed from `stakeengine` to `stake-engine-math`
+- **Reel file naming**: Standardized descriptive names (`base.csv`, `free.csv`, `wincap.csv`)
+
 #### Documentation
 
+- **docs/game-structure.md**: Complete rewrite with new 2-layer architecture
+  - Documented simplified inheritance (GameState → Board → BaseGameState)
+  - Explained single-file game structure vs old multi-file approach
+  - Added build/ directory structure and purpose
+  - Included migration guide from old architecture
+- **docs/running-games.md**: Updated all paths to use `build/` directory
+- **docs/optimization.md**: Updated optimization output paths
+- **CLAUDE.md**: Updated file structure with build/ organization
 - **PHASE3_COMPLETE_2026-01-15.md**: Comprehensive Phase 3 documentation
 - **EVENT_AUDIT.md**: Complete event type inventory and categorization
 - **COMPRESSION_BENCHMARK_RESULTS.md**: Benchmark data and analysis
 - **PERFORMANCE_ANALYSIS_2026-01-15.md**: Profiling results and optimization analysis
-- **Updated CLAUDE.md**: Architecture documentation with Phase 3-5 features
 - **Updated README.md**: Quick start guide with optimization examples
 
 #### Tests
@@ -145,6 +170,21 @@ This release represents a complete architecture overhaul of the SDK, improving m
 - **Event formatting**: Uses OutputFormatter for consistent serialization
 - **scripts/format_books_json.py**: Updated for format version detection
 - **utils/rgs_verification.py**: Updated for format version logging
+
+#### Project Structure
+
+- **Output directory**: `library/` → `build/` for clearer separation of source vs generated artifacts
+  - Aligns with modern JavaScript/TypeScript conventions (npm, webpack, vite)
+  - All generated artifacts now in `games/<game>/build/`
+  - Source files (reels/) remain separate and committed
+- **Path attributes**: `library_path` → `build_path` throughout codebase
+  - Updated in Python: `src/config/output_filenames.py`, `src/config/config.py`
+  - Updated in Rust: `optimization_program/src/main.rs`, `optimization_program/src/exes.rs`
+  - Updated in all utilities and scripts
+- **.gitignore**: Updated to ignore `**/build/**` instead of `**/library/**`
+- **Constants naming**: All constants renamed to PEP 8 UPPER_SNAKE_CASE
+  - `src/config/constants.py`: ANTEMAPPING → ANTE_MAPPING, etc.
+- **Documentation**: All docs updated to reflect new structure and paths
 
 ---
 
