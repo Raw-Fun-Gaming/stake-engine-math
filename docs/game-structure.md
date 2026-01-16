@@ -105,14 +105,14 @@ class GameState(Board):  # or Tumble
     def assign_special_sym_function(self):
         """Map symbols to handler functions"""
         self.special_symbol_functions = {
-            "M": [self.assign_mult_property],
+            "M": [self.assign_multiplier_property],
             "W": [self.handle_wild],
         }
 
-    def assign_mult_property(self, symbol):
+    def assign_multiplier_property(self, symbol):
         """Assign multiplier to symbol"""
-        mult = get_random_outcome(...)
-        symbol.assign_attribute({"multiplier": mult})
+        multiplier = get_random_outcome(...)
+        symbol.assign_attribute({"multiplier": multiplier})
 
     # ============================================================
     # SECTION 2: STATE MANAGEMENT OVERRIDES
@@ -518,12 +518,12 @@ class GameState(Board):
 ### Use Distributions
 ```python
 # ✅ Good - use distributions from config
-mult = get_random_outcome(
+multiplier = get_random_outcome(
     self.get_current_distribution_conditions()["multiplier_values"]
 )
 
 # ❌ Bad - hardcoded random
-mult = random.choice([2, 3, 5, 10])
+multiplier = random.choice([2, 3, 5, 10])
 ```
 
 ### Configuration vs Execution Settings
