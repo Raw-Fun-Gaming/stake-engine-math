@@ -32,7 +32,7 @@ def send_multiplier_info_event(
     win_info_formatted["tumbleWin"] = int(
         round(min(base_win, game_state.config.win_cap) * 100)
     )
-    win_info_formatted["boardMult"] = board_multiplier
+    win_info_formatted["boardMultiplier"] = board_multiplier
     win_info_formatted["totalWin"] = int(
         round(min(updated_win, game_state.config.win_cap) * 100)
     )
