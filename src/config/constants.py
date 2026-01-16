@@ -1,4 +1,4 @@
-ANTEMAPPING = {
+ANTE_MAPPING = {
     "base": False,
     "ante": True,
     "bonus": False,
@@ -10,7 +10,7 @@ ANTEMAPPING = {
     "superFeatureSoin": False,
 }
 
-ISBUYBONUSMAPPING = {
+IS_BUY_BONUS_MAPPING = {
     "base": False,
     "ante": False,
     "superAnte": False,
@@ -19,7 +19,7 @@ ISBUYBONUSMAPPING = {
     "super_spin": False,
 }
 
-ISFEATUREMAPPING = {
+IS_FEATURE_MAPPING = {
     "base": True,
     "ante": True,
     "superAnte": True,

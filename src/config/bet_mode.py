@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from typing import Any
 
-from src.config.constants import ANTEMAPPING, ISBUYBONUSMAPPING, ISFEATUREMAPPING
 from src.exceptions import GameConfigError
 
 
