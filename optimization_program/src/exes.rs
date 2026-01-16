@@ -110,7 +110,7 @@ pub(crate) fn load_force_options(
 ) -> Vec<SearchResult> {
     let file_path = Path::new(&path_to_games)
         .join(game_name)
-        .join("library")
+        .join("build")
         .join("forces")
         .join(format!("force_record_{}.json", bet_type));
     let json_file_path = Path::new(&file_path);
@@ -124,7 +124,7 @@ pub(crate) fn load_force_options(
 pub(crate) fn load_config_data(game_name: &str, path_to_games: String) -> ConfigData {
     let file_path = Path::new(&path_to_games)
         .join(game_name)
-        .join("library")
+        .join("build")
         .join("configs")
         .join("math_config.json");
     let json_file_path = Path::new(&file_path);
@@ -141,7 +141,7 @@ pub(crate) fn read_look_up_table(
 ) -> Result<HashMap<u32, LookUpTableEntry>, Box<dyn Error>> {
     let file_path = Path::new(&path_to_games)
         .join(game_name)
-        .join("library")
+        .join("build")
         .join("lookup_tables")
         .join(format!("lookUpTable_{}.csv", bet_type));
     let csv_file_path = Path::new(&file_path);

@@ -369,7 +369,7 @@ fn print_information(
         {
             let file_path = Path::new(&path_to_games)
                 .join(game_name.clone())
-                .join("library")
+                .join("build")
                 .join("optimization_files")
                 .join(format!("{}_0_{}.csv", bet_type, pig_index + 1));
             // let mut file = File::create(file_path).expect("Failed to create file");
@@ -431,7 +431,7 @@ fn print_information(
             {
                 let file_path = Path::new(&path_to_games)
                     .join(&game_name)
-                    .join("library")
+                    .join("build")
                     .join("publish_files")
                     .join(format!("lookUpTable_{}_0.csv", bet_type));
 
@@ -448,7 +448,7 @@ fn print_information(
         {
             let file_path = Path::new(&path_to_games)
                 .join(&game_name)
-                .join("library")
+                .join("build")
                 .join("optimization_files")
                 .join(format!("{}_0_{}.csv", bet_type, pig_index + 1));
             // let mut file = File::create(file_path).expect("Failed to create file");
