@@ -1,0 +1,25 @@
+# Development Configuration for template_lines Game
+# Fast iteration with small sample sizes for testing game logic
+
+# Target modes for optimization
+target_modes = ["base", "bonus"]
+
+[execution]
+num_threads = 4          # Fewer threads for development
+rust_threads = 8
+batching_size = 10000    # Smaller batches for faster feedback
+compression = false      # Uncompressed for easy debugging
+profiling = false
+
+[simulation]
+base = 100              # Small sample for quick testing
+bonus = 100
+
+[pipeline]
+run_sims = true         # Generate simulation books
+run_optimization = false # Skip optimization in dev
+run_analysis = false    # Skip analysis in dev
+run_format_checks = true # Always verify format
+
+[analysis]
+custom_keys = [{ symbol = "scatter" }]

@@ -198,18 +198,18 @@ print(config.pipeline.run_sims)
 
 **Multiple Config Files Pattern:**
 
-Games typically have three config files for different workflows:
+All games have separate config files for different workflows, with `run_config.toml` as a symlink to the default configuration (typically `dev.toml` for fast development):
 
-- **`dev.toml`** - Development: Small simulations (1K), no optimization, fast iteration (~10 seconds)
+- **`dev.toml`** - Development: Small simulations (100), no optimization, fast iteration (~10 seconds)
   ```toml
   [simulation]
-  base = 1000
+  base = 100
 
   [pipeline]
   run_optimization = false  # Skip optimization for speed
   ```
 
-- **`prod.toml`** - Production: Large simulations (1M+), full optimization, accurate statistics (~2 hours)
+- **`prod.toml`** - Production: Large simulations (1M), full optimization, accurate statistics (~2 hours)
   ```toml
   [simulation]
   base = 1000000
@@ -230,11 +230,15 @@ Games typically have three config files for different workflows:
   run_analysis = false
   ```
 
+**Default Configuration:**
+- `run_config.toml` is a symlink to `dev.toml` (default for fast development)
+- Running without CONFIG parameter uses `run_config.toml` → `dev.toml`
+
 **Usage:**
 ```bash
-make run GAME=tower_treasures CONFIG=dev.toml    # Fast development
+make run GAME=tower_treasures                    # Uses default (dev.toml via symlink)
 make run GAME=tower_treasures CONFIG=prod.toml   # Production run
-make run GAME=tower_treasures CONFIG=test.toml   # Quick test
+make run GAME=tower_treasures CONFIG=test.toml   # Quick test (if available)
 ```
 
 **Benefits:**
@@ -437,10 +441,11 @@ utils/                         # Analysis and verification tools
 
 1. Copy `games/template/` to `games/<new_game>/`
 2. Update `game_config.py`: Set `game_id`, `game_name`, `win_type`, paytable
-3. Create config files for different workflows:
-   - Copy `dev.toml`, `prod.toml`, `test.toml` from template
-   - Adjust simulation counts if needed
-   - `run_config.toml` can symlink to `dev.toml` for default behavior
+3. Config files are already set up (copied from template):
+   - `dev.toml` - Fast development (100 simulations, ~10 seconds)
+   - `prod.toml` - Production (1M simulations, ~2 hours)
+   - `run_config.toml` - Symlink to `dev.toml` (default)
+   - Adjust simulation counts in dev.toml/prod.toml if needed
 4. Create reel strips in `reels/` directory (CSV format)
 5. Implement game logic in `game_state.py`:
    - Add special symbol handlers in the designated section
@@ -448,12 +453,12 @@ utils/                         # Analysis and verification tools
    - Implement game-specific mechanics
    - Add win evaluation logic
    - Complete `run_spin()` and `run_free_spin()` methods
-6. Test with: `make run GAME=<new_game> CONFIG=dev.toml` (fast iteration)
+6. Test with: `make run GAME=<new_game>` (uses dev.toml via symlink for fast iteration)
 
 **Config File Strategy:**
-- Start with `dev.toml` for rapid development (1K simulations, ~10 seconds)
-- Use `prod.toml` only when ready for final testing (1M simulations, ~2 hours)
-- Keep `test.toml` for automated tests (100 simulations, ~5 seconds)
+- Default: `make run GAME=<game>` uses `run_config.toml` → `dev.toml` (100 simulations, ~10 seconds)
+- Production: `make run GAME=<game> CONFIG=prod.toml` for final testing (1M simulations, ~2 hours)
+- Optional: Create `test.toml` for automated tests if needed (100 simulations, ~5 seconds)
 
 **Note**: The new architecture consolidates all game logic in a single `game_state.py` file. No need for separate `game_override.py`, `game_executables.py`, or `game_calculations.py` files. Runtime settings go in TOML config files, not `run.py`.
 
