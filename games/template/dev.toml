@@ -18,7 +18,7 @@ base = 100              # Small sample for quick testing
 run_sims = true         # Generate simulation books
 run_optimization = false # Skip optimization in dev
 run_analysis = false    # Skip analysis in dev
-run_format_checks = true # Always verify format
+run_format_checks = false # Skip format checks (requires compression)
 
 [analysis]
 custom_keys = []
