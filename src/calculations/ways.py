@@ -131,7 +131,7 @@ class Ways:
                         "positions": positions,
                         "meta": {
                             "ways": ways,
-                            "globalMult": multiplier,
+                            "globalMultiplier": multiplier,
                             "winWithoutMult": win,
                             "symbolMult": cumulative_symbol_multiplier,
                         },

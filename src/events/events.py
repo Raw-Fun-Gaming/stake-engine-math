@@ -14,6 +14,27 @@ from src.events.event_constants import EventConstants
 from src.output.output_formatter import OutputFormatter
 
 
+def to_camel_case(snake_str: str) -> str:
+    """Convert snake_case to camelCase.
+
+    Args:
+        snake_str: String in snake_case format (e.g., "base_game", "free_game")
+
+    Returns:
+        String in camelCase format (e.g., "baseGame", "freeGame")
+
+    Examples:
+        >>> to_camel_case("base_game")
+        "baseGame"
+        >>> to_camel_case("free_game")
+        "freeGame"
+        >>> to_camel_case("super_spin")
+        "superSpin"
+    """
+    components = snake_str.split("_")
+    return components[0] + "".join(x.title() for x in components[1:])
+
+
 def json_ready_sym(symbol: Any, special_attributes: list[str]) -> dict[str, Any]:
     """Convert a symbol object to dictionary/JSON format.
 
@@ -84,7 +105,7 @@ def reveal_event(game_state: Any) -> None:
         "type": EventConstants.REVEAL.value,
         "board": board_client,
         "paddingPositions": game_state.reel_positions,
-        "gameType": game_state.game_type,
+        "gameType": to_camel_case(game_state.game_type),
         "anticipation": game_state.anticipation,
     }
     game_state.book.add_event(event)
@@ -307,7 +328,13 @@ def win_event(game_state: Any, include_padding_index: bool = True) -> None:
             )
             win_data_copy["details"][idx]["multiplier"] = win_data_copy["details"][idx][
                 "meta"
-            ]["globalMult"]
+            ]["globalMultiplier"]
+
+            # Include cluster multiplier if present (for cluster-pay games with grid multipliers)
+            if "clusterMultiplier" in win_data_copy["details"][idx]["meta"]:
+                win_data_copy["details"][idx]["clusterMultiplier"] = win_data_copy[
+                    "details"
+                ][idx]["meta"]["clusterMultiplier"]
 
             # Handle overlay if present
             if (
@@ -431,7 +458,7 @@ def update_global_mult_event(game_state: Any) -> None:
     event: dict[str, Any] = {
         "index": len(game_state.book.events),
         "type": EventConstants.UPDATE_GLOBAL_MULTIPLIER.value,
-        "globalMult": int(game_state.global_multiplier),
+        "globalMultiplier": int(game_state.global_multiplier),
     }
 
     game_state.book.add_event(event)

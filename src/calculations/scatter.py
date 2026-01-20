@@ -142,8 +142,8 @@ class Scatter:
                     * symbol_mult,
                     "positions": symbols_on_board[sym],
                     "meta": {
-                        "globalMult": global_multiplier,
-                        "clusterMult": symbol_mult,
+                        "globalMultiplier": global_multiplier,
+                        "clusterMultiplier": symbol_mult,
                         "winWithoutMult": config.paytable[(win_size, sym)],
                         "overlay": {
                             "reel": overlay_position[0],
@@ -174,7 +174,8 @@ class Scatter:
                     "kind": len(win["positions"]),
                     "symbol": win["symbol"],
                     "totalMult": int(
-                        win["meta"]["globalMult"] + win["meta"]["clusterMult"]
+                        win["meta"]["globalMultiplier"]
+                        + win["meta"]["clusterMultiplier"]
                     ),
                     "game_type": game_state.game_type,
                 }

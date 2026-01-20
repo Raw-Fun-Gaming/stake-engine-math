@@ -92,8 +92,7 @@ class Book:
         with standardized field names for the RGS.
 
         Returns:
-            Dictionary with id, payout_multiplier, events, criteria, win totals,
-            and format version (if formatter is set)
+            Dictionary with id, payout_multiplier, events, criteria, and win totals
         """
         json_book: dict[str, Any] = {
             "id": self.id,
@@ -103,9 +102,5 @@ class Book:
             "baseGameWins": self.base_game_wins,
             "freeGameWins": self.free_game_wins,
         }
-
-        # Add format version if formatter is available
-        if self.formatter:
-            json_book["format_version"] = self.formatter.get_format_version()
 
         return json_book

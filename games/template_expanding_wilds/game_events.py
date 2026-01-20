@@ -118,7 +118,7 @@ def reveal_prize_event(game_state):
         "type": EventConstants.REVEAL.value,
         "board": board_client,
         "paddingPositions": game_state.reel_positions,
-        "gameType": "super_spin",
+        "gameType": "superSpin",
         "anticipation": game_state.anticipation,
     }
     game_state.book.add_event(event)

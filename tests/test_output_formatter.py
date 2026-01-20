@@ -1,7 +1,8 @@
 """Unit tests for OutputFormatter class."""
 
-import pytest
 from unittest.mock import Mock
+
+import pytest
 
 from src.output.output_formatter import OutputFormatter, OutputMode
 
@@ -21,7 +22,9 @@ def mock_symbol_with_multiplier():
     symbol = Mock()
     symbol.name = "M"
     symbol.multiplier = 2
-    symbol.get_attribute = Mock(side_effect=lambda attr: 2 if attr == "multiplier" else False)
+    symbol.get_attribute = Mock(
+        side_effect=lambda attr: 2 if attr == "multiplier" else False
+    )
     return symbol
 
 
@@ -193,28 +196,12 @@ class TestOutputFormatter:
         assert isinstance(result[0][0], dict)
         assert result[0][0]["name"] == "L5"
 
-    def test_get_format_version_compact(self):
-        """Test format version string for compact mode."""
-        formatter = OutputFormatter(output_mode=OutputMode.COMPACT)
-
-        version = formatter.get_format_version()
-
-        assert version == "2.0-compact"
-
-    def test_get_format_version_verbose(self):
-        """Test format version string for verbose mode."""
-        formatter = OutputFormatter(output_mode=OutputMode.VERBOSE)
-
-        version = formatter.get_format_version()
-
-        assert version == "2.0-verbose"
-
     def test_manual_compression_flags_ignored_in_compact_mode(self):
         """Test that manual compression flags are overridden in compact mode."""
         formatter = OutputFormatter(
             output_mode=OutputMode.COMPACT,
             compress_positions=False,  # Should be ignored
-            compress_symbols=False,    # Should be ignored
+            compress_symbols=False,  # Should be ignored
         )
 
         # Compact mode should force compression on
@@ -232,6 +219,7 @@ class TestOutputFormatter:
 
         # Compact should be smaller (just a string vs dict)
         import json
+
         compact_size = len(json.dumps(compact_result))
         verbose_size = len(json.dumps(verbose_result))
 
@@ -246,6 +234,7 @@ class TestOutputFormatter:
         verbose_pos = verbose_formatter.format_position(0, 2)
 
         import json
+
         compact_size = len(json.dumps(compact_pos))
         verbose_size = len(json.dumps(verbose_pos))
 

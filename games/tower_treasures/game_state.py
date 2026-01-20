@@ -251,7 +251,7 @@ class GameState(Board):
                             "win": symbol_win_multiplier,
                             "positions": json_positions,
                             "meta": {
-                                "globalMult": self.global_multiplier,
+                                "globalMultiplier": self.global_multiplier,
                                 "winWithoutMult": symbol_win,
                             },
                         }
@@ -267,7 +267,7 @@ class GameState(Board):
                 {
                     "kind": win["clusterSize"],
                     "symbol": win["symbol"],
-                    "multiplier": int(win["meta"]["globalMult"]),
+                    "multiplier": int(win["meta"]["globalMultiplier"]),
                     "game_type": self.game_type,
                 }
             )

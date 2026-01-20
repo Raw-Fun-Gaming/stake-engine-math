@@ -121,12 +121,7 @@ def verify_lookup_format(filename: str) -> list:
 def verify_books_and_payout_multipliers(books_filename: str) -> list:
     """Ensure the values written to the books match those in the lookup table exactly.
 
-    Supports both format versions:
-    - Legacy (no format_version field): Assumed verbose format
-    - 2.0-verbose: Verbose symbol/position format
-    - 2.0-compact: Compact symbol/position format
-
-    The verification logic is format-agnostic since it only checks payoutMultiplier values.
+    The verification logic only checks payoutMultiplier values and is format-agnostic.
     """
     assert str(books_filename).endswith(".jsonl.zstd") or str(books_filename).endswith(
         "jsonl.zst"
@@ -134,7 +129,6 @@ def verify_books_and_payout_multipliers(books_filename: str) -> list:
 
     book_payout_ints = []
     total_num_events = 0
-    format_versions_seen = set()
 
     with open(books_filename, "rb") as f:
         decompressor = zst.ZstdDecompressor()
@@ -154,21 +148,8 @@ def verify_books_and_payout_multipliers(books_filename: str) -> list:
                     if key not in blob:
                         raise RuntimeError(f"Missing required key: {key}")
 
-                # Track format versions seen (optional field)
-                format_version = blob.get("format_version", "1.0-verbose")
-                format_versions_seen.add(format_version)
-
                 total_num_events += len(blob["events"])
                 book_payout_ints.append(blob["payoutMultiplier"])
-
-    # Log format versions for debugging
-    if len(format_versions_seen) > 1:
-        print(
-            f"⚠️  Multiple format versions detected in books file: {format_versions_seen}"
-        )
-    elif format_versions_seen:
-        detected_format = list(format_versions_seen)[0]
-        print(f"✅ Books format version: {detected_format}")
 
     return book_payout_ints, total_num_events
 

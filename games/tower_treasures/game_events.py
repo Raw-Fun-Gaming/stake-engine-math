@@ -4,6 +4,12 @@ from src.calculations.symbol import Symbol
 from src.events.event_constants import EventConstants
 
 
+def to_camel_case(snake_str: str) -> str:
+    """Convert snake_case to camelCase."""
+    components = snake_str.split("_")
+    return components[0] + "".join(x.title() for x in components[1:])
+
+
 def json_ready_sym(symbol: Symbol, special_attributes: list[str] | None = None):
     """Converts a symbol to dictionary/JSON format."""
     assert special_attributes is not None
@@ -39,7 +45,7 @@ def reveal_event(game_state):
         "index": len(game_state.book.events),
         "type": EventConstants.REVEAL.value,
         "board": board_client,
-        "gameType": game_state.game_type,
+        "gameType": to_camel_case(game_state.game_type),
     }
     game_state.book.add_event(event)
 

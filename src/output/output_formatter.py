@@ -281,16 +281,3 @@ class OutputFormatter:
             formatted_board.append(formatted_reel)
 
         return formatted_board
-
-    def get_format_version(self) -> str:
-        """Get the format version identifier for books files.
-
-        Returns:
-            Format version string (e.g., "2.0-compact" or "2.0-verbose")
-
-        Examples:
-            >>> formatter = OutputFormatter(OutputMode.COMPACT)
-            >>> formatter.get_format_version()
-            "2.0-compact"
-        """
-        return f"2.0-{self.output_mode.value}"

@@ -149,7 +149,7 @@ class Lines:
                             "lineIndex": line_index,
                             "multiplier": applied_mult,
                             "winWithoutMult": wild_win,
-                            "globalMult": int(global_multiplier),
+                            "globalMultiplier": int(global_multiplier),
                             "lineMultiplier": int(applied_mult / global_multiplier),
                         },
                     )
@@ -170,7 +170,7 @@ class Lines:
                             "lineIndex": line_index,
                             "multiplier": applied_mult,
                             "winWithoutMult": base_win,
-                            "globalMult": int(global_multiplier),
+                            "globalMultiplier": int(global_multiplier),
                             "lineMultiplier": int(applied_mult / global_multiplier),
                         },
                     )

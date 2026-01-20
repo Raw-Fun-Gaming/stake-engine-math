@@ -8,7 +8,7 @@ Flattened inheritance structure (Phase 1.3):
 from typing import Any
 
 # Import game-specific events
-from game_events import update_grid_multiplier_event
+from game_events import reveal_board_multipliers_event
 
 from src.calculations.cluster import Cluster
 from src.calculations.tumble import Tumble
@@ -95,7 +95,7 @@ class GameState(Tumble):
 
         Each position that contributes to a win gets its multiplier increased.
         Positions start at 0, are activated to 1 on first win, then increment
-        on subsequent wins up to maximum_board_mult.
+        on subsequent wins up to maximum_board_multiplier.
         """
         if self.win_data["totalWin"] > 0:
             for win in self.win_data["wins"]:
@@ -106,9 +106,9 @@ class GameState(Tumble):
                         self.position_multipliers[pos["reel"]][pos["row"]] += 1
                         self.position_multipliers[pos["reel"]][pos["row"]] = min(
                             self.position_multipliers[pos["reel"]][pos["row"]],
-                            self.config.maximum_board_mult,
+                            self.config.maximum_board_multiplier,
                         )
-            update_grid_multiplier_event(self)
+            reveal_board_multipliers_event(self)
 
     # =========================================================================
     # WIN EVALUATION
@@ -167,8 +167,8 @@ class GameState(Tumble):
                             "win": symbol_win_multiplier,
                             "positions": json_positions,
                             "meta": {
-                                "globalMult": global_multiplier,
-                                "clusterMult": board_multiplier,
+                                "globalMultiplier": global_multiplier,
+                                "clusterMultiplier": board_multiplier,
                                 "winWithoutMult": symbol_win,
                                 "overlay": {
                                     "reel": central_pos[0],
@@ -234,6 +234,9 @@ class GameState(Tumble):
     def run_spin(self, sim: int) -> None:
         """Run a single base game spin simulation.
 
+        Grid multipliers accumulate across tumbles within a single base spin,
+        then reset for the next spin.
+
         Args:
             sim: Simulation ID for this spin
         """
@@ -243,14 +246,17 @@ class GameState(Tumble):
             # Reset simulation variables and draw a new board
             self.reset_book()
             self.draw_board()
+            self.reset_grid_multipliers()
 
             self.get_clusters_update_wins()
             self.emit_tumble_win_events()
+            self.update_grid_multipliers()
 
             while self.win_data["totalWin"] > 0 and not (self.wincap_triggered):
                 self.tumble_game_board()
                 self.get_clusters_update_wins()
                 self.emit_tumble_win_events()
+                self.update_grid_multipliers()
 
             self.set_end_tumble_event()
             self.win_manager.update_game_type_wins(self.game_type)
@@ -273,7 +279,6 @@ class GameState(Tumble):
         while self.free_spin_count < self.total_free_spins:
             self.update_free_spin()
             self.draw_board()
-            update_grid_multiplier_event(self)
 
             self.get_clusters_update_wins()
             self.emit_tumble_win_events()

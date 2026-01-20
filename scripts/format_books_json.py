@@ -80,6 +80,7 @@ def format_json_with_compact_names(data):
     - Compact (2.0-compact): "L5" -> already compact (string)
     - Position arrays [0, 2] -> kept compact
     - Position objects {"reel": 0, "row": 2} -> kept compact on single line
+    - Numeric arrays (boardMultipliers rows) -> one line per row
     """
     # Convert to pretty-printed JSON
     pretty_json = json.dumps(data, indent=2)
@@ -101,6 +102,25 @@ def format_json_with_compact_names(data):
     position_pattern = r'{\s*\n\s*"reel":\s*(\d+),\s*\n\s*"row":\s*(\d+)\s*\n\s*}'
     pretty_json = re.sub(
         position_pattern, r'{"reel": \1, "row": \2}', pretty_json, flags=re.MULTILINE
+    )
+
+    # Compact numeric arrays to single lines (e.g., boardMultipliers rows)
+    # Pattern: arrays containing only numbers on separate lines
+    # Match: [\n      0,\n      1,\n      2\n    ]
+    # Replace with: [0, 1, 2]
+    numeric_array_pattern = r"\[\s*\n\s*((?:\d+\s*,\s*\n\s*)*\d+)\s*\n\s*\]"
+
+    def compact_numeric_array(match):
+        # Extract the numbers and commas
+        numbers_str = match.group(1)
+        # Remove whitespace and newlines, keep numbers and commas
+        numbers_clean = re.sub(r"\s+", "", numbers_str)
+        # Add space after commas for readability
+        numbers_clean = numbers_clean.replace(",", ", ")
+        return f"[{numbers_clean}]"
+
+    pretty_json = re.sub(
+        numeric_array_pattern, compact_numeric_array, pretty_json, flags=re.MULTILINE
     )
 
     return pretty_json

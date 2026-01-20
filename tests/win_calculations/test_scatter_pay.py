@@ -89,9 +89,9 @@ def test_scatterpay_mults(game_state):
         game_state.config, game_state.board, global_multiplier=1
     )
 
-    assert windata["wins"][0]["meta"]["clusterMult"] == 15
+    assert windata["wins"][0]["meta"]["clusterMultiplier"] == 15
     assert round(
-        windata["totalWin"] / windata["wins"][0]["meta"]["clusterMult"], 2
+        windata["totalWin"] / windata["wins"][0]["meta"]["clusterMultiplier"], 2
     ) == round(windata["wins"][0]["meta"]["winWithoutMult"], 2)
 
 

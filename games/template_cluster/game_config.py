@@ -87,7 +87,7 @@ class GameConfig(Config):
             - 1,
         }
 
-        self.maximum_board_mult = 512
+        self.maximum_board_multiplier = 512
 
         reels = {"base": "base.csv", "free": "free.csv", "wincap": "wincap.csv"}
         self.reels = {}

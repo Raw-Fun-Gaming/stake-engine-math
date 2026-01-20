@@ -274,8 +274,8 @@ class Cluster:
                             "win": symbol_win_multiplier,
                             "positions": json_positions,
                             "meta": {
-                                "globalMult": global_multiplier,
-                                "clusterMult": cluster_mult,
+                                "globalMultiplier": global_multiplier,
+                                "clusterMultiplier": cluster_mult,
                                 "winWithoutMult": symbol_win,
                                 "overlay": {
                                     "reel": central_pos[0],
@@ -354,7 +354,8 @@ class Cluster:
                     "kind": win["clusterSize"],
                     "symbol": win["symbol"],
                     "multiplier": int(
-                        win["meta"]["globalMult"] + win["meta"]["clusterMult"]
+                        win["meta"]["globalMultiplier"]
+                        + win["meta"]["clusterMultiplier"]
                     ),
                     "game_type": game_state.game_type,
                 }
