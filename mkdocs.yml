@@ -144,6 +144,14 @@ nav:
       - Event System: events.md
       - Optimization Guide: optimization.md
 
+  - Template Games:
+      - Overview: templates.md
+      - Cluster Template: templates-cluster.md
+      - Lines Template: templates-lines.md
+      - Ways Template: templates-ways.md
+      - Scatter Template: templates-scatter.md
+      - Expanding Wilds Template: templates-expanding-wilds.md
+
   - Advanced Topics:
       - Migration History: migration-history.md
       - Performance Analysis: performance-analysis.md
