@@ -58,7 +58,7 @@ games/<game>/
 - Easier to create new games - clear, self-contained template
 - **NEW**: TypeScript-like TOML config - familiar pattern for web developers
 
-See [REFACTOR_PROGRESS_2026-01-15.md](REFACTOR_PROGRESS_2026-01-15.md) and [PHASE3_COMPLETE_2026-01-15.md](PHASE3_COMPLETE_2026-01-15.md) for complete details and [CLAUDE.md](CLAUDE.md) for the updated architecture guide.
+See [docs/migration-history.md](docs/migration-history.md) for complete refactor details, [docs/game-structure.md](docs/game-structure.md) for game architecture, and [CLAUDE.md](CLAUDE.md) for the developer guide.
 
 ### TOML-Based Configuration (NEW!)
 
