@@ -9,7 +9,7 @@ def get_unoptimized_hits(lut_path, all_modes, win_ranges):
     all_modes_base_dist = defaultdict(lambda: defaultdict(int))
     total_mode_count = {}
     for mode in all_modes:
-        base_lut_file = os.path.join(lut_path, "lookUpTable_" + str(mode) + ".csv")
+        base_lut_file = os.path.join(lut_path, "look_up_table_" + str(mode) + ".csv")
         lut = open(base_lut_file, "r", encoding="UTF-8")
         counter = 0
         for line in lut:
@@ -146,14 +146,14 @@ def return_hit_rates(all_mode_distributions, total_weight, win_ranges, mode_cost
 def return_all_filepaths(game_id: str, mode: str):
     """Return file files required for PAR sheet generation."""
     lut_path = os.path.join(
-        PATH_TO_GAMES, game_id, "build", "publish_files", f"lookUpTable_{mode}_0.csv"
+        PATH_TO_GAMES, game_id, "build", "publish_files", f"look_up_table_{mode}.csv"
     )
     split_path = os.path.join(
         PATH_TO_GAMES,
         game_id,
         "build",
         "lookup_tables",
-        f"lookUpTableSegmented_{mode}.csv",
+        f"look_up_table_segmented_{mode}.csv",
     )
 
     return lut_path, split_path

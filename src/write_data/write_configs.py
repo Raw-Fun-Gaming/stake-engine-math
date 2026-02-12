@@ -77,7 +77,7 @@ def pass_fe_bet_mode(bet_mode):
     mode_info["feature"] = bet_mode.get_feature()
     mode_info["buyBonus"] = bet_mode.get_buy_bonus()
     mode_info["rtp"] = bet_mode.get_rtp()
-    mode_info["max_win"] = bet_mode.get_win_cap()
+    mode_info["maxWin"] = bet_mode.get_win_cap()
 
     return {bet_mode.get_name(): mode_info}
 
@@ -113,7 +113,7 @@ def make_temp_math_config(game_state):
                 "bet_mode": bet_mode.get_name(),
                 "cost": bet_mode.get_cost(),
                 "rtp": bet_mode.get_rtp(),
-                "max_win": bet_mode.get_win_cap(),
+                "maxWin": bet_mode.get_win_cap(),
             }
             rust_dict["bet_modes"] += [bet_mode_rust]
             jsonInfo["bet_modes"].append(bet_mode_rust)
@@ -187,7 +187,7 @@ def make_math_config(game_state):
             "bet_mode": bet_mode.get_name(),
             "cost": bet_mode.get_cost(),
             "rtp": bet_mode.get_rtp(),
-            "max_win": bet_mode.get_win_cap(),
+            "maxWin": bet_mode.get_win_cap(),
         }
         opt_mode = None
         for mode, mode_obj in game_state.config.optimization_params.items():
@@ -294,11 +294,20 @@ def make_fe_config(game_state, json_padding=True, assign_properties=True, **kwar
             symbols[sym.name]["paytable"] = sym.paytable
 
         if len(special_properties) > 0:
-            symbols[sym.name]["special_properties"] = special_properties
+            symbols[sym.name]["properties"] = special_properties
+
+    # Sort: H symbols first, then L symbols, then others
+    def symbol_sort_key(name):
+        if name.startswith("H") and name[1:].isdigit():
+            return (0, int(name[1:]))
+        elif name.startswith("L") and name[1:].isdigit():
+            return (1, int(name[1:]))
+        else:
+            return (2, 0, name)
 
     json_info["symbols"] = []
-    for key, val in symbols.items():
-        json_info["symbols"].append({key: val})
+    for key in sorted(symbols.keys(), key=symbol_sort_key):
+        json_info["symbols"].append({key: symbols[key]})
 
     reelstrip_json = {}
     if json_padding:
@@ -315,7 +324,7 @@ def make_fe_config(game_state, json_padding=True, assign_properties=True, **kwar
 
     f_name = os.path.join(
         game_state.output_files.config_path,
-        f"config_fe_{game_state.config.game_id}.json",
+        "game_config.json",
     )
     fe_json = open(f_name, "w", encoding="UTF-8")
     fe_json.write(json.dumps(json_info, indent=4))

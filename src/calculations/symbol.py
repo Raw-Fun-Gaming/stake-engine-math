@@ -120,7 +120,7 @@ class Symbol:
             fun(self)
 
     # Class-level cache for paytable lookups (shared across all instances)
-    _paytable_cache: dict[int, tuple[set[str], dict[str, list[dict[str, float]]]]] = {}
+    _paytable_cache: dict[int, tuple[set[str], dict[str, dict[str, float]]]] = {}
 
     def assign_paying_bool(self, config: Config) -> None:
         """Determine if symbol pays and extract its paytable values.
@@ -139,7 +139,7 @@ class Symbol:
         if config_id not in Symbol._paytable_cache:
             # Build paytable cache for this config
             paying_symbols: set[str] = set()
-            symbol_paytables: dict[str, list[dict[str, float]]] = {}
+            symbol_paytables: dict[str, dict[str, float]] = {}
 
             for tup, val in config.paytable.items():
                 assert isinstance(
@@ -149,8 +149,8 @@ class Symbol:
                 paying_symbols.add(symbol_name)
 
                 if symbol_name not in symbol_paytables:
-                    symbol_paytables[symbol_name] = []
-                symbol_paytables[symbol_name].append({str(tup[0]): val})
+                    symbol_paytables[symbol_name] = {}
+                symbol_paytables[symbol_name][str(tup[0])] = val
 
             # Cache the computed structure
             Symbol._paytable_cache[config_id] = (paying_symbols, symbol_paytables)

@@ -117,8 +117,12 @@ def reveal_prize_event(game_state):
         "index": len(game_state.book.events),
         "type": EventConstants.REVEAL.value,
         "board": board_client,
-        "paddingPositions": game_state.reel_positions,
         "gameType": "superSpin",
         "anticipation": game_state.anticipation,
     }
+
+    # Only include paddingPositions if enabled in config
+    if game_state.config.output_padding_positions:
+        event["paddingPositions"] = game_state.reel_positions
+
     game_state.book.add_event(event)

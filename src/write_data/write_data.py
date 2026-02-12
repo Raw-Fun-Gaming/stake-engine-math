@@ -227,6 +227,15 @@ def output_lookup_and_force_files(
                                 "," + file_data[1::]
                             )  # dont write first '[', write last ']'
 
+        # Also write JSONL version (one result per line, no formatting)
+        if game_state.config.output_regular_json:
+            jsonl_path = os.path.join(
+                game_state.output_files.book_path, f"books_{bet_mode}.jsonl"
+            )
+            with open(jsonl_path, "w", encoding="UTF-8") as outfile:
+                for book in all_books:
+                    outfile.write(json.dumps(book, separators=(",", ":")) + "\n")
+
     print("Saving force files for", game_id, "in", bet_mode)
     force_results_dict = {}
     file_list = []

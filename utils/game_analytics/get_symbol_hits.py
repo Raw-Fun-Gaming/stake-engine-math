@@ -2,6 +2,7 @@
 
 import json
 import os
+
 from src.config.paths import PATH_TO_GAMES
 
 
@@ -17,10 +18,18 @@ class HitRateCalculations:
     def initialize_file(self) -> None:
         """Initialize force files and lookup tables."""
         force_file = os.path.join(
-            PATH_TO_GAMES, self.game_id, "build", "forces", f"force_record_{self.mode}.json"
+            PATH_TO_GAMES,
+            self.game_id,
+            "build",
+            "forces",
+            f"force_record_{self.mode}.json",
         )
         lut_file = os.path.join(
-            PATH_TO_GAMES, self.game_id, "build", "publish_files", f"lookUpTable_{self.mode}_0.csv"
+            PATH_TO_GAMES,
+            self.game_id,
+            "build",
+            "publish_files",
+            f"look_up_table_{self.mode}.csv",
         )
         with open(force_file, "r", encoding="UTF-8") as f:
             file_dict = json.load(f)
@@ -64,7 +73,9 @@ class HitRateCalculations:
         average_win = 0
         # multiply each win in the subset of lookup table by the ratio of its weight to normalize the avg payout
         for id in unique_ids:
-            norm_payout = self.payouts[id - 1] * (self.weights[id - 1] / search_key_tot_weight)
+            norm_payout = self.payouts[id - 1] * (
+                self.weights[id - 1] / search_key_tot_weight
+            )
             average_win += norm_payout
         try:
             return average_win
@@ -106,7 +117,9 @@ def construct_symbol_keys(config) -> list:
     return search_keys
 
 
-def analyse_search_keys(config, modes_to_analyse: list, search_keys: list[dict]) -> type:
+def analyse_search_keys(
+    config, modes_to_analyse: list, search_keys: list[dict]
+) -> type:
     """Extract win information from search keys."""
     hr_summary, av_win_summary, sim_count_summary = {}, {}, {}
     for mode in modes_to_analyse:
@@ -132,7 +145,9 @@ def construct_symbol_probabilities(config, modes_to_analyse: list) -> type:
     """Find hit-rates of all symbol combinations."""
     check_file = []
     for mode in modes_to_analyse:
-        force_file = os.path.join(config.build_path, "forces", f"force_record_{mode}.json")
+        force_file = os.path.join(
+            config.build_path, "forces", f"force_record_{mode}.json"
+        )
         check_file.append(os.path.isfile(force_file))
     if not all(check_file):
         raise RuntimeError("Force File Does Not Exist.")
@@ -148,11 +163,15 @@ def construct_custom_key_probabilities(config, modes_to_analyse, custom_search) 
     """Analyze win information from user defined search keys."""
     check_file = []
     for mode in modes_to_analyse:
-        force_file = os.path.join(config.build_path, "forces", f"force_record_{mode}.json")
+        force_file = os.path.join(
+            config.build_path, "forces", f"force_record_{mode}.json"
+        )
         check_file.append(os.path.isfile(force_file))
     if not all(check_file):
         raise RuntimeError("Force File Does Not Exist.")
 
-    hr_summary, av_win_summary, sim_count_summary = analyse_search_keys(config, modes_to_analyse, custom_search)
+    hr_summary, av_win_summary, sim_count_summary = analyse_search_keys(
+        config, modes_to_analyse, custom_search
+    )
 
     return hr_summary, av_win_summary, sim_count_summary

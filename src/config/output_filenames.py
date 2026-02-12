@@ -61,15 +61,13 @@ class OutputFiles:
             "names": {
                 "manifest": "index.json",
                 "be_config": "config.json",
-                "fe_config": "fe_config.json",
+                "fe_config": "game_config.json",
                 "math_config": "math_config.json",
             },
             "paths": {
                 "manifest": os.path.join(self.publish_path, "index.json"),
                 "be_config": os.path.join(self.config_path, "config.json"),
-                "fe_config": os.path.join(
-                    self.config_path, f"config_fe_{self.game_config.game_id}.json"
-                ),
+                "fe_config": os.path.join(self.config_path, "game_config.json"),
                 "math_config": os.path.join(self.config_path, "math_config.json"),
             },
         }
@@ -122,19 +120,20 @@ class OutputFiles:
             self.lookups[mode.get_name()] = {
                 "folder_dir": self.lookup_path,
                 "names": {
-                    "base_lookup": f"lookUpTable_{mode.get_name()}.csv",
-                    "optimized_lookup": f"lookUpTable_{mode.get_name()}_0.csv",
-                    "segmented_id": f"lookUpTableSegmented_{mode.get_name()}.csv",
+                    "base_lookup": f"look_up_table_{mode.get_name()}.csv",
+                    "optimized_lookup": f"look_up_table_{mode.get_name()}.csv",
+                    "segmented_id": f"look_up_table_segmented_{mode.get_name()}.csv",
                 },
                 "paths": {
                     "base_lookup": os.path.join(
-                        self.lookup_path, f"lookUpTable_{mode.get_name()}.csv"
+                        self.lookup_path, f"look_up_table_{mode.get_name()}.csv"
                     ),
                     "optimized_lookup": os.path.join(
-                        self.publish_path, f"lookUpTable_{mode.get_name()}_0.csv"
+                        self.publish_path, f"look_up_table_{mode.get_name()}.csv"
                     ),
                     "segmented_id": os.path.join(
-                        self.lookup_path, f"lookUpTableSegmented_{mode.get_name()}.csv"
+                        self.lookup_path,
+                        f"look_up_table_segmented_{mode.get_name()}.csv",
                     ),
                 },
             }
@@ -157,7 +156,7 @@ class OutputFiles:
     def get_temp_lookup_name(self, bet_mode: str, thread_index: int, repeat_count: int):
         """Naming convention for temp lookup files."""
         return os.path.join(
-            self.temp_path, f"lookUpTable_{bet_mode}_{thread_index}_{repeat_count}"
+            self.temp_path, f"look_up_table_{bet_mode}_{thread_index}_{repeat_count}"
         )
 
     def get_temp_segmented_name(
@@ -166,7 +165,7 @@ class OutputFiles:
         """Naming convention for temp segmented lookup files."""
         return os.path.join(
             self.temp_path,
-            f"lookUpTableSegmented_{bet_mode}_{thread_index}_{repeat_count}",
+            f"look_up_table_segmented_{bet_mode}_{thread_index}_{repeat_count}",
         )
 
     def get_temp_force_name(self, bet_mode: str, thread_index: int, repeat_count: int):
@@ -191,12 +190,12 @@ class OutputFiles:
 
     def get_final_lookup_name(self, bet_mode: str):
         """Final csv lookup table name."""
-        return os.path.join(self.lookup_path, f"lookUpTable_{bet_mode}.csv")
+        return os.path.join(self.lookup_path, f"look_up_table_{bet_mode}.csv")
 
     def get_optimized_lookup_name(self, bet_mode: str):
         """Optimized lookup table"""
-        return os.path.join(self.publish_path, f"lookUpTable_{bet_mode}_0.csv")
+        return os.path.join(self.publish_path, f"look_up_table_{bet_mode}.csv")
 
     def get_final_segmented_name(self, bet_mode: str):
         """Final csv segmented wins lookup table name."""
-        return os.path.join(self.lookup_path, f"lookUpTableSegmented_{bet_mode}.csv")
+        return os.path.join(self.lookup_path, f"look_up_table_segmented_{bet_mode}.csv")

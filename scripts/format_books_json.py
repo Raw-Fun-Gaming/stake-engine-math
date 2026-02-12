@@ -136,8 +136,7 @@ def process_json_file(file_path):
         is_jsonl = file_path.suffix == ".jsonl"
 
         if is_jsonl:
-            # Handle JSONL format
-            # Try to reconstruct valid JSONL if the file is corrupted
+            # Handle JSONL format - keep compact (one object per line, no formatting)
             if not is_valid_jsonl(content):
                 print(
                     f"  ⚠️  File appears corrupted, attempting to reconstruct JSONL format..."
@@ -153,26 +152,20 @@ def process_json_file(file_path):
                     continue  # Skip empty lines in JSONL
 
                 try:
-                    # Parse JSON
                     data = json.loads(line)
-                    # Format with compact names
-                    formatted = format_json_with_compact_names(data)
-                    formatted_lines.append(formatted)
+                    # JSONL: compact single-line output, no formatting
+                    formatted_lines.append(json.dumps(data, separators=(",", ":")))
                 except json.JSONDecodeError as e:
                     print(f"  ⚠️  Warning: Invalid JSON on line {line_num}: {e}")
                     print(f"       Line content: {line[:100]}...")
-                    # Skip invalid lines instead of keeping them
                     continue
 
             # Write back to file
             with open(file_path, "w", encoding="utf-8") as f:
-                f.write("\n".join(formatted_lines))
-                if (
-                    formatted_lines and formatted_lines[-1]
-                ):  # Add final newline if content exists
-                    f.write("\n")
+                for line in formatted_lines:
+                    f.write(line + "\n")
 
-            return len(lines)
+            return len(formatted_lines)
 
         else:
             # Handle JSON format

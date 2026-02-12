@@ -15,7 +15,7 @@ def swap_tables(game_name: str, game_mode: str, target_file_number: int):
     """Replace default optimization table."""
 
     target_file = game_mode + "_0_" + str(target_file_number) + ".csv"
-    lut_name = str.join("_", ["lookUpTable", game_mode, "0.csv"])
+    lut_name = f"look_up_table_{game_mode}.csv"
     new_lut_file = os.path.join("build", "publish_files", lut_name)
     new_opt_file = os.path.join("build", "optimization_files", target_file)
 

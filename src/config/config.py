@@ -36,7 +36,8 @@ class Config:
         special_symbols: Special symbol configurations
         base_game_type: Base game mode name
         free_game_type: Free game mode name
-        include_padding: Whether to include padding symbols in display
+        include_padding: Whether to include top/bottom padding symbols in board display
+        output_padding_positions: Whether to output paddingPositions array in reveal events
         free_spin_triggers: Free spin trigger requirements
         bet_modes: List of BetMode configurations
         win_levels: Win level thresholds for different contexts
@@ -107,6 +108,9 @@ class Config:
         self.free_game_type: str = "free_game"
 
         self.include_padding: bool = True
+        self.output_padding_positions: bool = (
+            True  # Output paddingPositions array in reveal events
+        )
 
         # Define the number of scatter-symbols required to award free-spins
         self.free_spin_triggers: dict[str, dict[int, int]] = {}

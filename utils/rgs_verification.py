@@ -217,7 +217,7 @@ def execute_all_tests(config, excluded_modes=[]):
         cost = bet_mode.get_cost()
         if name not in excluded_modes:
             book_name = f"books_{name}.jsonl.zst"
-            lookup_name = f"lookUpTable_{name}_0.csv"
+            lookup_name = f"look_up_table_{name}.csv"
             book_file = os.path.join(config.publish_path, book_name)
             lut_file = os.path.join(config.publish_path, lookup_name)
 

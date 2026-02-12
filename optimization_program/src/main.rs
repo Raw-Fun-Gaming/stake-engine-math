@@ -170,7 +170,7 @@ fn run_farm(
 
     // LOAD IN FORCE OPTIONS AND CONFIG FILE
     let force_options = load_force_options(game_name, bet_type, path_to_games.to_string());
-    
+
     let config_file: exes::ConfigData;
     config_file = load_config_data(game_name, path_to_games.to_string());
     // NEED TO PULL OUT THE INDEXES OF BET MODE AND DRESSES
@@ -433,7 +433,7 @@ fn print_information(
                     .join(&game_name)
                     .join("build")
                     .join("publish_files")
-                    .join(format!("lookUpTable_{}_0.csv", bet_type));
+                    .join(format!("look_up_table_{}.csv", bet_type));
 
                 // let mut file = File::create(file_path).expect("Failed to create file");
                 let mut file = BufWriter::new(File::create(file_path).unwrap());

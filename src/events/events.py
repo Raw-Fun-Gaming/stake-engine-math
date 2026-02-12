@@ -104,10 +104,14 @@ def reveal_event(game_state: Any) -> None:
         "index": len(game_state.book.events),
         "type": EventConstants.REVEAL.value,
         "board": board_client,
-        "paddingPositions": game_state.reel_positions,
         "gameType": to_camel_case(game_state.game_type),
         "anticipation": game_state.anticipation,
     }
+
+    # Only include paddingPositions if enabled in config
+    if game_state.config.output_padding_positions:
+        event["paddingPositions"] = game_state.reel_positions
+
     game_state.book.add_event(event)
 
 

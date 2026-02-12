@@ -1,9 +1,9 @@
 """Scan force-files for simulation id's matching given search criteria"""
 
-import os
 import importlib
 import json
-from typing import List, Dict
+import os
+from typing import Dict, List
 
 
 def load_game_config(game_id: str):
@@ -40,7 +40,9 @@ class ForceTool:
 
     def get_force_file_name(self):
         "Get force-file path."
-        return os.path.join(self.config.build_path, "forces", f"force_record_{self.target_mode}.json")
+        return os.path.join(
+            self.config.build_path, "forces", f"force_record_{self.target_mode}.json"
+        )
 
     def load_force_file(self):
         "Load JSON format force file."
@@ -48,7 +50,9 @@ class ForceTool:
         with open(force_name, "r", encoding="UTF-8") as f:
             self.current_force_file = json.loads(f.read())
 
-    def print_search_results(self, search_criteria, simulation_ids: List, filename: str, game_mode: str):
+    def print_search_results(
+        self, search_criteria, simulation_ids: List, filename: str, game_mode: str
+    ):
         """Record"""
         base_path = os.path.join(self.config.build_path, "forces")
         if not (os.path.exists(base_path)):
@@ -73,7 +77,9 @@ class ForceTool:
 
         return tranform_dict
 
-    def find_partial_key_match(self, search_keys: dict = None, reload_force_json: bool = True) -> list:
+    def find_partial_key_match(
+        self, search_keys: dict = None, reload_force_json: bool = True
+    ) -> list:
         """
         Returns all ids with partial match in the 'search' field. i.e. search_keys = [{'kind':'3'}] returns all recorded 3-kind entries
         """
@@ -115,22 +121,34 @@ class ForceTool:
         lookup_name: str = None,
     ):
         """Search lookup table for simulations where the payout amount fally within a specified range."""
-        assert method.upper() in ["RANGE", "MIN", "MAX"], "method must be: RANGE, MIN, or MAX."
+        assert method.upper() in [
+            "RANGE",
+            "MIN",
+            "MAX",
+        ], "method must be: RANGE, MIN, or MAX."
 
         self.method = method.upper()
         match method.upper():
             case "RANGE":
                 assert all([min_payout is not None, max_payout is not None])
             case "MIN":
-                assert min_payout is not None, "Must specify minimum payout for this method"
-                assert max_payout is None, "Cannot specify maximum payout amount for 'MIN' method"
+                assert (
+                    min_payout is not None
+                ), "Must specify minimum payout for this method"
+                assert (
+                    max_payout is None
+                ), "Cannot specify maximum payout amount for 'MIN' method"
             case "MAX":
                 assert max_payout is not None, "Must specify a maximum payout amount"
-                assert min_payout is None, "Cannot specify minimum  payout amount for 'MIN' method"
+                assert (
+                    min_payout is None
+                ), "Cannot specify minimum  payout amount for 'MIN' method"
 
         if lookup_name is None:
             lookup_name = os.path.join(
-                self.config.build_path, "lookup_tables", f"lookUpTable_{self.target_mode}.csv"
+                self.config.build_path,
+                "lookup_tables",
+                f"look_up_table_{self.target_mode}.csv",
             )
 
         recorded_ids = []
@@ -140,7 +158,11 @@ class ForceTool:
                 line_val = int(line.strip().split(",")[-1])
                 sim_id = int(line.strip().split(",")[0])
                 if (
-                    (self.method == "RANGE" and line_val >= min_payout and line_val < max_payout)
+                    (
+                        self.method == "RANGE"
+                        and line_val >= min_payout
+                        and line_val < max_payout
+                    )
                     or (self.method == "MAX" and line_val < max_payout)
                     or (self.method == "MIN" and line_val < min_payout)
                 ):

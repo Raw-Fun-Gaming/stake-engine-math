@@ -69,7 +69,10 @@ class GameConfig(Config):
         }
         self.paytable = self.convert_range_table(pay_group)
 
-        self.include_padding = True
+        # Include top/bottom padding symbols in board display
+        self.include_padding = False
+        # Output paddingPositions array in reveal events
+        self.output_padding_positions = False
         self.special_symbols = {"wild": ["W"], "scatter": ["S"]}
 
         self.free_spin_triggers = {

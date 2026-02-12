@@ -143,7 +143,7 @@ pub(crate) fn read_look_up_table(
         .join(game_name)
         .join("build")
         .join("lookup_tables")
-        .join(format!("lookUpTable_{}.csv", bet_type));
+        .join(format!("look_up_table_{}.csv", bet_type));
     let csv_file_path = Path::new(&file_path);
     let file = File::open(csv_file_path)?;
     let mut rdr = ReaderBuilder::new().has_headers(false).from_reader(file);
@@ -153,8 +153,8 @@ pub(crate) fn read_look_up_table(
     for result in rdr.deserialize() {
         let record: LookUpTableInput = result?;
         let record_float = LookUpTableEntry{
-            id: record.id, 
-            weight: record.weight, 
+            id: record.id,
+            weight: record.weight,
             win: record.win as f64 / 100.0};
         lookup_table.insert(record.id, record_float);
     }
