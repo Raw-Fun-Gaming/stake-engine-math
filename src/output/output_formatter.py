@@ -37,7 +37,7 @@ class OutputFormatter:
         output_mode: Format mode (compact or verbose)
         include_losing_boards: Whether to include board reveals for 0-win spins
         compress_positions: Whether to use array format for positions
-        compress_symbols: Whether to use string format for symbols
+        simple_symbols: Whether to use string format for symbols
         skip_implicit_events: Whether to skip redundant/implicit events
 
     Examples:
@@ -57,7 +57,7 @@ class OutputFormatter:
         output_mode: OutputMode = OutputMode.VERBOSE,
         include_losing_boards: bool = True,
         compress_positions: bool = False,
-        compress_symbols: bool = False,
+        simple_symbols: bool = False,
         skip_implicit_events: bool = False,
     ) -> None:
         """Initialize output formatter with configuration options.
@@ -66,23 +66,19 @@ class OutputFormatter:
             output_mode: Format mode (compact or verbose), defaults to verbose
             include_losing_boards: Include board reveals for 0-win spins, defaults to True
             compress_positions: Use [reel, row] instead of {reel, row}, defaults to False
-            compress_symbols: Use "L5" instead of {"name": "L5"}, defaults to False
+            simple_symbols: Use "L5" instead of {"name": "L5"}, defaults to False
             skip_implicit_events: Skip redundant events that can be inferred, defaults to False
         """
         self.output_mode = output_mode
         self.include_losing_boards = include_losing_boards
-        self.compress_positions = (
-            compress_positions if output_mode == OutputMode.COMPACT else False
-        )
-        self.compress_symbols = (
-            compress_symbols if output_mode == OutputMode.COMPACT else False
-        )
+        self.compress_positions = compress_positions
+        self.simple_symbols = simple_symbols
         self.skip_implicit_events = skip_implicit_events
 
         # Auto-enable compression in compact mode
         if output_mode == OutputMode.COMPACT:
             self.compress_positions = True
-            self.compress_symbols = True
+            self.simple_symbols = True
 
     def format_symbol(
         self,
@@ -108,7 +104,7 @@ class OutputFormatter:
             >>> formatter.format_symbol(symbol, ["multiplier"])
             {"name": "L5", "multiplier": 2}
         """
-        if self.compress_symbols:
+        if self.simple_symbols:
             # Compact format: just the symbol name
             # If symbol has special attributes, we still need to include them
             if special_attributes:

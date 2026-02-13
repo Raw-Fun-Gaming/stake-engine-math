@@ -39,7 +39,7 @@ class EventFilter:
         EventConstants.WIN.value,
         EventConstants.TRIGGER_FREE_SPINS.value,
         EventConstants.RETRIGGER_FREE_SPINS.value,
-        EventConstants.TUMBLE_BOARD.value,
+        EventConstants.TUMBLE.value,
         EventConstants.UPDATE_GLOBAL_MULTIPLIER.value,
         EventConstants.UPDATE_BOARD_MULTIPLIER.value,
         EventConstants.UPGRADE.value,

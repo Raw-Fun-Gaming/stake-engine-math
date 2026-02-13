@@ -89,10 +89,10 @@ Based on `src/events/event_constants.py` and `src/events/events.py`:
   - **Required**: Maybe (implicit when count reaches 0)
 
 ### 4. Tumble/Cascade Events
-- **TUMBLE_BOARD** (`tumble_board_event()`)
+- **TUMBLE** (`tumble_event()`)
   - **When**: After wins in tumble games
-  - **Purpose**: Show symbols exploding and new ones falling
-  - **Data**: exploding_positions, new_symbols
+  - **Purpose**: Show removed symbols and new ones falling
+  - **Data**: removedIndexes, newSymbols
   - **Frequency**: Every tumble
   - **Required**: Yes (core mechanic display)
 
@@ -200,7 +200,7 @@ class Config:
 - REVEAL (unless losing and include_losing_boards=False)
 - WIN (individual wins)
 - TRIGGER_FREE_SPINS, RETRIGGER_FREE_SPINS
-- TUMBLE_BOARD
+- TUMBLE
 - UPDATE_GLOBAL_MULTIPLIER, UPGRADE
 - SET_FINAL_WIN
 

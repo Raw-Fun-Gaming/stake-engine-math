@@ -45,7 +45,7 @@ class TestEventFilter:
         assert (
             filter.should_include_event(EventConstants.TRIGGER_FREE_SPINS.value) is True
         )
-        assert filter.should_include_event(EventConstants.TUMBLE_BOARD.value) is True
+        assert filter.should_include_event(EventConstants.TUMBLE.value) is True
         assert filter.should_include_event(EventConstants.UPGRADE.value) is True
 
     def test_skip_derived_wins(self):

@@ -232,7 +232,7 @@ class Cluster:
         """
         if return_data is None:
             return_data = {"totalWin": 0, "wins": []}
-        exploding_symbols: list[dict[str, int]] = []
+        removed_symbols: list[dict[str, int]] = []
         total_win: float = 0.0
         for sym in clusters:
             for cluster in clusters[sym]:
@@ -290,8 +290,8 @@ class Cluster:
                         if {
                             "reel": positions[0],
                             "row": positions[1],
-                        } not in exploding_symbols:
-                            exploding_symbols.append(
+                        } not in removed_symbols:
+                            removed_symbols.append(
                                 {"reel": positions[0], "row": positions[1]}
                             )
 

@@ -46,7 +46,7 @@ class Config:
         output_mode: Output format (COMPACT for smaller files, VERBOSE for readability)
         include_losing_boards: Whether to include board reveals for 0-win spins
         compress_positions: Use array format [reel, row] instead of object format
-        compress_symbols: Use string "L5" instead of object {"name": "L5"}
+        simple_symbols: Use string "L5" instead of object {"name": "L5"}
         skip_implicit_events: Skip redundant events that can be inferred
         skip_derived_wins: Skip SET_WIN, SET_TOTAL_WIN (client can sum WIN events)
         skip_progress_updates: Skip UPDATE_FREE_SPINS, UPDATE_TUMBLE_WIN counters
@@ -69,7 +69,7 @@ class Config:
         self.output_mode: OutputMode = OutputMode.VERBOSE  # compact or verbose format
         self.include_losing_boards: bool = True  # Include board reveals for 0-win spins
         self.compress_positions: bool = False  # Use [reel, row] instead of {reel, row}
-        self.compress_symbols: bool = False  # Use "L5" instead of {"name": "L5"}
+        self.simple_symbols: bool = True  # Use "L5" instead of {"name": "L5"}
         self.skip_implicit_events: bool = (
             False  # Skip redundant events (e.g., set_final_win with 0)
         )

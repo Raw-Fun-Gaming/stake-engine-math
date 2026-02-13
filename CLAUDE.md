@@ -127,7 +127,7 @@ class GameConfig(Config):
 ```python
 # Phase 3.1: Output Compression
 config.output_mode = OutputMode.COMPACT  # or OutputMode.VERBOSE (default)
-config.compress_symbols = True  # "L5" instead of {"name": "L5"}
+config.simple_symbols = True  # "L5" instead of {"name": "L5"}
 config.compress_positions = True  # [0, 2] instead of {"reel": 0, "row": 2}
 config.include_losing_boards = False  # Skip board reveals with zero wins
 config.skip_implicit_events = True  # Skip redundant zero-amount events
@@ -301,7 +301,7 @@ event = {
 **Standard event types:**
 - Win events: `WIN`, `SET_FINAL_WIN`, `SET_WIN`, `SET_TOTAL_WIN`, `WIN_CAP`
 - Free spins: `TRIGGER_FREE_SPINS`, `RETRIGGER_FREE_SPINS`, `END_FREE_SPINS`
-- Tumbles: `TUMBLE_BOARD`, `SET_TUMBLE_WIN`, `UPDATE_TUMBLE_WIN`
+- Tumbles: `TUMBLE`, `SET_TUMBLE_WIN`, `UPDATE_TUMBLE_WIN`
 - Special symbols: `UPDATE_GLOBAL_MULTIPLIER`, `UPGRADE`, `REVEAL`, `REVEAL_EXPANDING_WILDS`, `UPDATE_EXPANDING_WILDS`, `ADD_STICKY_SYMBOLS`
 
 **Event Filtering (Phase 3.2):**

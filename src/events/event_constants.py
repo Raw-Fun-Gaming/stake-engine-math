@@ -23,7 +23,7 @@ class EventConstants(Enum):
     END_FREE_SPINS = "endFreeSpins"
 
     # Tumble events
-    TUMBLE_BOARD = "tumbleBoard"
+    TUMBLE = "tumble"
     SET_TUMBLE_WIN = "setTumbleWin"
     UPDATE_TUMBLE_WIN = "updateTumbleWin"
 

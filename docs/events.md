@@ -41,7 +41,7 @@ event_type = "win"
 - `EventConstants.END_FREE_SPINS` - Free spins ended
 
 **Tumbles/Cascades**
-- `EventConstants.TUMBLE_BOARD` - Board tumble/cascade
+- `EventConstants.TUMBLE` - Board tumble/cascade
 - `EventConstants.SET_TUMBLE_WIN` - Win from tumble
 - `EventConstants.UPDATE_TUMBLE_WIN` - Update tumble win
 
@@ -104,7 +104,7 @@ self.book.add_event(event)
 
 ```python
 event = construct_event(
-    event_type=EventConstants.TUMBLE_BOARD.value,
+    event_type=EventConstants.TUMBLE.value,
     details={
         "removed_positions": [[0, 0], [0, 1]],
         "new_symbols": [["K", 0, 0], ["Q", 0, 1]]
@@ -145,7 +145,7 @@ def run_spin(self):
     if self.has_winning_clusters():
         while self.has_wins():
             self.book.add_event(construct_event(
-                event_type=EventConstants.TUMBLE_BOARD.value
+                event_type=EventConstants.TUMBLE.value
             ))
             self.remove_winning_symbols()
             self.drop_symbols()

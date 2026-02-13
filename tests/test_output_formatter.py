@@ -38,7 +38,7 @@ class TestOutputFormatter:
         assert formatter.output_mode == OutputMode.VERBOSE
         assert formatter.include_losing_boards is True
         assert formatter.compress_positions is False
-        assert formatter.compress_symbols is False
+        assert formatter.simple_symbols is False
         assert formatter.skip_implicit_events is False
 
     def test_init_compact_mode_enables_compression(self):
@@ -47,7 +47,7 @@ class TestOutputFormatter:
 
         assert formatter.output_mode == OutputMode.COMPACT
         assert formatter.compress_positions is True
-        assert formatter.compress_symbols is True
+        assert formatter.simple_symbols is True
 
     def test_format_symbol_compact_simple(self, mock_symbol):
         """Test compact symbol formatting without special attributes."""
@@ -201,12 +201,12 @@ class TestOutputFormatter:
         formatter = OutputFormatter(
             output_mode=OutputMode.COMPACT,
             compress_positions=False,  # Should be ignored
-            compress_symbols=False,  # Should be ignored
+            simple_symbols=False,  # Should be ignored
         )
 
         # Compact mode should force compression on
         assert formatter.compress_positions is True
-        assert formatter.compress_symbols is True
+        assert formatter.simple_symbols is True
 
     def test_file_size_savings_estimate(self, mock_symbol):
         """Test that compact format is actually smaller than verbose."""

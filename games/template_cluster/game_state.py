@@ -142,7 +142,7 @@ class GameState(Tumble):
         if return_data is None:
             return_data = {"totalWin": 0, "wins": []}
 
-        exploding_symbols = []
+        removed_symbols = []
         total_win = 0
         for sym in clusters:
             for cluster in clusters[sym]:
@@ -183,8 +183,8 @@ class GameState(Tumble):
                         if {
                             "reel": positions[0],
                             "row": positions[1],
-                        } not in exploding_symbols:
-                            exploding_symbols.append(
+                        } not in removed_symbols:
+                            removed_symbols.append(
                                 {"reel": positions[0], "row": positions[1]}
                             )
 

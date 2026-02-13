@@ -202,7 +202,7 @@ class GameConfig(Config):
 
         # Output optimization (Phase 3)
         self.output_mode = OutputMode.COMPACT  # or OutputMode.VERBOSE
-        self.compress_symbols = True
+        self.simple_symbols = True
         self.compress_positions = True
 
         # BetModes
@@ -293,7 +293,7 @@ self.book.add_event(event)
 
 - **Wins**: `WIN`, `SET_FINAL_WIN`, `SET_WIN`, `SET_TOTAL_WIN`, `WIN_CAP`
 - **Free Spins**: `TRIGGER_FREE_SPINS`, `RETRIGGER_FREE_SPINS`, `END_FREE_SPINS`, `UPDATE_FREE_SPINS`
-- **Tumbles**: `TUMBLE_BOARD`, `SET_TUMBLE_WIN`, `UPDATE_TUMBLE_WIN`
+- **Tumbles**: `TUMBLE`, `SET_TUMBLE_WIN`, `UPDATE_TUMBLE_WIN`
 - **Special**: `UPDATE_GLOBAL_MULTIPLIER`, `UPGRADE`, `REVEAL`
 
 ### Event Filtering (Phase 3.2)

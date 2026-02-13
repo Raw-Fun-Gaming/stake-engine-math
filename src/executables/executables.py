@@ -3,7 +3,7 @@ from src.events.events import (
     end_free_spins_event,
     set_final_win_event,
     trigger_free_spins_event,
-    tumble_board_event,
+    tumble_event,
     update_free_spins_event,
     update_global_mult_event,
     update_tumble_win_event,
@@ -23,7 +23,7 @@ class Executables(Conditions, Tumble):
     def tumble_game_board(self):
         "Remove winning symbols from active board and replace."
         self.tumble_board()
-        tumble_board_event(self)
+        tumble_event(self)
 
     def emit_tumble_win_events(self) -> None:
         """Transmit win and new board information upon tumble."""

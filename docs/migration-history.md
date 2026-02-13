@@ -307,7 +307,7 @@ from src.output.output_formatter import OutputMode
 output_mode: OutputMode = OutputMode.VERBOSE  # or OutputMode.COMPACT
 include_losing_boards: bool = True  # Skip 0-win board reveals
 compress_positions: bool = False  # Use array format
-compress_symbols: bool = False  # Use string format
+simple_symbols: bool = True  # Use string format
 skip_implicit_events: bool = False  # Skip redundant events
 ```
 
@@ -316,7 +316,7 @@ Updated 6 event generation functions in [src/events/events.py](../src/events/eve
 - `reveal_event()` - Board symbol formatting
 - `trigger_free_spins_event()` - Position formatting
 - `win_event()` - Win position formatting
-- `tumble_board_event()` - Tumble positions and symbols
+- `tumble_event()` - Tumble positions and symbols
 - `upgrade_event()` - Upgrade position formatting
 - `prize_win_event()` - Prize position formatting
 

@@ -49,13 +49,13 @@ class Tumble(Board):
         ]
 
         for reel, _ in enumerate(static_board):
-            exploding_symbols: int = 0
+            removed_count: int = 0
             copy_reel: list[Symbol] = static_board[reel]
-            exploding_symbols = sum(
+            removed_count = sum(
                 1 for x in static_board[reel] if x.check_attribute("explode")
             )
 
-            for i in range(exploding_symbols):
+            for i in range(removed_count):
                 reel_pos: int = (self.reel_positions[reel] - 1) % len(
                     self.reelstrip[reel]
                 )
@@ -79,13 +79,13 @@ class Tumble(Board):
                 raise BoardGenerationError(
                     f"Tumble board size mismatch on reel {reel}: "
                     f"expected {self.config.num_rows[reel]} symbols, got {len(copy_reel)}. "
-                    f"Exploding symbols: {exploding_symbols}. "
+                    f"Removed symbols: {removed_count}. "
                     f"This usually indicates a bug in the tumble logic or incorrect symbol removal. "
                     f"Check that symbols are properly marked with 'explode' attribute."
                 )
             static_board[reel] = copy_reel
 
-            if self.config.include_padding and exploding_symbols > 0:
+            if self.config.include_padding and removed_count > 0:
                 padding_name: str = str(
                     self.reelstrip[reel][
                         (self.reel_positions[reel] - 1) % len(self.reelstrip[reel])

@@ -24,7 +24,7 @@ from src.events.events import (
     end_free_spins_event,
     set_final_win_event,
     trigger_free_spins_event,
-    tumble_board_event,
+    tumble_event,
     update_free_spins_event,
     update_global_mult_event,
     update_tumble_win_event,
@@ -171,7 +171,7 @@ class BaseGameState(ABC):
             output_mode=self.config.output_mode,
             include_losing_boards=self.config.include_losing_boards,
             compress_positions=self.config.compress_positions,
-            compress_symbols=self.config.compress_symbols,
+            simple_symbols=self.config.simple_symbols,
             skip_implicit_events=self.config.skip_implicit_events,
         )
 
@@ -504,7 +504,7 @@ class BaseGameState(ABC):
         """
         if hasattr(self, "tumble_board"):
             self.tumble_board()  # type: ignore[attr-defined]
-            tumble_board_event(self)
+            tumble_event(self)
         else:
             raise NotImplementedError(
                 "tumble_game_board requires tumble_board method from Tumble class"

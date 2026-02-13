@@ -256,7 +256,7 @@ class GameConfig(Config):
 
         # Enable compact output (27.9% smaller)
         self.output_mode = OutputMode.COMPACT
-        self.compress_symbols = True
+        self.simple_symbols = True
         self.compress_positions = True
 
         # Enable event filtering (additional 10-15% reduction)

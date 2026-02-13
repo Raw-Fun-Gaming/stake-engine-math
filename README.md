@@ -120,7 +120,7 @@ config = GameConfig()
 
 # Enable output compression (Phase 3.1)
 config.output_mode = OutputMode.COMPACT  # 27.9% reduction
-config.compress_symbols = True
+config.simple_symbols = True
 config.compress_positions = True
 
 # Enable event filtering (Phase 3.2) - additional 10-15% reduction

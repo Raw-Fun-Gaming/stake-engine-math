@@ -78,7 +78,7 @@ This release represents a complete architecture overhaul of the SDK, improving m
   - `output_mode`: OutputMode.COMPACT or OutputMode.VERBOSE
   - `include_losing_boards`: Skip 0-win board reveals
   - `compress_positions`: Use array format for positions
-  - `compress_symbols`: Use string format for symbols
+  - `simple_symbols`: Use string format for symbols
   - `skip_implicit_events`: Skip redundant events
   - `skip_derived_wins`: Skip calculable win events
   - `skip_progress_updates`: Skip progress tracking events
@@ -247,7 +247,7 @@ class GameConfig(Config):
         super().__init__()
         # Enable compact output mode (27.9% smaller files)
         self.output_mode = OutputMode.COMPACT
-        self.compress_symbols = True
+        self.simple_symbols = True
         self.compress_positions = True
 
         # Enable event filtering (additional 10-15% reduction)

@@ -67,7 +67,7 @@ def reveal_event(game_state: Any) -> None:
         output_mode=game_state.config.output_mode,
         include_losing_boards=game_state.config.include_losing_boards,
         compress_positions=game_state.config.compress_positions,
-        compress_symbols=game_state.config.compress_symbols,
+        simple_symbols=game_state.config.simple_symbols,
         skip_implicit_events=game_state.config.skip_implicit_events,
     )
 
@@ -468,36 +468,37 @@ def update_global_mult_event(game_state: Any) -> None:
     game_state.book.add_event(event)
 
 
-def tumble_board_event(game_state: Any) -> None:
-    """Create tumble/cascade event showing exploded and new symbols.
+def tumble_event(game_state: Any, include_padding_index: bool = True) -> None:
+    """Create tumble/cascade event showing removed and new symbols.
 
-    Generates a TUMBLE_BOARD event listing which symbols were removed
+    Generates a TUMBLE event listing which symbols were removed
     and which new symbols drop in to replace them.
 
     Args:
         game_state: Current game state with win_data and new_symbols_from_tumble
+        include_padding_index: If True, offset row positions by 1 for padding symbols
     """
     # Create OutputFormatter from config settings
     formatter = OutputFormatter(
         output_mode=game_state.config.output_mode,
         compress_positions=game_state.config.compress_positions,
-        compress_symbols=game_state.config.compress_symbols,
+        simple_symbols=game_state.config.simple_symbols,
     )
 
     special_attributes = list(game_state.config.special_symbols.keys())
 
-    exploding_raw: list[dict[str, int]] = []
+    # Build per-reel removed row indexes
+    removed_indexes: list[list[int]] = [[] for _ in range(game_state.config.num_reels)]
     for win in game_state.win_data["wins"]:
         for pos in win["positions"]:
-            if game_state.config.include_padding:
-                exploding_raw.append({"reel": pos["reel"], "row": pos["row"] + 1})
-            else:
-                exploding_raw.append({"reel": pos["reel"], "row": pos["row"]})
+            reel = pos["reel"]
+            row = pos["row"] + 1 if include_padding_index else pos["row"]
+            if row not in removed_indexes[reel]:
+                removed_indexes[reel].append(row)
 
-    exploding_raw = sorted(exploding_raw, key=lambda x: x["reel"])
-
-    # Format positions
-    exploding = formatter.format_position_list(exploding_raw)
+    # Sort row indexes within each reel
+    for reel_indexes in removed_indexes:
+        reel_indexes.sort()
 
     new_symbols: list[list[Any]] = [[] for _ in range(game_state.config.num_reels)]
     for r, _ in enumerate(game_state.new_symbols_from_tumble):
@@ -509,9 +510,9 @@ def tumble_board_event(game_state: Any) -> None:
 
     event: dict[str, Any] = {
         "index": len(game_state.book.events),
-        "type": EventConstants.TUMBLE_BOARD.value,
+        "type": EventConstants.TUMBLE.value,
         "newSymbols": new_symbols,
-        "explodingSymbols": exploding,
+        "removedIndexes": removed_indexes,
     }
     game_state.book.add_event(event)
 
