@@ -104,8 +104,24 @@ def format_json_with_compact_names(data):
         position_pattern, r'{"reel": \1, "row": \2}', pretty_json, flags=re.MULTILINE
     )
 
+    # Compact string arrays to single lines (e.g., board rows with simple symbols)
+    # Match: [\n      "H1",\n      "L2",\n      "L3"\n    ]
+    # Replace with: ["H1", "L2", "L3"]
+    string_array_pattern = (
+        r'\[\s*\n\s*((?:"[^"]*"\s*,\s*\n\s*)*"[^"]*")\s*\n\s*\]'
+    )
+
+    def compact_string_array(match):
+        items_str = match.group(1)
+        items_clean = re.sub(r"\s*\n\s*", "", items_str)
+        items_clean = re.sub(r",\s*", ", ", items_clean)
+        return f"[{items_clean}]"
+
+    pretty_json = re.sub(
+        string_array_pattern, compact_string_array, pretty_json, flags=re.MULTILINE
+    )
+
     # Compact numeric arrays to single lines (e.g., boardMultipliers rows)
-    # Pattern: arrays containing only numbers on separate lines
     # Match: [\n      0,\n      1,\n      2\n    ]
     # Replace with: [0, 1, 2]
     numeric_array_pattern = r"\[\s*\n\s*((?:\d+\s*,\s*\n\s*)*\d+)\s*\n\s*\]"

@@ -106,22 +106,20 @@ class OutputFormatter:
         """
         if self.simple_symbols:
             # Compact format: just the symbol name
-            # If symbol has special attributes, we still need to include them
+            # Only fall back to verbose if symbol has non-boolean special
+            # attributes (e.g. multiplier=5). Boolean flags like scatter=True
+            # or wild=True are redundant — the symbol name already conveys it.
             if special_attributes:
-                has_special = False
+                has_data_attr = False
                 for attr in special_attributes:
-                    if (
-                        hasattr(symbol, attr)
-                        and symbol.get_attribute(attr) is not False
-                    ):
-                        has_special = True
+                    val = symbol.get_attribute(attr)
+                    if val is not False and val is not True:
+                        has_data_attr = True
                         break
 
-                if has_special:
-                    # Symbol has special attributes, use object format
+                if has_data_attr:
                     return self._format_symbol_verbose(symbol, special_attributes)
 
-            # Simple symbol with no special attributes
             return symbol.name
         else:
             # Verbose format: full object
