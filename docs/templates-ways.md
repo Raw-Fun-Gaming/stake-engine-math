@@ -2,7 +2,7 @@
 
 **Location**: `games/template_ways/`
 **Win Type**: Ways-pay
-**Inheritance**: `GameState` → `Board` → `BaseGameState`
+**Inheritance**: `GameState` → `Board` → `GameState` (base, `src/state/game_state.py`)
 
 ## Overview
 

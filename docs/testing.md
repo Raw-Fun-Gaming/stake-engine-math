@@ -42,16 +42,16 @@ pytest games/tower_treasures/tests/
 
 ```bash
 # Single test file
-pytest tests/test_state.py
+pytest tests/test_game_state.py
 
 # Single test function
-pytest tests/test_state.py::test_draw_board
+pytest tests/test_game_state.py::test_draw_board
 
 # With verbose output
-pytest tests/test_state.py -v
+pytest tests/test_game_state.py -v
 
 # With print statements
-pytest tests/test_state.py -s
+pytest tests/test_game_state.py -s
 ```
 
 ## Writing Game-Specific Tests

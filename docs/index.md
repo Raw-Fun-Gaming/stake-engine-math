@@ -146,7 +146,7 @@ target_modes = ["base", "bonus"]
 Enable file size optimization in your game's `game_config.py`:
 
 ```python
-from src.output.output_formatter import OutputMode
+from src.formatter import OutputMode
 
 config = GameConfig()
 

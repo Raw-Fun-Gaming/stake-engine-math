@@ -156,7 +156,7 @@ class Symbol:
 **Impact**: -0.3s to -0.4s (6-8% total speedup)
 
 #### 2. Reduce Unnecessary Deepcopy ✅
-**Files**: board.py, base_game_state.py
+**Files**: board.py, game_state.py
 
 **Change**: Identify where deepcopy is used unnecessarily and replace with:
 - Shallow copy for simple dicts/lists

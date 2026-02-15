@@ -38,10 +38,10 @@ This release represents a complete architecture overhaul of the SDK, improving m
 
 #### Phase 1.3: Architecture Simplification
 
-- **src/state/base_game_state.py**: New unified base class (~850 lines) merging:
-  - `GeneralGameState` (core simulation infrastructure)
-  - `Conditions` (query methods for game state)
-  - `Executables` (common game actions)
+- **src/state/game_state.py** (originally `base_game_state.py`, renamed to `game_state.py`): Unified base class (~850 lines) merging:
+  - `GeneralGameState` from `src/state/state.py` (core simulation infrastructure, now removed)
+  - `Conditions` from `src/state/state_conditions.py` (query methods for game state, now removed)
+  - `Executables` from `src/executables/executables.py` (common game actions, now removed)
 - **Simplified game structure**: All game logic now in single `game_state.py` file per game
 - **Clear section organization**: Special symbols → State management → Mechanics → Win evaluation → Game loops
 
@@ -60,16 +60,16 @@ This release represents a complete architecture overhaul of the SDK, improving m
   - `BoardGenerationError`: Board generation issues
   - `EventError`: Event recording/emission failures
   - `OptimizationError`: Optimization process failures
-- **src/events/event_constants.py**: Standardized event type constants
+- **src/events/constants.py**: Standardized event type constants
 
 #### Phase 3: Output Optimization
 
-- **src/output/output_formatter.py**: Centralized output formatting (280 lines)
+- **src/formatter.py**: Centralized output formatting (280 lines)
   - Two modes: COMPACT (minimal size) and VERBOSE (human-readable)
   - Symbol compression: `{"name": "L5"}` → `"L5"` (71% reduction per symbol)
   - Position compression: `{"reel": 0, "row": 2}` → `[0, 2]` (83% reduction)
   - Format versioning: "2.0-compact" or "2.0-verbose"
-- **src/events/event_filter.py**: Event filtering system (320 lines)
+- **src/events/filter.py**: Event filtering system (320 lines)
   - Event categorization (REQUIRED/STANDARD/VERBOSE)
   - Skip derived wins (SET_WIN, SET_TOTAL_WIN)
   - Skip progress updates (UPDATE_FREE_SPINS, UPDATE_TUMBLE_WIN)
@@ -123,7 +123,7 @@ This release represents a complete architecture overhaul of the SDK, improving m
 #### Documentation
 
 - **docs/game-structure.md**: Complete rewrite with new 2-layer architecture
-  - Documented simplified inheritance (GameState → Board → BaseGameState)
+  - Documented simplified inheritance (GameState → Board → GameState base class)
   - Explained single-file game structure vs old multi-file approach
   - Added build/ directory structure and purpose
   - Included migration guide from old architecture
@@ -151,18 +151,18 @@ This release represents a complete architecture overhaul of the SDK, improving m
 
 - **Inheritance hierarchy**: Reduced from 6 layers to 2 layers (67% reduction)
   - Before: GeneralGameState → Conditions → Tumble → Executables → GameCalculations → GameExecutables → GameStateOverride → GameState
-  - After: BaseGameState → Board/Tumble → GameState
+  - After: GameState (`src/state/game_state.py`) → Board/Tumble → Game-specific GameState
 - **Game file structure**: Consolidated from 4 files to 1 file per game (75% reduction)
   - Removed: `game_override.py`, `game_executables.py`, `game_calculations.py`
   - Kept: `game_state.py` (all game logic), `game_config.py`, `run.py`
-- **Board class**: Now inherits from BaseGameState instead of Executables
+- **Board class**: Now inherits from GameState (was BaseGameState, originally Executables)
 - **Tumble class**: Continues to inherit from Board for cascade mechanics
 
 #### Event System
 
 - **Event emission**: Now uses EventFilter for automatic filtering
 - **Book.add_event()**: Checks EventFilter before adding events
-- **BaseGameState.reset_book()**: Creates EventFilter from config
+- **GameState.reset_book()**: Creates EventFilter from config
 
 #### Output Format
 
@@ -202,8 +202,10 @@ This release represents a complete architecture overhaul of the SDK, improving m
   - `games/*/game_override.py` (7 files)
   - `games/*/game_executables.py` (7 files)
   - `games/*/game_calculations.py` (7 files)
-- **src/state/state_conditions.py**: Merged into base_game_state.py
-- **Legacy inheritance chain**: Executables and Conditions intermediate classes
+- **src/state/state.py**: `GeneralGameState` merged into `GameState` (`src/state/game_state.py`)
+- **src/state/state_conditions.py**: `Conditions` merged into `GameState` (`src/state/game_state.py`)
+- **src/executables/executables.py**: `Executables` merged into `GameState` (`src/state/game_state.py`); entire `src/executables/` directory removed
+- **Legacy inheritance chain**: Executables and Conditions intermediate classes removed
 
 ---
 
@@ -240,7 +242,7 @@ Games automatically inherit all improvements through the base class. No changes 
 
 ```python
 # In game_config.py - Enable output compression
-from src.output.output_formatter import OutputMode
+from src.formatter import OutputMode
 
 class GameConfig(Config):
     def __init__(self):
@@ -267,7 +269,7 @@ If you have custom game files using the old 4-file structure:
    - Game-specific mechanics
    - Win evaluation
    - Main game loops (`run_spin()`, `run_free_spin()`)
-3. Update imports to use `BaseGameState`, `Board`, or `Tumble`
+3. Update imports to use `Board` or `Tumble` (which inherit from `GameState` in `src/state/game_state.py`)
 4. Remove the deprecated files
 
 See `games/template/game_state.py` for the recommended structure.

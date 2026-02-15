@@ -80,11 +80,13 @@ The optimization program reads configuration from `optimization_program/src/setu
 Each game lives in `games/<game_name>/` with a simplified inheritance chain:
 
 ```
-GameState (games/<game_name>/game_state.py)
-    ↓ inherits from
-Board (src/calculations/board.py) or Tumble (src/calculations/tumble.py)
-    ↓ inherits from
-BaseGameState (src/state/base_game_state.py)
+GameState (src/state/game_state.py) ← base ABC
+    ↓ inherited by
+Board (src/calculations/board.py)
+    ↓ inherited by (optional)
+Tumble (src/calculations/tumble.py)
+    ↓ inherited by
+Game-specific GameState (games/<game_name>/game_state.py)
 ```
 
 **Key improvements:**
@@ -98,9 +100,9 @@ BaseGameState (src/state/base_game_state.py)
   - Main game loops (`run_spin()`, `run_free_spin()`)
 
 **Base Classes:**
-- `BaseGameState`: Core simulation infrastructure (books, events, state management, common actions)
-- `Board`: Random board generation, forced symbols, special symbol tracking
-- `Tumble`: Cascade/tumble mechanics (optional, only for games with falling symbols)
+- `GameState` (`src/state/game_state.py`): Core simulation infrastructure (books, events, state management, common actions)
+- `Board`: Random board generation, forced symbols, special symbol tracking (inherits from `GameState`)
+- `Tumble`: Cascade/tumble mechanics (optional, only for games with falling symbols, inherits from `Board`)
 
 ### Configuration System
 
@@ -286,10 +288,10 @@ reels = {
 
 ### Event System
 
-All game events use standardized constants from `src/events/event_constants.py`:
+All game events use standardized constants from `src/events/constants.py`:
 
 ```python
-from src.events.event_constants import EventConstants
+from src.events.constants import EventConstants
 
 # Use constants instead of hardcoded strings
 event = {
@@ -312,7 +314,7 @@ Events are automatically filtered based on configuration via the `EventFilter` c
 - **STANDARD events** (emit by default): `SET_WIN`, `SET_TOTAL_WIN`, `WIN_CAP`, `END_FREE_SPINS`
 - **VERBOSE events** (optional): `UPDATE_FREE_SPINS`, `UPDATE_TUMBLE_WIN`, `SET_TUMBLE_WIN`
 
-Filtering is applied automatically when events are added to books via `book.add_event()`. All games inherit this functionality through `BaseGameState`.
+Filtering is applied automatically when events are added to books via `book.add_event()`. All games inherit this functionality through `GameState`.
 
 ### Win Calculation Modules
 
@@ -391,12 +393,11 @@ games/<game_name>/
 
 src/                           # Universal SDK modules
   ├── state/
-  │   ├── base_game_state.py   # ⭐ NEW: Unified base class (850+ lines)
+  │   ├── game_state.py        # ⭐ Unified base class (850+ lines)
   │   ├── books.py             # Book class with EventFilter integration
-  │   ├── state.py             # Legacy compatibility layer
   │   └── run_sims.py          # Simulation runner
   ├── calculations/
-  │   ├── board.py             # Board generation (inherits from BaseGameState)
+  │   ├── board.py             # Board generation (inherits from GameState)
   │   ├── tumble.py            # Tumble/cascade mechanics (optional)
   │   ├── cluster.py           # Cluster-pay calculations
   │   ├── lines.py             # Line-pay calculations
@@ -407,15 +408,21 @@ src/                           # Universal SDK modules
   │   ├── bet_mode.py           # BetMode configuration
   │   └── run_config.py        # ⭐ NEW: TOML-based run configuration loader
   ├── events/                  # Event system and constants
-  │   ├── event_constants.py   # Standardized event type constants
-  │   ├── event_filter.py      # ⭐ NEW: Event filtering (Phase 3.2)
-  │   └── events.py            # Event generation functions
-  ├── output/                  # ⭐ NEW: Output optimization (Phase 3.1)
-  │   └── output_formatter.py  # OutputFormatter for compression
+  │   ├── constants.py         # Standardized event type constants
+  │   ├── filter.py            # ⭐ NEW: Event filtering (Phase 3.2)
+  │   ├── core.py              # Core events (reveal, win, set_win, win_cap)
+  │   ├── free_spins.py        # Free spins events (trigger, update, end)
+  │   ├── tumble.py            # Tumble events (tumble, board multipliers)
+  │   ├── special_symbols.py   # Special symbol events (upgrade, prize, multiplier)
+  │   └── helpers.py           # Utilities (to_camel_case, convert_symbol_json)
+  ├── formatter.py             # ⭐ OutputFormatter for compression (Phase 3.1)
   ├── wins/                    # Win manager
   ├── constants.py             # ⭐ NEW: GameMode, WinType enums
   ├── exceptions.py            # ⭐ NEW: Custom exception hierarchy
-  └── write_data/              # Output file generation
+  └── writers/                 # Output file generation
+  │   ├── data.py              # Books, lookup tables, force files
+  │   ├── configs.py           # Frontend/backend config generation
+  │   └── force.py             # Force file search/option classes
 
 optimization_program/          # Rust optimization algorithm
   └── src/
@@ -429,10 +436,11 @@ utils/                         # Analysis and verification tools
 
 **Key Changes from Old Structure:**
 - ❌ Removed: `game_override.py`, `game_executables.py`, `game_calculations.py` per game
+- ❌ Removed: `src/state/state.py` (`GeneralGameState`), `src/state/state_conditions.py` (`Conditions`), `src/executables/executables.py` (`Executables`) -- merged into `GameState`
 - ✅ Simplified: All game logic now in single `game_state.py` file
-- ✅ Added: `BaseGameState` unified base class
+- ✅ Added: `GameState` unified base class (`src/state/game_state.py`)
 - ✅ Added: Constants and exceptions modules
-- ✅ Added: `output/` directory with OutputFormatter (Phase 3.1)
+- ✅ Added: `src/formatter.py` with OutputFormatter (Phase 3.1)
 - ✅ Added: EventFilter in `events/` (Phase 3.2)
 
 ## Important Development Guidelines
@@ -474,13 +482,14 @@ utils/                         # Analysis and verification tools
 
 **Adding a custom event:**
 ```python
-from src.events.event_constants import EventConstants
-from src.events.events import construct_event
+from src.events.constants import EventConstants
 
-event = construct_event(
-    event_type=EventConstants.REVEAL.value,
-    details={"symbol": "scatter", "positions": [1, 2, 3]}
-)
+event = {
+    "index": len(self.book.events),
+    "type": EventConstants.REVEAL.value,
+    "board": board_client,
+    "gameType": "baseGame",
+}
 self.book.add_event(event)
 ```
 
@@ -564,5 +573,5 @@ The `game_optimization.py` file configures optimization per bet mode:
 - The SDK uses a virtual environment (`env/`). Always activate before development.
 - Reels are stored as CSV files with symbol weights per position.
 - The `BetMode` system allows different symbol distributions for base/bonus games.
-- Force files can override specific outcomes for testing (see `src/write_data/force.py`).
+- Force files can override specific outcomes for testing (see `src/writers/force.py`).
 - Each game is a singleton (`_instance` pattern) to prevent duplicate initialization.

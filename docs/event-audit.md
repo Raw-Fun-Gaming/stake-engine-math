@@ -7,7 +7,7 @@
 
 ## Event Types Inventory
 
-Based on `src/events/event_constants.py` and `src/events/events.py`:
+Based on `src/events/constants.py` and event modules (`core.py`, `free_spins.py`, `tumble.py`, `special_symbols.py`):
 
 ### 1. Board/Reveal Events
 - **REVEAL** (`reveal_event()`)

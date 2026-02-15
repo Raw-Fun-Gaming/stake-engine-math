@@ -37,17 +37,22 @@ Optimization is configured in each game's `game_optimization.py` file:
 ### Basic Structure
 
 ```python
-from src.write_data.optimization_setup import OptimizationSetup, ConstructConditions, ConstructScaling, ConstructParameters
-
-optimization_setup = OptimizationSetup(
-    setup_dict={
-        "base": {  # Bet mode name
-            "conditions": {...},
-            "scaling": {...},
-            "parameters": {...}
-        }
-    }
+from optimization_program.optimization_config import (
+    ConstructConditions,
+    ConstructScaling,
+    ConstructParameters,
 )
+
+class OptimizationSetup:
+    def __init__(self, game_config):
+        self.game_config = game_config
+        self.game_config.opt_params = {
+            "base": {  # Bet mode name
+                "conditions": {...},
+                "scaling": {...},
+                "parameters": {...}
+            }
+        }
 ```
 
 ### Conditions
@@ -129,15 +134,16 @@ Optimization algorithm settings:
 ```python
 # games/my_game/game_optimization.py
 
-from src.write_data.optimization_setup import (
-    OptimizationSetup,
+from optimization_program.optimization_config import (
     ConstructConditions,
     ConstructScaling,
-    ConstructParameters
+    ConstructParameters,
 )
 
-optimization_setup = OptimizationSetup(
-    setup_dict={
+class OptimizationSetup:
+    def __init__(self, game_config):
+        self.game_config = game_config
+        self.game_config.opt_params = {
         "base": {
             "conditions": {
                 # Base game: 3.5% hit rate, contributes 59% RTP
@@ -186,7 +192,7 @@ optimization_setup = OptimizationSetup(
 Edit `games/<game_name>/run.py`:
 
 ```python
-from src.write_data.optimization_execution import OptimizationExecution
+from optimization_program.run_script import OptimizationExecution
 
 # Load game and config
 game_state = GameState()

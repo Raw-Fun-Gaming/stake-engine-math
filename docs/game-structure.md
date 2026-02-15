@@ -58,16 +58,18 @@ games/<game_name>/
 Games follow a 2-layer inheritance chain:
 
 ```
-GameState (games/<game_name>/gamestate.py)
-    ↓ inherits from
-Board (src/calculations/board.py) or Tumble (src/calculations/tumble.py)
-    ↓ inherits from
-BaseGameState (src/state/base_game_state.py)
+GameState (src/state/game_state.py) ← base ABC
+    ↓ inherited by
+Board (src/calculations/board.py)
+    ↓ inherited by (optional)
+Tumble (src/calculations/tumble.py)
+    ↓ inherited by
+Game-specific GameState (games/<game_name>/game_state.py)
 ```
 
 ### Base Classes
 
-**`BaseGameState`** (src/state/base_game_state.py)
+**`GameState`** (src/state/game_state.py)
 - Core simulation infrastructure (~850+ lines)
 - Books management
 - Event system with EventFilter integration
@@ -78,12 +80,12 @@ BaseGameState (src/state/base_game_state.py)
 - Random board generation
 - Forced symbols
 - Special symbol tracking
-- Inherits from `BaseGameState`
+- Inherits from `GameState`
 
 **`Tumble`** (src/calculations/tumble.py)
 - Cascade/tumble mechanics
 - For games with falling symbols
-- Inherits from `BaseGameState`
+- Inherits from `Board`
 
 **`GameState`** (games/<game_name>/gamestate.py)
 - ALL game-specific logic in one file
@@ -177,7 +179,7 @@ Located in `game_config.py`:
 ```python
 from src.config.config import Config
 from src.config.bet_mode import BetMode
-from src.output.output_formatter import OutputMode
+from src.formatter import OutputMode
 
 class GameConfig(Config):
     def __init__(self):
@@ -272,18 +274,18 @@ self.betmodes = {
 
 ## Event System
 
-All events use constants from `src/events/event_constants.py`:
+All events use constants from `src/events/constants.py`:
 
 ```python
-from src.events.event_constants import EventConstants
-from src.events.events import construct_event
+from src.events.constants import EventConstants
 
 # Create an event
-event = construct_event(
-    event_type=EventConstants.WIN.value,
-    amount=10.0,
-    details={"symbols": ["A"], "positions": [[0,0], [0,1]]}
-)
+event = {
+    "index": len(self.book.events),
+    "type": EventConstants.WIN.value,
+    "amount": 1000,
+    "details": [{"symbol": "A", "positions": [[0, 0], [0, 1]]}],
+}
 
 # Add to book (automatically filtered based on config)
 self.book.add_event(event)

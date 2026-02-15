@@ -188,13 +188,16 @@ stake-engine-math/
 │   │   ├── config.py                  # Base Config class
 │   │   └── bet_mode.py                 # BetMode class
 │   ├── events/                        # Event system
-│   │   ├── event_constants.py         # Standardized constants
-│   │   ├── event_filter.py            # Event filtering (Phase 3.2)
-│   │   └── events.py                  # Event generation
-│   ├── output/                        # Output optimization (Phase 3.1)
-│   │   └── output_formatter.py        # COMPACT/VERBOSE modes
+│   │   ├── constants.py               # Standardized event type constants
+│   │   ├── filter.py                  # Event filtering (Phase 3.2)
+│   │   ├── core.py                    # Core events (reveal, win, set_win, win_cap)
+│   │   ├── free_spins.py             # Free spins events (trigger, update, end)
+│   │   ├── tumble.py                  # Tumble events (tumble, board multipliers)
+│   │   ├── special_symbols.py        # Special symbol events (upgrade, prize)
+│   │   └── helpers.py                 # Utilities (to_camel_case, convert_symbol_json)
+│   ├── formatter.py                   # Output optimization - COMPACT/VERBOSE modes (Phase 3.1)
 │   ├── state/                         # Core state machine
-│   │   ├── base_game_state.py         # Unified base class (Phase 1.3)
+│   │   ├── game_state.py              # GameState base class (Phase 1.3)
 │   │   ├── books.py                   # Book generation
 │   │   └── run_sims.py                # Simulation runner
 │   ├── wins/                          # Win management
@@ -248,7 +251,7 @@ make run GAME=tower_treasures
 In your game's `game_config.py`:
 
 ```python
-from src.output.output_formatter import OutputMode
+from src.formatter import OutputMode
 
 class GameConfig(Config):
     def __init__(self):

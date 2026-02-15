@@ -129,7 +129,7 @@ def board():  # Not a verb, unclear action
 
 #### ✓ Good
 ```python
-class BaseGameState:
+class GameState:
     """Base class for all game state implementations."""
     ...
 
@@ -151,10 +151,10 @@ class GameConfig:
 class State:  # Too generic
     ...
 
-class GameExecutables:  # Not a noun, unclear purpose
+class GameExecutables:  # Not a noun, unclear purpose (removed)
     ...
 
-class GeneralGameState:  # "General" is vague
+class GeneralGameState:  # "General" is vague (removed, merged into GameState)
     ...
 ```
 
@@ -167,18 +167,17 @@ class GeneralGameState:  # "General" is vague
 
 #### ✓ Good
 ```
-base_game_state.py      # Contains BaseGameState class
+game_state.py           # Contains GameState base class (in src/state/)
 cluster_calculator.py   # Contains cluster win logic
 win_manager.py          # Contains WinManager class
 game_config.py          # Contains GameConfig class
-event_constants.py      # Contains EventConstants enum
+constants.py            # Contains EventConstants enum
 ```
 
 #### ✗ Bad
 ```
-state.py           # Too generic
-game_state.py       # Should be snake_case
-executables.py     # Unclear purpose
+state.py           # Too generic (removed)
+executables.py     # Unclear purpose (removed)
 override.py        # What does it override?
 ```
 
@@ -312,7 +311,7 @@ matching symbols.
 
 #### Class Docstrings
 ```python
-class BaseGameState(ABC):
+class GameState(ABC):
     """Base class for all slot game simulations.
 
     Provides core infrastructure for:
@@ -322,7 +321,7 @@ class BaseGameState(ABC):
     - Free spin triggering and tracking
     - RNG seeding for reproducibility
 
-    Games should inherit from this class and implement:
+    Games should inherit from this class (via Board or Tumble) and implement:
         - run_spin(): Main game logic for a single spin
         - run_free_spin(): Free spin game logic
         - assign_special_sym_function(): Special symbol handlers
@@ -334,7 +333,7 @@ class BaseGameState(ABC):
         current_board: Current board state
 
     Example:
-        >>> class MyGame(BaseGameState):
+        >>> class MyGame(Board):
         ...     def run_spin(self, simulation_id: int) -> None:
         ...         self.reset_seed(simulation_id)
         ...         self.draw_board()
@@ -410,17 +409,23 @@ stake-engine-math/
 │   │   ├── bet_mode.py
 │   │   └── distributions.py
 │   ├── events/                   # Event system
-│   │   ├── event_constants.py
-│   │   └── events.py
+│   │   ├── constants.py          # EventConstants enum
+│   │   ├── filter.py             # Event filtering
+│   │   ├── core.py               # Core events (reveal, win, win_cap)
+│   │   ├── free_spins.py         # Free spins events
+│   │   ├── tumble.py             # Tumble/cascade events
+│   │   ├── special_symbols.py    # Upgrade, prize, multiplier events
+│   │   └── helpers.py            # Utilities
 │   ├── state/                    # Core state machine
-│   │   ├── base_game_state.py   # (was state.py)
+│   │   ├── game_state.py        # GameState base class
 │   │   ├── books.py
 │   │   └── run_sims.py
 │   ├── wins/                     # Win management
 │   │   └── win_manager.py
-│   └── write_data/               # Output generation
-│       ├── write_data.py
-│       └── write_configs.py
+│   └── writers/                  # Output generation
+│       ├── data.py              # Books, lookup tables, force files
+│       ├── configs.py           # Frontend/backend config generation
+│       └── force.py             # Force file search/option classes
 ├── games/                        # Individual game implementations
 │   ├── template/                 # Template for new games
 │   ├── tower_treasures/
@@ -458,7 +463,7 @@ import numpy as np
 
 # Local application
 from src.config.config import Config
-from src.events.event_constants import EventConstants
+from src.events.constants import EventConstants
 from src.wins.win_manager import WinManager
 ```
 
@@ -471,7 +476,7 @@ from src.wins.win_manager import WinManager
 tests/
 ├── test_cluster_calculator.py
 ├── test_win_manager.py
-├── test_base_game_state.py
+├── test_game_state.py
 └── win_calculations/
     ├── test_cluster_pay.py
     ├── test_lines_pay.py
@@ -571,7 +576,7 @@ pytest tests/
 
 3. Implement `game_state.py`:
    ```python
-   class GameState(BaseGameState):
+   class GameState(Board):
        def run_spin(self, simulation_id: int) -> None:
            # Implement game logic
            ...
@@ -616,7 +621,7 @@ class GameConfig:
 ```python
 from abc import ABC, abstractmethod
 
-class BaseGameState(ABC):
+class GameState(ABC):
     """Base class for game implementations."""
 
     @abstractmethod
@@ -630,18 +635,15 @@ class BaseGameState(ABC):
 
 ### Event Generation
 ```python
-from src.events.event_constants import EventConstants
-from src.events.events import construct_event
+from src.events.constants import EventConstants
 
 # Always use EventConstants, never hardcoded strings
-event = construct_event(
-    event_type=EventConstants.WIN.value,
-    details={
-        "symbol": "L1",
-        "amount": 10.0,
-        "positions": [(0, 0), (0, 1)]
-    }
-)
+event = {
+    "index": len(self.book.events),
+    "type": EventConstants.WIN.value,
+    "amount": 1000,
+    "details": [{"symbol": "L1", "positions": [[0, 0], [0, 1]]}],
+}
 self.book.add_event(event)
 ```
 

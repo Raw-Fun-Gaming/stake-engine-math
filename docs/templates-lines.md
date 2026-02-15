@@ -2,7 +2,7 @@
 
 **Location**: `games/template_lines/`
 **Win Type**: Line-pay
-**Inheritance**: `GameState` → `Board` → `BaseGameState`
+**Inheritance**: `GameState` → `Board` → `GameState` (base, `src/state/game_state.py`)
 
 ## Overview
 
@@ -250,7 +250,7 @@ Scatters are counted separately and don't need to be on paylines:
 | `game_optimization.py` | Optimization params | ~60 |
 | `run.py` | Execution script | ~50 |
 
-**Note**: This template does NOT include `game_events.py` because it uses only standard events from `src/events/event_constants.py`.
+**Note**: This template does NOT include `game_events.py` because it uses only standard events from `src/events/constants.py`.
 
 ## Why Use This Template?
 

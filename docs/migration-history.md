@@ -98,9 +98,9 @@ The SDK underwent a comprehensive refactoring program (January 2026) that transf
 - Used TYPE_CHECKING guards to prevent circular imports
 
 **Modules Annotated:**
-1. `src/state/state.py` - Core state machine (20+ methods)
+1. `src/state/state.py` (now removed, merged into `src/state/game_state.py`) - Core state machine (20+ methods)
 2. `src/wins/win_manager.py` - Win tracking (8 methods, 8 attributes)
-3. `src/events/events.py` - Event generation (15 functions)
+3. `src/events/` - Event generation (15 functions, later split into modular files)
 4. `src/config/bet_mode.py` - Bet mode configuration (14 methods)
 5. `src/config/config.py` - Game configuration (8 methods, 30+ attributes)
 6. `src/calculations/symbol.py` - Symbol handling (13 methods)
@@ -126,13 +126,13 @@ The SDK underwent a comprehensive refactoring program (January 2026) that transf
 
 **Before Architecture (6 layers):**
 ```
-GeneralGameState (src/state/state.py)
+GeneralGameState (src/state/state.py)           # REMOVED - merged into GameState
   ↑
-Conditions (src/state/state_conditions.py)
+Conditions (src/state/state_conditions.py)       # REMOVED - merged into GameState
   ↑
 Tumble (src/calculations/tumble.py)
   ↑
-Executables (src/executables/executables.py)
+Executables (src/executables/executables.py)      # REMOVED - merged into GameState
   ↑
 GameCalculations (game_calculations.py)
   ↑
@@ -145,21 +145,21 @@ GameState (game_state.py)
 
 **After Architecture (2 layers):**
 ```
-BaseGameState (src/state/base_game_state.py)
+GameState (src/state/game_state.py)  # Renamed from BaseGameState/base_game_state.py
   ↑
 Board (src/calculations/board.py)
   ↑
 [Tumble (src/calculations/tumble.py)]  # Optional for cascade games
   ↑
-GameState (game_state.py)  # All game logic in one file
+Game-specific GameState (games/<name>/game_state.py)  # All game logic in one file
 ```
 
 **Work Completed:**
-- Created [src/state/base_game_state.py](../src/state/base_game_state.py) (~850 lines) merging:
-  - `GeneralGameState` - Core simulation infrastructure
-  - `Conditions` - Query methods for game state
-  - `Executables` - Common game actions
-- Updated `Board` to inherit from `BaseGameState`
+- Created `src/state/game_state.py` (originally `base_game_state.py`, now renamed) (~850 lines) merging:
+  - `GeneralGameState` from `src/state/state.py` - Core simulation infrastructure (file removed)
+  - `Conditions` from `src/state/state_conditions.py` - Query methods for game state (file removed)
+  - `Executables` from `src/executables/executables.py` - Common game actions (file and directory removed)
+- Updated `Board` to inherit from `GameState`
 - Fixed Symbol type alias issues across 5 calculation modules
 - Migrated 7 complete games to new structure
 - Removed 21 deprecated game files (game_override.py, game_executables.py, game_calculations.py)
@@ -201,7 +201,7 @@ Each game now uses a single consolidated file with clear sections:
 **Planned Changes:**
 - Rename abbreviated variables: `fs` → `free_spin_count`, `tot_fs` → `total_free_spins`
 - Rename unclear methods: `check_free_spin_condition()` → `has_free_spin_trigger()`
-- Rename generic classes: `GeneralGameState` → `BaseGameState` (✅ done)
+- Rename generic classes: `GeneralGameState` → `GameState` (✅ done, was previously `BaseGameState`, now renamed to `GameState`)
 - Consistent configuration keys
 
 ---
@@ -236,8 +236,8 @@ Each game now uses a single consolidated file with clear sections:
 - All migrated game files (7 games)
 
 **Remaining:**
-- `src/write_data/` modules
-- `src/executables/` modules
+- `src/writers/` modules (renamed from `src/write_data/`)
+- `src/executables/` modules (now removed, merged into `src/state/game_state.py`)
 - Some utility modules
 - Sphinx documentation generation (optional)
 
@@ -286,7 +286,7 @@ Each game now uses a single consolidated file with clear sections:
 **Work Completed:**
 
 #### 1. OutputFormatter Class
-Created [src/output/output_formatter.py](../src/output/output_formatter.py) (280 lines)
+Created [src/formatter.py](../src/formatter.py) (280 lines)
 
 **Features:**
 - Two modes: COMPACT (minimal size) and VERBOSE (human-readable)
@@ -302,7 +302,7 @@ Created [src/output/output_formatter.py](../src/output/output_formatter.py) (280
 Added to [src/config/config.py](../src/config/config.py):
 
 ```python
-from src.output.output_formatter import OutputMode
+from src.formatter import OutputMode
 
 output_mode: OutputMode = OutputMode.VERBOSE  # or OutputMode.COMPACT
 include_losing_boards: bool = True  # Skip 0-win board reveals
@@ -312,7 +312,7 @@ skip_implicit_events: bool = False  # Skip redundant events
 ```
 
 #### 3. Event System Integration
-Updated 6 event generation functions in [src/events/events.py](../src/events/events.py):
+Updated 6 event generation functions in `src/events/` (now split across `core.py`, `free_spins.py`, `tumble.py`, `special_symbols.py`):
 - `reveal_event()` - Board symbol formatting
 - `trigger_free_spins_event()` - Position formatting
 - `win_event()` - Win position formatting
@@ -322,7 +322,7 @@ Updated 6 event generation functions in [src/events/events.py](../src/events/eve
 
 #### 4. Format Versioning
 - [src/state/books.py](../src/state/books.py) - Book class accepts OutputFormatter
-- [src/state/base_game_state.py](../src/state/base_game_state.py) - Creates formatter in `reset_book()`
+- `src/state/game_state.py` - Creates formatter in `reset_book()`
 - All games inherit automatically via `super().reset_book()`
 - Format version field in JSON output: "2.0-compact" or "2.0-verbose"
 
@@ -372,7 +372,7 @@ Created [EVENT_AUDIT.md](../EVENT_AUDIT.md) documenting:
 - **VERBOSE** (4 events): UPDATE_FREE_SPINS, UPDATE_TUMBLE_WIN - optional progress tracking
 
 #### 2. EventFilter Class
-Created [src/events/event_filter.py](../src/events/event_filter.py) (320 lines)
+Created [src/events/filter.py](../src/events/filter.py) (320 lines)
 
 **Features:**
 - Automatic event categorization
@@ -400,7 +400,7 @@ verbose_event_level: str = "full"  # "minimal", "standard", or "full"
 ```
 
 #### 5. Base Integration
-Updated [src/state/base_game_state.py](../src/state/base_game_state.py):
+Updated `src/state/game_state.py` (renamed from `base_game_state.py`):
 - Creates EventFilter from config in `reset_book()`
 - All games inherit filtering automatically
 
@@ -514,7 +514,7 @@ Enhanced error messages across 12+ files:
 - [src/config/config.py](../src/config/config.py) - Configuration validation errors
 - [src/config/bet_mode.py](../src/config/bet_mode.py) - Bet mode setup errors
 - [src/calculations/board.py](../src/calculations/board.py) - Board generation errors
-- [src/state/base_game_state.py](../src/state/base_game_state.py) - State machine errors
+- `src/state/game_state.py` - State machine errors
 - Event generation functions - Event validation errors
 - Output formatter - Format validation errors
 
@@ -656,7 +656,7 @@ Enhanced error messages across 12+ files:
 - Difficult to trace game flow
 
 **After (Current):**
-- 2-layer inheritance (BaseGameState → Board/Tumble → GameState)
+- 2-layer inheritance (GameState → Board/Tumble → Game-specific GameState)
 - Single consolidated file per game with clear sections
 - Explicit separation: SDK infrastructure vs game-specific logic
 - Easy to understand game flow top-to-bottom

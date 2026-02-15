@@ -17,7 +17,7 @@ All events are stored in the books files and consumed by the frontend to render 
 **Always use `EventConstants`** instead of hardcoded strings:
 
 ```python
-from src.events.event_constants import EventConstants
+from src.events.constants import EventConstants
 
 # ✅ Good
 event_type = EventConstants.WIN.value
@@ -59,14 +59,13 @@ event_type = "win"
 ### Basic Event
 
 ```python
-from src.events.event_constants import EventConstants
-from src.events.events import construct_event
+from src.events.constants import EventConstants
 
-event = construct_event(
-    event_type=EventConstants.WIN.value,
-    amount=10.0
-)
-
+event = {
+    "index": len(self.book.events),
+    "type": EventConstants.WIN.value,
+    "amount": 1000,
+}
 self.book.add_event(event)
 ```
 

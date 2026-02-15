@@ -2,7 +2,7 @@
 
 **Location**: `games/template_cluster/`
 **Win Type**: Cluster-pay
-**Inheritance**: `GameState` → `Tumble` → `Board` → `BaseGameState`
+**Inheritance**: `GameState` → `Tumble` → `Board` → `GameState` (base, `src/state/game_state.py`)
 
 ## Overview
 
