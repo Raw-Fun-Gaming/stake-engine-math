@@ -1,7 +1,7 @@
 from copy import deepcopy
 
 from src.calculations.symbol import Symbol
-from src.events.event_constants import EventConstants
+from src.events.constants import EventConstants
 
 
 def to_camel_case(snake_str: str) -> str:
@@ -10,7 +10,7 @@ def to_camel_case(snake_str: str) -> str:
     return components[0] + "".join(x.title() for x in components[1:])
 
 
-def json_ready_sym(symbol: Symbol, special_attributes: list[str] | None = None):
+def convert_symbol_json(symbol: Symbol, special_attributes: list[str] | None = None):
     """Converts a symbol to dictionary/JSON format."""
     assert special_attributes is not None
     print_sym = {"name": symbol.name}
@@ -29,16 +29,16 @@ def reveal_event(game_state):
         board_client.append([])
         for row in range(len(game_state.board[reel])):
             board_client[reel].append(
-                json_ready_sym(game_state.board[reel][row], special_attributes)
+                convert_symbol_json(game_state.board[reel][row], special_attributes)
             )
 
     if game_state.config.include_padding:
         for reel, _ in enumerate(board_client):
             board_client[reel] = [
-                json_ready_sym(game_state.top_symbols[reel], special_attributes)
+                convert_symbol_json(game_state.top_symbols[reel], special_attributes)
             ] + board_client[reel]
             board_client[reel].append(
-                json_ready_sym(game_state.bottom_symbols[reel], special_attributes)
+                convert_symbol_json(game_state.bottom_symbols[reel], special_attributes)
             )
 
     event = {

@@ -1,10 +1,7 @@
-"""Base game state module for slot game simulations.
+"""Game state module for slot game simulations.
 
-This module provides the unified base class for all game implementations,
-merging previously separate concerns (GeneralGameState, Conditions, Executables)
-into a single cohesive base class.
-
-Phase 1.3 Refactoring: Flattened 6-layer inheritance to 2 layers.
+This module provides the base class for all game implementations,
+handling core simulation infrastructure, state queries, and common game actions.
 """
 
 from __future__ import annotations
@@ -17,26 +14,21 @@ from warnings import warn
 
 from src.calculations.symbol import SymbolStorage
 from src.config.output_filenames import OutputFiles
-from src.events.event_filter import EventFilter
-
-# Event imports (from Executables)
-from src.events.events import (
+from src.events.core import set_final_win_event, win_cap_event, win_event
+from src.events.filter import EventFilter
+from src.events.free_spins import (
     end_free_spins_event,
-    set_final_win_event,
     trigger_free_spins_event,
-    tumble_event,
     update_free_spins_event,
-    update_global_mult_event,
-    update_tumble_win_event,
-    win_cap_event,
-    win_event,
 )
+from src.events.special_symbols import update_global_mult_event
+from src.events.tumble import tumble_event, update_tumble_win_event
 from src.exceptions import GameConfigError
-from src.output.output_formatter import OutputFormatter
+from src.formatter import OutputFormatter
 from src.state.books import Book
 from src.types import Board, Event, SimulationID
 from src.wins.win_manager import WinManager
-from src.write_data.write_data import (
+from src.writers.data import (
     make_lookup_pay_split,
     make_lookup_tables,
     print_recorded_wins,
@@ -50,13 +42,8 @@ if TYPE_CHECKING:
     from src.config.distributions import Distribution
 
 
-class BaseGameState(ABC):
-    """Unified base class for all slot game simulations.
-
-    This class merges functionality from:
-    - GeneralGameState: Core simulation infrastructure
-    - Conditions: Game state query methods
-    - Executables: Common game actions (free_spin, wincap, tumble)
+class GameState(ABC):
+    """Base class for all slot game simulations.
 
     Provides complete infrastructure for:
     - Random board generation from reel strips
@@ -118,7 +105,7 @@ class BaseGameState(ABC):
         self.reset_free_spin()
 
     # =========================================================================
-    # CORE INFRASTRUCTURE (from GeneralGameState)
+    # CORE INFRASTRUCTURE
     # =========================================================================
 
     def create_symbol_map(self) -> None:
@@ -492,7 +479,7 @@ class BaseGameState(ABC):
         return False
 
     # =========================================================================
-    # COMMON EXECUTABLE ACTIONS (from Executables)
+    # COMMON GAME ACTIONS
     # =========================================================================
 
     def tumble_game_board(self) -> None:
@@ -633,7 +620,7 @@ class BaseGameState(ABC):
         """Returns integer count of active special symbols on board.
 
         This method will be properly implemented by Board class.
-        Included here as a stub for Executables methods that depend on it.
+        Included here as a stub for game action methods that depend on it.
 
         Args:
             special_sym_criteria: Special symbol type to count

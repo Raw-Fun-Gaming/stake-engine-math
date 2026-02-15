@@ -27,9 +27,12 @@ class EventConstants(Enum):
     SET_TUMBLE_WIN = "setTumbleWin"
     UPDATE_TUMBLE_WIN = "updateTumbleWin"
 
-    # Special symbol events
+    # Multiplier events
     UPDATE_GLOBAL_MULTIPLIER = "updateGlobalMultiplier"
     UPDATE_BOARD_MULTIPLIER = "updateBoardMultiplier"
+    REVEAL_BOARD_MULTIPLIERS = "revealBoardMultipliers"
+
+    # Special symbol events
     UPGRADE = "upgrade"
     REVEAL_EXPANDING_WILDS = "revealExpandingWilds"
     UPDATE_EXPANDING_WILDS = "updateExpandingWilds"

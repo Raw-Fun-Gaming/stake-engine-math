@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, Any, Callable
 if TYPE_CHECKING:
     from src.config.config import Config
 
-from src.events.event_constants import EventConstants
+from src.events.constants import EventConstants
 
 
 class EventFilter:
@@ -42,6 +42,7 @@ class EventFilter:
         EventConstants.TUMBLE.value,
         EventConstants.UPDATE_GLOBAL_MULTIPLIER.value,
         EventConstants.UPDATE_BOARD_MULTIPLIER.value,
+        EventConstants.REVEAL_BOARD_MULTIPLIERS.value,
         EventConstants.UPGRADE.value,
         EventConstants.REVEAL_EXPANDING_WILDS.value,
         EventConstants.UPDATE_EXPANDING_WILDS.value,

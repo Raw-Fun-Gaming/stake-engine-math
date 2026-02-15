@@ -1,8 +1,7 @@
 """Game state for tower_treasures - Cluster-pay slot with upgrades and sticky symbols.
 
-Flattened inheritance structure (Phase 1.3):
-- Direct inheritance from Board (which inherits from BaseGameState)
-- All game-specific logic consolidated in this single file
+Inheritance: Board → GameState
+All game-specific logic consolidated in this single file.
 """
 
 import random
@@ -14,13 +13,9 @@ from game_events import reveal_event
 from src.calculations.board import Board
 from src.calculations.cluster import Cluster
 from src.calculations.statistics import get_random_outcome
-from src.events.events import (
-    prize_win_event,
-    trigger_free_spins_event,
-    update_free_spins_event,
-    upgrade_event,
-    win_event,
-)
+from src.events.core import win_event
+from src.events.free_spins import trigger_free_spins_event, update_free_spins_event
+from src.events.special_symbols import prize_win_event, upgrade_event
 
 
 class GameState(Board):

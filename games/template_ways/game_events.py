@@ -1,1 +1,1 @@
-from src.events.events import *
+from src.events import *

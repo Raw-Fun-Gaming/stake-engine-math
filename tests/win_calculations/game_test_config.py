@@ -1,7 +1,7 @@
-from src.state.state import GeneralGameState
+from src.state.game_state import GameState
 
 
-class GameStateTest(GeneralGameState):
+class GameStateTest(GameState):
     """Simple game_state setup with abstract methods defined."""
 
     def __init__(self, config):

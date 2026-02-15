@@ -7,7 +7,7 @@ from multiprocessing import Manager, Process
 from typing import Dict
 from warnings import warn
 
-from src.write_data.write_data import output_lookup_and_force_files
+from src.writers.data import output_lookup_and_force_files
 
 
 def create_books(

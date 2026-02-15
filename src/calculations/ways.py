@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any
 
-from src.events.events import set_total_win_event, set_win_event, win_event
+from src.events.core import set_total_win_event, set_win_event, win_event
 from src.wins.multiplier_strategy import apply_mult
 
 if TYPE_CHECKING:

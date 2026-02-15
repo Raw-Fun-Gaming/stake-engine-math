@@ -1,8 +1,8 @@
 """Tests for Book class integration with EventFilter."""
 
 from src.config.config import Config
-from src.events.event_constants import EventConstants
-from src.events.event_filter import EventFilter
+from src.events.constants import EventConstants
+from src.events.filter import EventFilter
 from src.state.books import Book
 
 
@@ -16,9 +16,7 @@ class TestBookEventFiltering:
         # Add events of various types
         book.add_event({"type": EventConstants.WIN.value, "amount": 10})
         book.add_event({"type": EventConstants.SET_WIN.value, "amount": 10})
-        book.add_event(
-            {"type": EventConstants.UPDATE_FREE_SPINS.value, "remaining": 5}
-        )
+        book.add_event({"type": EventConstants.UPDATE_FREE_SPINS.value, "remaining": 5})
 
         assert len(book.events) == 3
 
@@ -50,12 +48,8 @@ class TestBookEventFiltering:
 
         # Add events
         book.add_event({"type": EventConstants.WIN.value, "amount": 10})
-        book.add_event(
-            {"type": EventConstants.UPDATE_FREE_SPINS.value, "remaining": 5}
-        )
-        book.add_event(
-            {"type": EventConstants.UPDATE_TUMBLE_WIN.value, "amount": 10}
-        )
+        book.add_event({"type": EventConstants.UPDATE_FREE_SPINS.value, "remaining": 5})
+        book.add_event({"type": EventConstants.UPDATE_TUMBLE_WIN.value, "amount": 10})
         book.add_event({"type": EventConstants.TRIGGER_FREE_SPINS.value, "count": 10})
 
         # Only WIN and TRIGGER_FREE_SPINS should be added (updates are filtered)
@@ -73,9 +67,7 @@ class TestBookEventFiltering:
 
         # Add events of different categories
         book.add_event({"type": EventConstants.WIN.value, "amount": 10})  # REQUIRED
-        book.add_event(
-            {"type": EventConstants.SET_WIN.value, "amount": 10}
-        )  # STANDARD
+        book.add_event({"type": EventConstants.SET_WIN.value, "amount": 10})  # STANDARD
         book.add_event(
             {"type": EventConstants.UPDATE_FREE_SPINS.value, "remaining": 5}
         )  # VERBOSE
@@ -94,9 +86,7 @@ class TestBookEventFiltering:
 
         # Add events of different categories
         book.add_event({"type": EventConstants.WIN.value, "amount": 10})  # REQUIRED
-        book.add_event(
-            {"type": EventConstants.SET_WIN.value, "amount": 10}
-        )  # STANDARD
+        book.add_event({"type": EventConstants.SET_WIN.value, "amount": 10})  # STANDARD
         book.add_event(
             {"type": EventConstants.UPDATE_FREE_SPINS.value, "remaining": 5}
         )  # VERBOSE

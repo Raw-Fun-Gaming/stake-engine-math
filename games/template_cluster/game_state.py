@@ -1,19 +1,16 @@
 """Game state for template_cluster - Cluster-pay slot with tumble mechanics and grid multipliers.
 
-Flattened inheritance structure (Phase 1.3):
-- Direct inheritance from Tumble (Board → BaseGameState)
-- All game-specific logic consolidated in this single file
+Inheritance: Tumble → Board → GameState
+All game-specific logic consolidated in this single file.
 """
 
 from typing import Any
 
-# Import game-specific events
-from game_events import reveal_board_multipliers_event
-
 from src.calculations.cluster import Cluster
 from src.calculations.tumble import Tumble
 from src.config.config import Config
-from src.events.events import update_free_spins_event
+from src.events.free_spins import update_free_spins_event
+from src.events.tumble import reveal_board_multipliers_event
 from src.types import Board
 
 

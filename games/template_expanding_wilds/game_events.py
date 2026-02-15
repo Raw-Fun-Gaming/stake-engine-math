@@ -2,8 +2,8 @@
 
 from copy import deepcopy
 
-from src.events.event_constants import EventConstants
-from src.events.events import json_ready_sym
+from src.events.constants import EventConstants
+from src.events.helpers import convert_symbol_json
 
 
 def new_expanding_wild_event(game_state) -> None:
@@ -94,16 +94,16 @@ def reveal_prize_event(game_state):
         board_client.append([])
         for row in range(len(game_state.board[reel])):
             board_client[reel].append(
-                json_ready_sym(game_state.board[reel][row], special_attributes)
+                convert_symbol_json(game_state.board[reel][row], special_attributes)
             )
 
     if game_state.config.include_padding:
         for reel, _ in enumerate(board_client):
             board_client[reel] = [
-                json_ready_sym(game_state.top_symbols[reel], special_attributes)
+                convert_symbol_json(game_state.top_symbols[reel], special_attributes)
             ] + board_client[reel]
             board_client[reel].append(
-                json_ready_sym(game_state.bottom_symbols[reel], special_attributes)
+                convert_symbol_json(game_state.bottom_symbols[reel], special_attributes)
             )
 
     for idx, _ in enumerate(board_client):

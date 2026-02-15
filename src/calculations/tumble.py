@@ -11,7 +11,7 @@ from copy import copy
 from typing import TYPE_CHECKING, Any
 
 from src.calculations.board import Board
-from src.events.events import set_total_win_event, set_win_event
+from src.events.core import set_total_win_event, set_win_event
 from src.exceptions import BoardGenerationError
 
 if TYPE_CHECKING:

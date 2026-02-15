@@ -1,8 +1,7 @@
 """Game state for template_scatter - Scatter-pay slot with tumble mechanics and multipliers.
 
-Flattened inheritance structure (Phase 1.3):
-- Direct inheritance from Tumble (Board → BaseGameState)
-- All game-specific logic consolidated in this single file
+Inheritance: Tumble → Board → GameState
+All game-specific logic consolidated in this single file.
 """
 
 from copy import copy
@@ -14,14 +13,10 @@ from game_events import send_multiplier_info_event
 from src.calculations.scatter import Scatter
 from src.calculations.statistics import get_random_outcome
 from src.calculations.tumble import Tumble
-from src.events.events import (
-    set_total_win_event,
-    set_win_event,
-    trigger_free_spins_event,
-    update_free_spins_event,
-    update_global_mult_event,
-    update_tumble_win_event,
-)
+from src.events.core import set_total_win_event, set_win_event
+from src.events.free_spins import trigger_free_spins_event, update_free_spins_event
+from src.events.special_symbols import update_global_mult_event
+from src.events.tumble import update_tumble_win_event
 
 
 class GameState(Tumble):

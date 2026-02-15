@@ -1,8 +1,8 @@
 """Tests for EventFilter class."""
 
 from src.config.config import Config
-from src.events.event_constants import EventConstants
-from src.events.event_filter import EventFilter
+from src.events.constants import EventConstants
+from src.events.filter import EventFilter
 
 
 class TestEventFilter:

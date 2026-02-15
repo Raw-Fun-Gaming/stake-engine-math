@@ -10,8 +10,8 @@ from copy import deepcopy
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from src.events.event_filter import EventFilter
-    from src.output.output_formatter import OutputFormatter
+    from src.events.filter import EventFilter
+    from src.formatter import OutputFormatter
 
 
 class Book:

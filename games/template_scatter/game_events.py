@@ -1,4 +1,4 @@
-from src.events.event_constants import EventConstants
+from src.events.constants import EventConstants
 
 
 def send_multiplier_info_event(

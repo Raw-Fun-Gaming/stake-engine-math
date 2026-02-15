@@ -18,7 +18,7 @@ from game_state import GameState
 from optimization_program.run_script import OptimizationExecution
 from src.config.run_config import RunConfig
 from src.state.run_sims import create_books
-from src.write_data.write_configs import generate_configs
+from src.writers.configs import generate_configs
 
 
 def main() -> None:

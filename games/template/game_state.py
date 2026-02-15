@@ -1,8 +1,7 @@
 """Game state for template - Minimal template for creating new slot games.
 
-Flattened inheritance structure (Phase 1.3):
-- Direct inheritance from Board (which inherits from BaseGameState)
-- All game-specific logic consolidated in this single file
+Inheritance: Board → GameState
+All game-specific logic consolidated in this single file.
 """
 
 from typing import Any

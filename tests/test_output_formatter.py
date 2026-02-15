@@ -4,7 +4,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from src.output.output_formatter import OutputFormatter, OutputMode
+from src.formatter import OutputFormatter, OutputMode
 
 
 @pytest.fixture

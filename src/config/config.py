@@ -12,7 +12,7 @@ from typing import Any
 from src.config.bet_mode import BetMode
 from src.config.paths import PATH_TO_GAMES
 from src.exceptions import GameConfigError, ReelStripError
-from src.output.output_formatter import OutputMode
+from src.formatter import OutputMode
 
 
 class Config:

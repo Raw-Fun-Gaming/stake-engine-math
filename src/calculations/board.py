@@ -11,9 +11,9 @@ import random
 from typing import TYPE_CHECKING, Any
 
 from src.calculations.statistics import get_random_outcome
-from src.events.events import reveal_event
+from src.events.core import reveal_event
 from src.exceptions import BoardGenerationError
-from src.state.base_game_state import BaseGameState
+from src.state.game_state import GameState
 
 if TYPE_CHECKING:
     from src.calculations.symbol import Symbol
@@ -23,7 +23,7 @@ Position = dict[str, int]
 SymbolBoard = list[list["Symbol"]]
 
 
-class Board(BaseGameState):
+class Board(GameState):
     """Board generation and manipulation for slot games.
 
     Provides methods for:
