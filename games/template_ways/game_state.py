@@ -24,7 +24,7 @@ class GameState(Board):
     # SPECIAL SYMBOL HANDLERS
     # =========================================================================
 
-    def assign_special_sym_function(self) -> None:
+    def assign_special_symbol_functions(self) -> None:
         """Define special symbol behaviors.
 
         W symbols get assigned random multiplier values from distribution.

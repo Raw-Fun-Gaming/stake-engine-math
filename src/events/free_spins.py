@@ -43,11 +43,9 @@ def trigger_free_spins_event(
 
     event: dict[str, Any] = {}
     scatter_positions: list[dict[str, int]] = []
-    for reel, _ in enumerate(game_state.special_syms_on_board["scatter"]):
-        scatter_positions.append(game_state.special_syms_on_board["scatter"][reel])
-    if include_padding_index:
-        for pos in scatter_positions:
-            pos["row"] += 1
+    for pos in game_state.special_symbols_on_board["scatter"]:
+        row = pos["row"] + 1 if include_padding_index else pos["row"]
+        scatter_positions.append({"reel": pos["reel"], "row": row})
 
     # Format positions using the formatter
     formatted_positions = formatter.format_position_list(scatter_positions)

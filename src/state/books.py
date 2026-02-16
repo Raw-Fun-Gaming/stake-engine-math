@@ -82,8 +82,8 @@ class Book:
             event_id: Index of event to modify
             appended_info: Dictionary of fields to add/update in the event
         """
-        for k, v in appended_info.items():
-            self.events[event_id][k] = v
+        for key, value in appended_info.items():
+            self.events[event_id][key] = value
 
     def to_json(self) -> dict[str, Any]:
         """Return JSON-ready object.

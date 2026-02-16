@@ -7,7 +7,7 @@ ANTE_MAPPING = {
     "bonusBattle": False,
     "bonusBattleOpposing": False,
     "featureSpin": False,
-    "superFeatureSoin": False,
+    "superFeatureSpin": False,
 }
 
 IS_BUY_BONUS_MAPPING = {

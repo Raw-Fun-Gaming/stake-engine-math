@@ -99,7 +99,7 @@ The SDK underwent a comprehensive refactoring program (January 2026) that transf
 
 **Modules Annotated:**
 1. `src/state/state.py` (now removed, merged into `src/state/game_state.py`) - Core state machine (20+ methods)
-2. `src/wins/win_manager.py` - Win tracking (8 methods, 8 attributes)
+2. `src/wins/manager.py` - Win tracking (8 methods, 8 attributes)
 3. `src/events/` - Event generation (15 functions, later split into modular files)
 4. `src/config/bet_mode.py` - Bet mode configuration (14 methods)
 5. `src/config/config.py` - Game configuration (8 methods, 30+ attributes)

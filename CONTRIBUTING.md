@@ -169,7 +169,7 @@ class GeneralGameState:  # "General" is vague (removed, merged into GameState)
 ```
 game_state.py           # Contains GameState base class (in src/state/)
 cluster_calculator.py   # Contains cluster win logic
-win_manager.py          # Contains WinManager class
+manager.py              # Contains WinManager class (in src/wins/)
 game_config.py          # Contains GameConfig class
 constants.py            # Contains EventConstants enum
 ```
@@ -324,7 +324,7 @@ class GameState(ABC):
     Games should inherit from this class (via Board or Tumble) and implement:
         - run_spin(): Main game logic for a single spin
         - run_free_spin(): Free spin game logic
-        - assign_special_sym_function(): Special symbol handlers
+        - assign_special_symbol_functions(): Special symbol handlers
 
     Attributes:
         config: Game configuration instance
@@ -421,7 +421,7 @@ stake-engine-math/
 │   │   ├── books.py
 │   │   └── run_sims.py
 │   ├── wins/                     # Win management
-│   │   └── win_manager.py
+│   │   └── manager.py
 │   └── writers/                  # Output generation
 │       ├── data.py              # Books, lookup tables, force files
 │       ├── configs.py           # Frontend/backend config generation
@@ -464,7 +464,7 @@ import numpy as np
 # Local application
 from src.config.config import Config
 from src.events.constants import EventConstants
-from src.wins.win_manager import WinManager
+from src.wins.manager import WinManager
 ```
 
 ---

@@ -28,7 +28,7 @@ class GameState(Tumble):
     # SPECIAL SYMBOL HANDLERS
     # =========================================================================
 
-    def assign_special_sym_function(self) -> None:
+    def assign_special_symbol_functions(self) -> None:
         """Define special symbol behaviors.
 
         This game has no special symbol handlers.

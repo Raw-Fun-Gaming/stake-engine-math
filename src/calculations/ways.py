@@ -11,7 +11,7 @@ from collections import defaultdict
 from typing import TYPE_CHECKING, Any
 
 from src.events.core import set_total_win_event, set_win_event, win_event
-from src.wins.multiplier_strategy import apply_mult
+from src.wins.multiplier_strategy import apply_multiplier
 
 if TYPE_CHECKING:
     from src.calculations.symbol import Symbol
@@ -83,23 +83,31 @@ class Ways:
                     kind += 1
                     multiplier_enhance: int = 0
                     # Note that here multipliers on subsequent reels multiplier (not add, like in lines games)
-                    for s in potential_wins[symbol][reel]:
+                    for pos in potential_wins[symbol][reel]:
                         if (
-                            board[s["reel"]][s["row"]].check_attribute(multiplier_key)
-                            and board[s["reel"]][s["row"]].get_attribute(multiplier_key)
+                            board[pos["reel"]][pos["row"]].check_attribute(
+                                multiplier_key
+                            )
+                            and board[pos["reel"]][pos["row"]].get_attribute(
+                                multiplier_key
+                            )
                             > 1
                         ):
-                            multiplier_enhance += board[s["reel"]][
-                                s["row"]
+                            multiplier_enhance += board[pos["reel"]][
+                                pos["row"]
                             ].get_attribute(multiplier_key)
-                    for s in wilds[reel]:
+                    for pos in wilds[reel]:
                         if (
-                            board[s["reel"]][s["row"]].check_attribute(multiplier_key)
-                            and board[s["reel"]][s["row"]].get_attribute(multiplier_key)
+                            board[pos["reel"]][pos["row"]].check_attribute(
+                                multiplier_key
+                            )
+                            and board[pos["reel"]][pos["row"]].get_attribute(
+                                multiplier_key
+                            )
                             > 1
                         ):
-                            multiplier_enhance += board[s["reel"]][
-                                s["row"]
+                            multiplier_enhance += board[pos["reel"]][
+                                pos["row"]
                             ].get_attribute(multiplier_key)
 
                     ways *= (
@@ -122,7 +130,7 @@ class Ways:
                 win: float = config.paytable[kind, symbol] * ways
                 win_amt: float
                 multiplier: float
-                win_amt, multiplier = apply_mult(board=board, strategy="global", win_amount=win)  # type: ignore[arg-type]
+                win_amt, multiplier = apply_multiplier(board=board, strategy="global", win_amount=win)  # type: ignore[arg-type]
                 return_data["wins"] += [
                     {
                         "symbol": symbol,

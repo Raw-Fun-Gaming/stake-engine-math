@@ -56,11 +56,11 @@ class OptimizationParameters:
 
     def to_dict(self):
         """JSON readable"""
-        data_struct = {
+        result = {
             "rtp": self.rtp,
             "hr": self.hr,
             "av_win": self.av_win,
             "search_range": self.search_range,
             "force_search": self.force_search,
         }
-        return data_struct
+        return result

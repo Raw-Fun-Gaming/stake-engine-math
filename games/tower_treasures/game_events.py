@@ -22,7 +22,7 @@ def convert_symbol_json(symbol: Symbol, special_attributes: list[str] | None = N
 
 
 def reveal_event(game_state):
-    """Display the initial board drawn from reelstrips - Tower Defense custom version without paddingPositions and anticipation."""
+    """Display the initial board drawn from reel strips - Tower Defense custom version without paddingPositions and anticipation."""
     board_client = []
     special_attributes = list(game_state.config.special_symbols.keys())
     for reel, _ in enumerate(game_state.board):

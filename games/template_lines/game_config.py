@@ -4,7 +4,7 @@ import os
 
 from src.config.bet_mode import BetMode
 from src.config.config import Config
-from src.config.distributions import Distribution
+from src.config.distribution import Distribution
 
 
 class GameConfig(Config):

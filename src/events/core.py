@@ -93,80 +93,65 @@ def win_event(game_state: Any, include_padding_index: bool = True) -> None:
 
     win_data_copy: dict[str, Any] = {}
     win_data_copy["details"] = deepcopy(game_state.win_data["wins"])
-    for idx, w in enumerate(win_data_copy["details"]):
+    for i, win_detail in enumerate(win_data_copy["details"]):
         if include_padding_index:
             new_positions: list[dict[str, int]] = []
-            for p in w["positions"]:
-                new_positions.append({"reel": p["reel"], "row": p["row"] + 1})
+            for pos in win_detail["positions"]:
+                new_positions.append({"reel": pos["reel"], "row": pos["row"] + 1})
         else:
-            new_positions = w["positions"]
+            new_positions = win_detail["positions"]
 
         # Format positions using OutputFormatter
         formatted_positions = formatter.format_position_list(new_positions)
 
-        win_data_copy["details"][idx]["amount"] = int(
+        detail = win_data_copy["details"][i]
+        detail["amount"] = int(
             round(
-                min(win_data_copy["details"][idx]["win"], game_state.config.win_cap)
-                * 100,
+                min(detail["win"], game_state.config.win_cap) * 100,
                 0,
             )
         )
-        win_data_copy["details"][idx]["positions"] = formatted_positions
+        detail["positions"] = formatted_positions
 
         # Convert clusterSize (cluster-pay) or kind (line-pay/ways-pay) to count
-        if "clusterSize" in win_data_copy["details"][idx]:
-            win_data_copy["details"][idx]["count"] = win_data_copy["details"][idx][
-                "clusterSize"
-            ]
-            del win_data_copy["details"][idx]["clusterSize"]
-        elif "kind" in win_data_copy["details"][idx]:
-            win_data_copy["details"][idx]["count"] = win_data_copy["details"][idx][
-                "kind"
-            ]
-            del win_data_copy["details"][idx]["kind"]
+        if "clusterSize" in detail:
+            detail["count"] = detail["clusterSize"]
+            del detail["clusterSize"]
+        elif "kind" in detail:
+            detail["count"] = detail["kind"]
+            del detail["kind"]
 
         # Remove old field names
-        del win_data_copy["details"][idx]["win"]
+        del detail["win"]
 
-        if "meta" in win_data_copy["details"][idx]:
-            win_data_copy["details"][idx]["baseAmount"] = int(
+        if "meta" in detail:
+            detail["baseAmount"] = int(
                 int(
                     min(
-                        win_data_copy["details"][idx]["meta"]["winWithoutMult"] * 100,
+                        detail["meta"]["winWithoutMult"] * 100,
                         game_state.config.win_cap * 100,
                     ),
                 )
             )
-            win_data_copy["details"][idx]["multiplier"] = win_data_copy["details"][idx][
-                "meta"
-            ]["globalMultiplier"]
+            detail["multiplier"] = detail["meta"]["globalMultiplier"]
 
             # Include cluster multiplier if present (for cluster-pay games with grid multipliers)
-            if "clusterMultiplier" in win_data_copy["details"][idx]["meta"]:
-                win_data_copy["details"][idx]["clusterMultiplier"] = win_data_copy[
-                    "details"
-                ][idx]["meta"]["clusterMultiplier"]
+            if "clusterMultiplier" in detail["meta"]:
+                detail["clusterMultiplier"] = detail["meta"]["clusterMultiplier"]
 
             # Include cluster increment if present (for cluster-pay games with grid incrementers)
-            if "clusterIncrement" in win_data_copy["details"][idx]["meta"]:
-                win_data_copy["details"][idx]["clusterIncrement"] = win_data_copy[
-                    "details"
-                ][idx]["meta"]["clusterIncrement"]
-                win_data_copy["details"][idx]["effectiveCount"] = win_data_copy[
-                    "details"
-                ][idx]["meta"]["effectiveCount"]
+            if "clusterIncrement" in detail["meta"]:
+                detail["clusterIncrement"] = detail["meta"]["clusterIncrement"]
+                detail["effectiveCount"] = detail["meta"]["effectiveCount"]
 
             # Handle overlay if present
-            if (
-                "overlay" in win_data_copy["details"][idx]["meta"]
-                and include_padding_index
-            ):
-                overlay_data = win_data_copy["details"][idx]["meta"]["overlay"]
+            if "overlay" in detail["meta"] and include_padding_index:
+                overlay_data = detail["meta"]["overlay"]
                 overlay_data["row"] += 1
-                win_data_copy["details"][idx]["overlay"] = overlay_data
+                detail["overlay"] = overlay_data
 
             # Remove old meta structure
-            del win_data_copy["details"][idx]["meta"]
+            del detail["meta"]
 
     event: dict[str, Any] = {
         "index": len(game_state.book.events),

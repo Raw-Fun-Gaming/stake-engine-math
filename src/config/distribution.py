@@ -34,14 +34,16 @@ class Distribution:
     def verify_and_set_conditions(self, conditions):
         """Enforce required conditions for distribution setup."""
         condition_keys = list(conditions.keys())
-        for rk in self._required_distribution_conditions:
+        for required_key in self._required_distribution_conditions:
             assert (
-                rk in condition_keys
-            ), f"condition missing required key: {rk}\n condition_keys"
+                required_key in condition_keys
+            ), f"condition missing required key: {required_key}\n condition_keys"
 
-        for rk in list(self._default_distribution_conditions.keys()):
-            if rk not in condition_keys:
-                conditions[rk] = self._default_distribution_conditions[rk]
+        for default_key in list(self._default_distribution_conditions.keys()):
+            if default_key not in condition_keys:
+                conditions[default_key] = self._default_distribution_conditions[
+                    default_key
+                ]
 
         self._conditions = conditions
 

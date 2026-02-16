@@ -15,7 +15,7 @@ from src.exceptions import WinCalculationError
 
 
 def get_random_outcome(
-    distribution: dict[Any, float], totalWeight: float | None = None
+    distribution: dict[Any, float], total_weight: float | None = None
 ) -> Any:
     """Returns a random value from a weighted distribution.
 
@@ -25,7 +25,7 @@ def get_random_outcome(
 
     Args:
         distribution: Dict mapping values to their weights {value: weight, ...}
-        totalWeight: Optional pre-calculated sum of all weights (for performance)
+        total_weight: Optional pre-calculated sum of all weights (for performance)
 
     Returns:
         A value from the distribution keys, selected based on weights
@@ -48,14 +48,14 @@ def get_random_outcome(
             "Cannot draw from empty distribution. "
             "Check that your distribution configuration has at least one entry."
         )
-    if totalWeight is None:
-        totalWeight = sum(distribution.values())
-    if totalWeight <= 0:
+    if total_weight is None:
+        total_weight = sum(distribution.values())
+    if total_weight <= 0:
         raise WinCalculationError(
-            f"Distribution has non-positive total weight ({totalWeight}). "
+            f"Distribution has non-positive total weight ({total_weight}). "
             f"All weights must be positive. Distribution keys: {list(distribution.keys())}."
         )
-    roll: float = random.uniform(0, totalWeight)
+    roll: float = random.uniform(0, total_weight)
     cumulative: float = 0.0
     for value, weight in distribution.items():
         cumulative += weight
@@ -65,7 +65,7 @@ def get_random_outcome(
     # This should only happen with NaN weights or floating point issues
     raise WinCalculationError(
         f"Failed to draw item from distribution after iterating all {len(distribution)} entries. "
-        f"Total weight: {totalWeight}, roll: {roll}, final cumulative: {cumulative}. "
+        f"Total weight: {total_weight}, roll: {roll}, final cumulative: {cumulative}. "
         f"Check for NaN or invalid weight values in your distribution."
     )
 

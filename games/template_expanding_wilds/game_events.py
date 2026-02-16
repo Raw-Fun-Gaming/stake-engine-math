@@ -87,7 +87,7 @@ def win_info_prize_event(game_state, include_padding_index=True):
 
 
 def reveal_prize_event(game_state):
-    """Display the initial board drawn from reelstrips."""
+    """Display the initial board drawn from reel strips."""
     board_client = []
     special_attributes = list(game_state.config.special_symbols.keys())
     for reel, _ in enumerate(game_state.board):

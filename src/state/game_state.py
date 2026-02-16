@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Any, Callable, Optional
 from warnings import warn
 
 from src.calculations.symbol import SymbolStorage
-from src.config.output_filenames import OutputFiles
+from src.config.output import OutputFiles
 from src.events.core import set_final_win_event, win_cap_event, win_event
 from src.events.filter import EventFilter
 from src.events.free_spins import (
@@ -21,13 +21,13 @@ from src.events.free_spins import (
     trigger_free_spins_event,
     update_free_spins_event,
 )
-from src.events.special_symbols import update_global_mult_event
+from src.events.special_symbols import update_global_multiplier_event
 from src.events.tumble import tumble_event, update_tumble_win_event
 from src.exceptions import GameConfigError, SimulationError
 from src.formatter import OutputFormatter
 from src.state.books import Book
 from src.types import Board, Event, SimulationID
-from src.wins.win_manager import WinManager
+from src.wins.manager import WinManager
 from src.writers.data import (
     make_lookup_pay_split,
     make_lookup_tables,
@@ -39,7 +39,7 @@ from src.writers.data import (
 if TYPE_CHECKING:
     from src.config.bet_mode import BetMode
     from src.config.config import Config
-    from src.config.distributions import Distribution
+    from src.config.distribution import Distribution
 
 
 class GameState(ABC):
@@ -57,7 +57,7 @@ class GameState(ABC):
     Games should inherit from this class and implement:
         - run_spin(): Main game logic for a single spin
         - run_free_spin(): Free spin game logic
-        - assign_special_sym_function(): Special symbol handlers
+        - assign_special_symbol_functions(): Special symbol handlers
 
     Attributes:
         config: Game configuration instance
@@ -91,7 +91,7 @@ class GameState(ABC):
         self.special_symbol_functions: dict[str, list[Callable[[Any], None]]] = {}
         self.temp_wins: list[Any] = []
         self.create_symbol_map()
-        self.assign_special_sym_function()
+        self.assign_special_symbol_functions()
         self.sim: SimulationID = 0
         self.criteria: str = ""
         self.book: Book = Book(self.sim, self.criteria)
@@ -122,14 +122,14 @@ class GameState(ABC):
         self.symbol_storage = SymbolStorage(self.config, all_symbols_list)
 
     @abstractmethod
-    def assign_special_sym_function(self) -> None:
+    def assign_special_symbol_functions(self) -> None:
         """Define custom symbol functions in game implementation.
 
         Games should override this method to register special symbol handlers.
         Each handler is called when that symbol appears on the board.
 
         Example:
-            >>> def assign_special_sym_function(self) -> None:
+            >>> def assign_special_symbol_functions(self) -> None:
             ...     self.special_symbol_functions = {
             ...         "M": [self.assign_multiplier_property],
             ...         "W": [self.apply_wild_expansion]
@@ -153,8 +153,8 @@ class GameState(ABC):
 
         self.temp_wins = []
         self.board: Board = [
-            [[] for _ in range(self.config.num_rows[x])]  # type: ignore[attr-defined]
-            for x in range(self.config.num_reels)  # type: ignore[attr-defined]
+            [[] for _ in range(self.config.num_rows[reel])]  # type: ignore[attr-defined]
+            for reel in range(self.config.num_reels)  # type: ignore[attr-defined]
         ]
         self.top_symbols = None
         self.bottom_symbols = None
@@ -254,11 +254,11 @@ class GameState(ABC):
                 f"Available bet modes: {available_modes}. "
                 f"Check that self.bet_mode is set to a valid mode name."
             )
-        dist = current_bet_mode.get_distributions()  # type: ignore[attr-defined]
-        for c in dist:
-            if c._criteria == self.criteria:
-                return c  # type: ignore[return-value]
-        available_criteria = [d._criteria for d in dist]
+        distributions = current_bet_mode.get_distributions()  # type: ignore[attr-defined]
+        for dist in distributions:
+            if dist._criteria == self.criteria:
+                return dist  # type: ignore[return-value]
+        available_criteria = [dist._criteria for dist in distributions]
         raise GameConfigError(
             f"Could not locate distribution for criteria '{self.criteria}' in bet_mode '{self.bet_mode}'. "
             f"Available criteria: {available_criteria}. "
@@ -282,10 +282,10 @@ class GameState(ABC):
                 f"Available bet modes: {available_modes}. "
                 f"Check that self.bet_mode is set to a valid mode name."
             )
-        for d in bet_mode.get_distributions():  # type: ignore[attr-defined]
-            if d._criteria == self.criteria:
-                return d._conditions  # type: ignore[return-value]
-        available_criteria = [d._criteria for d in bet_mode.get_distributions()]
+        for dist in bet_mode.get_distributions():  # type: ignore[attr-defined]
+            if dist._criteria == self.criteria:
+                return dist._conditions  # type: ignore[return-value]
+        available_criteria = [dist._criteria for dist in bet_mode.get_distributions()]
         raise GameConfigError(
             f"Could not locate conditions for criteria '{self.criteria}' in bet_mode '{self.bet_mode}'. "
             f"Available criteria: {available_criteria}. "
@@ -311,8 +311,8 @@ class GameState(ABC):
             ... })
         """
         description_str: dict[str, str] = {}
-        for k, v in description.items():
-            description_str[str(k)] = str(v)
+        for key, value in description.items():
+            description_str[str(key)] = str(value)
         self.temp_wins.append(description_str)
         self.temp_wins.append(self.book_id)
 
@@ -326,9 +326,9 @@ class GameState(ABC):
         if current_bet_mode is None:
             return
         current_mode_force_keys = current_bet_mode.get_force_keys()  # type: ignore[attr-defined]
-        for keyValue in description:
-            if keyValue[0] not in current_mode_force_keys:
-                current_bet_mode.add_force_key(keyValue[0])  # type: ignore[attr-defined]
+        for key_value in description:
+            if key_value[0] not in current_mode_force_keys:
+                current_bet_mode.add_force_key(key_value[0])  # type: ignore[attr-defined]
 
     def combine(self, modes: list[list[BetMode]], bet_mode_name: str) -> None:
         """Combine force record keys across multiple mode configurations.
@@ -337,8 +337,8 @@ class GameState(ABC):
             modes: List of bet_mode configuration lists
             bet_mode_name: Name of the bet_mode to combine keys for
         """
-        for modeConfig in modes:
-            for bet_mode in modeConfig:
+        for mode_config in modes:
+            for bet_mode in mode_config:
                 if bet_mode.get_name() == bet_mode_name:
                     break
             force_keys = bet_mode.get_force_keys()  # type: ignore[attr-defined]
@@ -583,7 +583,7 @@ class GameState(ABC):
         """Check if there are enough active scatters to trigger free spins.
 
         Args:
-            scatter_key: Key for scatter symbols in special_syms_on_board
+            scatter_key: Key for scatter symbols in special_symbols_on_board
 
         Returns:
             True if free spin trigger condition is met
@@ -598,13 +598,13 @@ class GameState(ABC):
         """Ensure that bet_mode criteria is expecting free_spin trigger.
 
         Args:
-            scatter_key: Key for scatter symbols in special_syms_on_board
+            scatter_key: Key for scatter symbols in special_symbols_on_board
 
         Returns:
             True if conditions allow free spin entry
         """
         if self.get_current_distribution_conditions()["force_free_game"] and len(
-            self.special_syms_on_board[scatter_key]
+            self.special_symbols_on_board[scatter_key]
         ) >= min(self.config.free_spin_triggers[self.game_type].keys()):
             return True
         self.repeat = True
@@ -614,7 +614,7 @@ class GameState(ABC):
         """Trigger the free_spin function and update total free spin amount.
 
         Args:
-            scatter_key: Key for scatter symbols in special_syms_on_board
+            scatter_key: Key for scatter symbols in special_symbols_on_board
         """
         self.record(
             {
@@ -630,7 +630,7 @@ class GameState(ABC):
         """Set initial number of spins for a free game and transmit event.
 
         Args:
-            scatter_key: Key for scatter symbols in special_syms_on_board
+            scatter_key: Key for scatter symbols in special_symbols_on_board
         """
         self.total_free_spins = self.config.free_spin_triggers[self.game_type][
             self.count_special_symbols(scatter_key)
@@ -650,7 +650,7 @@ class GameState(ABC):
         """Update total free_spin amount on retrigger.
 
         Args:
-            scatter_key: Key for scatter symbols in special_syms_on_board
+            scatter_key: Key for scatter symbols in special_symbols_on_board
         """
         self.total_free_spins += self.config.free_spin_triggers[self.game_type][
             self.count_special_symbols(scatter_key)
@@ -678,24 +678,24 @@ class GameState(ABC):
         self.update_final_win()
         set_final_win_event(self)
 
-    def update_global_mult(self) -> None:
+    def update_global_multiplier(self) -> None:
         """Increment multiplier value and emit corresponding event."""
         self.global_multiplier += 1
-        update_global_mult_event(self)
+        update_global_multiplier_event(self)
 
-    def count_special_symbols(self, special_sym_criteria: str) -> int:
+    def count_special_symbols(self, symbol_key: str) -> int:
         """Returns integer count of active special symbols on board.
 
         This method will be properly implemented by Board class.
         Included here as a stub for game action methods that depend on it.
 
         Args:
-            special_sym_criteria: Special symbol type to count
+            symbol_key: Special symbol type to count
 
         Returns:
             Number of special symbols of that type currently on board
         """
-        return len(self.special_syms_on_board[special_sym_criteria])
+        return len(self.special_symbols_on_board[symbol_key])
 
     # =========================================================================
     # ABSTRACT METHODS (must be implemented by games)

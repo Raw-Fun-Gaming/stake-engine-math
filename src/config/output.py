@@ -51,8 +51,8 @@ class OutputFiles:
             "optimization_result_path",
             "publish_path",
         ]
-        for p in all_paths:
-            self.check_folder_exists(getattr(self, p))
+        for path_name in all_paths:
+            self.check_folder_exists(getattr(self, path_name))
 
     def assign_config_details(self):
         """All config filenames and paths."""

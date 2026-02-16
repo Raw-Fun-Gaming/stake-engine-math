@@ -201,7 +201,7 @@ stake-engine-math/
 │   │   ├── books.py                   # Book generation
 │   │   └── run_sims.py                # Simulation runner
 │   ├── wins/                          # Win management
-│   │   └── win_manager.py
+│   │   └── manager.py
 │   ├── constants.py                   # Enums (GameMode, WinType)
 │   ├── exceptions.py                  # Custom exceptions
 │   └── types.py                       # Type aliases

@@ -57,7 +57,7 @@ def create_test_cluster_game_state():
     test_config = GameClusterConfig()
     test_game_state = GameStateTest(test_config)
     test_game_state.create_symbol_map()
-    test_game_state.assign_special_sym_function()
+    test_game_state.assign_special_symbol_functions()
     test_game_state.board = create_blank_board(
         test_config.num_reels, test_config.num_rows
     )

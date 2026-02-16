@@ -7,7 +7,7 @@ class GameStateTest(GameState):
     def __init__(self, config):
         self.config = config
 
-    def assign_special_sym_function(self):
+    def assign_special_symbol_functions(self):
         self.special_symbol_functions = {
             "M": [self.assign_multiplier_property],
             "WM": [self.assign_multiplier_property],

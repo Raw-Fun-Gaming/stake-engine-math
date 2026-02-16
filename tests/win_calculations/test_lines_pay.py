@@ -78,7 +78,7 @@ def create_test_lines_game_state():
     test_config = GameLinesConfig()
     test_game_state = GameStateTest(test_config)
     test_game_state.create_symbol_map()
-    test_game_state.assign_special_sym_function()
+    test_game_state.assign_special_symbol_functions()
     test_game_state.board = create_blank_board(
         test_config.num_reels, test_config.num_rows
     )
@@ -93,7 +93,7 @@ def game_state():
 
 
 def test_linespay_basic(game_state):
-    "Basic lines-payout."
+    """Basic lines-payout."""
     for idx, _ in enumerate(game_state.board):
         for idy, _ in enumerate(game_state.board[idx]):
             if idx != len(game_state.board) - 1:
@@ -108,7 +108,7 @@ def test_linespay_basic(game_state):
 
 
 def test_linespay_wilds(game_state):
-    "Basic lines-payout."
+    """Basic lines-payout."""
     for idx, _ in enumerate(game_state.board):
         for idy, _ in enumerate(game_state.board[idx]):
             if idx < 4:
@@ -124,7 +124,7 @@ def test_linespay_wilds(game_state):
 
 
 def test_linespay_mult(game_state):
-    "Special symbol with multiplier"
+    """Special symbol with multiplier."""
     for idx, _ in enumerate(game_state.board):
         for idy, _ in enumerate(game_state.board[idx]):
             if idy == 0:

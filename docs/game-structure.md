@@ -104,7 +104,7 @@ class GameState(Board):  # or Tumble
     # ============================================================
     # SECTION 1: SPECIAL SYMBOL HANDLERS
     # ============================================================
-    def assign_special_sym_function(self):
+    def assign_special_symbol_functions(self):
         """Map symbols to handler functions"""
         self.special_symbol_functions = {
             "M": [self.assign_multiplier_property],
@@ -455,7 +455,7 @@ from src.calculations.board import Board
 class GameState(Board):
     """My new game logic"""
 
-    def assign_special_sym_function(self):
+    def assign_special_symbol_functions(self):
         """Define special symbols"""
         self.special_symbol_functions = {
             "M": [self.assign_mult],
@@ -505,7 +505,7 @@ event_type="win"
 # ✅ Good - all logic in gamestate.py, organized by sections
 class GameState(Board):
     # Special symbols section
-    def assign_special_sym_function(self): ...
+    def assign_special_symbol_functions(self): ...
 
     # Mechanics section
     def check_bonus(self): ...

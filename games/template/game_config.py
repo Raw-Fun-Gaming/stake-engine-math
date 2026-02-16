@@ -1,7 +1,7 @@
 """Template game configuration file, detailing required user-specified inputs."""
 
 from src.config.config import BetMode, Config
-from src.config.distributions import Distribution
+from src.config.distribution import Distribution
 
 
 class GameConfig(Config):

@@ -93,13 +93,13 @@ class Symbol:
         self.name: str = name
         self.special_functions: list[Callable[[Symbol], None]] = []
         self.special: bool = False
-        is_special = False
+        has_special = False
         for special_property in config.special_symbols.keys():
             if name in config.special_symbols[special_property]:
                 setattr(self, special_property, True)
-                is_special = True
+                has_special = True
 
-        if is_special:
+        if has_special:
             setattr(self, "special", True)
 
         self.assign_paying_bool(config)
@@ -116,8 +116,8 @@ class Symbol:
 
     def apply_special_function(self) -> None:
         """Execute all registered special functions on this symbol."""
-        for fun in self.special_functions:
-            fun(self)
+        for func in self.special_functions:
+            func(self)
 
     # Class-level cache for paytable lookups (shared across all instances)
     _paytable_cache: dict[int, tuple[set[str], dict[str, dict[str, float]]]] = {}
@@ -141,16 +141,16 @@ class Symbol:
             paying_symbols: set[str] = set()
             symbol_paytables: dict[str, dict[str, float]] = {}
 
-            for tup, val in config.paytable.items():
+            for combo, val in config.paytable.items():
                 assert isinstance(
-                    tup[1], str
+                    combo[1], str
                 ), "paytable expects string for symbol name, (kind, symbol): value"
-                symbol_name = tup[1]
+                symbol_name = combo[1]
                 paying_symbols.add(symbol_name)
 
                 if symbol_name not in symbol_paytables:
                     symbol_paytables[symbol_name] = {}
-                symbol_paytables[symbol_name][str(tup[0])] = val
+                symbol_paytables[symbol_name][str(combo[0])] = val
 
             # Cache the computed structure
             Symbol._paytable_cache[config_id] = (paying_symbols, symbol_paytables)

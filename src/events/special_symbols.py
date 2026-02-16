@@ -12,7 +12,7 @@ from src.events.constants import EventConstants
 from src.formatter import OutputFormatter
 
 
-def update_global_mult_event(game_state: Any) -> None:
+def update_global_multiplier_event(game_state: Any) -> None:
     """Increment global multiplier display.
 
     Creates an UPDATE_GLOBAL_MULTIPLIER event showing the current multiplier value.

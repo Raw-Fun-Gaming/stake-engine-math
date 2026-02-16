@@ -96,7 +96,7 @@ class Cluster:
 
     @staticmethod
     def in_cluster(
-        board: Board, reel: int, row: int, og_symbol: str, wild_key: str = "wild"
+        board: Board, reel: int, row: int, original_symbol: str, wild_key: str = "wild"
     ) -> bool:
         """Check if symbol at position matches cluster type (including wilds).
 
@@ -104,7 +104,7 @@ class Cluster:
             board: 2D list of Symbol objects [reel][row]
             reel: Reel index to check
             row: Row index to check
-            og_symbol: Original symbol name defining the cluster
+            original_symbol: Original symbol name defining the cluster
             wild_key: Attribute name for wild symbols (default: "wild")
 
         Returns:
@@ -112,7 +112,7 @@ class Cluster:
         """
         if (
             board[reel][row].check_attribute(wild_key)
-            or og_symbol == board[reel][row].name
+            or original_symbol == board[reel][row].name
         ):
             return True
         return False
@@ -125,7 +125,7 @@ class Cluster:
         potential_cluster: ClusterPositions,
         reel: int,
         row: int,
-        og_symbol: str,
+        original_symbol: str,
         wild_key: str = "wild",
     ) -> None:
         """Recursively find all adjacent matching symbols (flood fill).
@@ -141,22 +141,24 @@ class Cluster:
             potential_cluster: Growing list of positions in this cluster
             reel: Current reel index
             row: Current row index
-            og_symbol: Original symbol name defining the cluster
+            original_symbol: Original symbol name defining the cluster
             wild_key: Attribute name for wild symbols (default: "wild")
         """
         neighbours = Cluster.get_neighbours(board, reel, row, local_checked)
-        for reel_, row_ in neighbours:
-            if Cluster.in_cluster(board, reel_, row_, og_symbol, wild_key):
-                potential_cluster += [(reel_, row_)]
-                already_checked += [(reel_, row_)]
+        for neighbor_reel, neighbor_row in neighbours:
+            if Cluster.in_cluster(
+                board, neighbor_reel, neighbor_row, original_symbol, wild_key
+            ):
+                potential_cluster += [(neighbor_reel, neighbor_row)]
+                already_checked += [(neighbor_reel, neighbor_row)]
                 Cluster.check_all_neighbours(
                     board,
                     already_checked,
                     local_checked,
                     potential_cluster,
-                    reel_,
-                    row_,
-                    og_symbol,
+                    neighbor_reel,
+                    neighbor_row,
+                    original_symbol,
                     wild_key,
                 )
 
@@ -238,62 +240,54 @@ class Cluster:
             for cluster in clusters[sym]:
                 syms_in_cluster = len(cluster)
                 if (syms_in_cluster, sym) in config.paytable:
-                    cluster_mult: int = 0
-                    for positions in cluster:
-                        if board[positions[0]][positions[1]].check_attribute(
-                            multiplier_key
-                        ):
+                    cluster_multiplier: int = 0
+                    for pos in cluster:
+                        if board[pos[0]][pos[1]].check_attribute(multiplier_key):
                             if (
-                                int(
-                                    board[positions[0]][positions[1]].get_attribute(
-                                        multiplier_key
-                                    )
-                                )
+                                int(board[pos[0]][pos[1]].get_attribute(multiplier_key))
                                 > 0
                             ):
-                                cluster_mult += board[positions[0]][
-                                    positions[1]
+                                cluster_multiplier += board[pos[0]][
+                                    pos[1]
                                 ].get_attribute(multiplier_key)
-                    cluster_mult = max(cluster_mult, 1)
+                    cluster_multiplier = max(cluster_multiplier, 1)
                     symbol_win: float = config.paytable[(syms_in_cluster, sym)]
-                    symbol_win_multiplier: float = (
-                        symbol_win * cluster_mult * global_multiplier
+                    total_symbol_win: float = (
+                        symbol_win * cluster_multiplier * global_multiplier
                     )
-                    total_win += symbol_win_multiplier
-                    json_positions: list[dict[str, int]] = [
-                        {"reel": p[0], "row": p[1]} for p in cluster
+                    total_win += total_symbol_win
+                    win_positions: list[dict[str, int]] = [
+                        {"reel": pos[0], "row": pos[1]} for pos in cluster
                     ]
 
-                    central_pos: Position = Cluster.get_central_cluster_position(
-                        json_positions
+                    center_position: Position = Cluster.get_central_cluster_position(
+                        win_positions
                     )
                     return_data["wins"] += [
                         {
                             "symbol": sym,
                             "clusterSize": syms_in_cluster,
-                            "win": symbol_win_multiplier,
-                            "positions": json_positions,
+                            "win": total_symbol_win,
+                            "positions": win_positions,
                             "meta": {
                                 "globalMultiplier": global_multiplier,
-                                "clusterMultiplier": cluster_mult,
+                                "clusterMultiplier": cluster_multiplier,
                                 "winWithoutMult": symbol_win,
                                 "overlay": {
-                                    "reel": central_pos[0],
-                                    "row": central_pos[1],
+                                    "reel": center_position[0],
+                                    "row": center_position[1],
                                 },
                             },
                         }
                     ]
 
-                    for positions in cluster:
-                        board[positions[0]][positions[1]].explode = True  # type: ignore[attr-defined]
+                    for pos in cluster:
+                        board[pos[0]][pos[1]].explode = True  # type: ignore[attr-defined]
                         if {
-                            "reel": positions[0],
-                            "row": positions[1],
+                            "reel": pos[0],
+                            "row": pos[1],
                         } not in removed_symbols:
-                            removed_symbols.append(
-                                {"reel": positions[0], "row": positions[1]}
-                            )
+                            removed_symbols.append({"reel": pos[0], "row": pos[1]})
 
         return board, return_data, total_win
 

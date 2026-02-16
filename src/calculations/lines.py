@@ -10,7 +10,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from src.events.core import set_total_win_event, set_win_event, win_event
-from src.wins.multiplier_strategy import apply_mult
+from src.wins.multiplier_strategy import apply_multiplier
 
 if TYPE_CHECKING:
     from src.calculations.symbol import Symbol
@@ -132,12 +132,12 @@ class Lines:
             if base_win > 0 or wild_win > 0:
                 if wild_win > base_win:
                     positions: list[Position] = [
-                        {"reel": idx, "row": line[idx]}
-                        for idx in range(0, wild_matches)
+                        {"reel": reel, "row": line[reel]}
+                        for reel in range(0, wild_matches)
                     ]
                     line_win: float
-                    applied_mult: float
-                    line_win, applied_mult = apply_mult(
+                    applied_multiplier: float
+                    line_win, applied_multiplier = apply_multiplier(
                         board, multiplier_method, win_amount=wild_win, positions=positions  # type: ignore[arg-type]
                     )
                     win_dict: dict[str, Any] = Lines.line_win_info(
@@ -147,18 +147,20 @@ class Lines:
                         positions,
                         {
                             "lineIndex": line_index,
-                            "multiplier": applied_mult,
+                            "multiplier": applied_multiplier,
                             "winWithoutMult": wild_win,
                             "globalMultiplier": int(global_multiplier),
-                            "lineMultiplier": int(applied_mult / global_multiplier),
+                            "lineMultiplier": int(
+                                applied_multiplier / global_multiplier
+                            ),
                         },
                     )
                 else:
                     positions = [
-                        {"reel": idx, "row": line[idx]}
-                        for idx in range(0, matches + wild_matches)
+                        {"reel": reel, "row": line[reel]}
+                        for reel in range(0, matches + wild_matches)
                     ]
-                    line_win, applied_mult = apply_mult(
+                    line_win, applied_multiplier = apply_multiplier(
                         board, multiplier_method, win_amount=base_win, positions=positions  # type: ignore[arg-type]
                     )
                     win_dict = Lines.line_win_info(
@@ -168,10 +170,12 @@ class Lines:
                         positions,
                         {
                             "lineIndex": line_index,
-                            "multiplier": applied_mult,
+                            "multiplier": applied_multiplier,
                             "winWithoutMult": base_win,
                             "globalMultiplier": int(global_multiplier),
-                            "lineMultiplier": int(applied_mult / global_multiplier),
+                            "lineMultiplier": int(
+                                applied_multiplier / global_multiplier
+                            ),
                         },
                     )
 

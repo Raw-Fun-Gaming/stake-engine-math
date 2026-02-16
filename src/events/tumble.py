@@ -47,11 +47,11 @@ def tumble_event(game_state: Any, include_padding_index: bool = True) -> None:
         reel_indexes.sort()
 
     new_symbols: list[list[Any]] = [[] for _ in range(game_state.config.num_reels)]
-    for r, _ in enumerate(game_state.new_symbols_from_tumble):
-        if len(game_state.new_symbols_from_tumble[r]) > 0:
-            new_symbols[r] = [
-                formatter.format_symbol(s, special_attributes)
-                for s in game_state.new_symbols_from_tumble[r]
+    for reel, _ in enumerate(game_state.new_symbols_from_tumble):
+        if len(game_state.new_symbols_from_tumble[reel]) > 0:
+            new_symbols[reel] = [
+                formatter.format_symbol(sym, special_attributes)
+                for sym in game_state.new_symbols_from_tumble[reel]
             ]
 
     event: dict[str, Any] = {

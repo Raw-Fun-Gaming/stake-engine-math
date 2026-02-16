@@ -57,17 +57,17 @@ class Tumble(Board):
 
             for i in range(removed_count):
                 reel_pos: int = (self.reel_positions[reel] - 1) % len(
-                    self.reelstrip[reel]
+                    self.reel_strip[reel]
                 )
                 self.reel_positions[reel] = reel_pos
                 # Take top symbol if it exists (don't add this to new_symbols_from_tumble)
                 if i == 0 and self.config.include_padding:
                     insert_sym: Symbol = self.top_symbols[reel]
                 else:
-                    nme: str = self.reelstrip[reel][
-                        (reel_pos) % len(self.reelstrip[reel])
+                    sym_name: str = self.reel_strip[reel][
+                        (reel_pos) % len(self.reel_strip[reel])
                     ]
-                    insert_sym = self.create_symbol(nme)
+                    insert_sym = self.create_symbol(sym_name)
                     self.new_symbols_from_tumble[reel].insert(0, insert_sym)
                 copy_reel.insert(0, insert_sym)
 
@@ -87,8 +87,8 @@ class Tumble(Board):
 
             if self.config.include_padding and removed_count > 0:
                 padding_name: str = str(
-                    self.reelstrip[reel][
-                        (self.reel_positions[reel] - 1) % len(self.reelstrip[reel])
+                    self.reel_strip[reel][
+                        (self.reel_positions[reel] - 1) % len(self.reel_strip[reel])
                     ]
                 )
                 self.top_symbols[reel] = self.create_symbol(padding_name)

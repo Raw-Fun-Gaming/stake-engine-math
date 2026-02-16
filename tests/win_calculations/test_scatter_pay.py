@@ -49,7 +49,7 @@ def create_test_scatter_game_state():
     test_config = GameScatterConfig()
     test_game_state = GameStateTest(test_config)
     test_game_state.create_symbol_map()
-    test_game_state.assign_special_sym_function()
+    test_game_state.assign_special_symbol_functions()
     test_game_state.board = create_blank_board(
         test_config.num_reels, test_config.num_rows
     )
@@ -63,7 +63,7 @@ def game_state():
 
 
 def test_scatterpay_nowilds(game_state):
-    "Test basic scatter-pay functionality, no wilds/multipliers"
+    """Test basic scatter-pay functionality, no wilds/multipliers."""
     for idx, _ in enumerate(game_state.board):
         for idy, _ in enumerate(game_state.board[idx]):
             game_state.board[idx][idy] = game_state.create_symbol("H1")
@@ -96,7 +96,7 @@ def test_scatterpay_mults(game_state):
 
 
 def test_scatterpay_wilds(game_state):
-    "Test scatter-pay method with inclusion of Wild symbols"
+    """Test scatter-pay method with inclusion of Wild symbols."""
     for idx, _ in enumerate(game_state.board):
         for idy, _ in enumerate(game_state.board[idx]):
             if idx == 0:

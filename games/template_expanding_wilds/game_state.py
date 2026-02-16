@@ -39,7 +39,7 @@ class GameState(Board):
     # SPECIAL SYMBOL HANDLERS
     # =========================================================================
 
-    def assign_special_sym_function(self) -> None:
+    def assign_special_symbol_functions(self) -> None:
         """Define special symbol behaviors.
 
         W symbols get multiplier attributes (in free game only)
@@ -347,19 +347,19 @@ class GameState(Board):
 
         while self.free_spin_count < self.total_free_spins:
             self.update_free_spin()
-            self.create_board_reelstrips()
+            self.create_board_reel_strips()
 
             # Force/avoid prizes based on criteria
             if self.criteria == "0":
-                while len(self.special_syms_on_board["prize"]) > 0:
-                    self.create_board_reelstrips()
+                while len(self.special_symbols_on_board["prize"]) > 0:
+                    self.create_board_reel_strips()
             elif (
                 self.criteria.upper() == "wincap"
                 and self.win_manager.running_bet_win < 0.95 * self.config.win_cap
                 and self.free_spin_count <= 1
             ):
-                while len(self.special_syms_on_board["prize"]) == 0:
-                    self.create_board_reelstrips()
+                while len(self.special_symbols_on_board["prize"]) == 0:
+                    self.create_board_reel_strips()
 
             self.replace_board_with_stickys()
             reveal_prize_event(self)

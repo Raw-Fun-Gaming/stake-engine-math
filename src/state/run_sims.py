@@ -20,12 +20,12 @@ def create_books(
     profiling: bool,
 ):
     """Main run-function for simulating game outcomes and outputting all files."""
-    for key, ns in num_sim_args.items():
-        if all([ns > 0, ns > batch_size * batch_size]):
+    for key, count in num_sim_args.items():
+        if all([count > 0, count > batch_size * batch_size]):
             assert (
-                ns % (threads * batch_size) == 0
+                count % (threads * batch_size) == 0
             ), "mode-sims/(batch * threads) must be divisible with no remainder"
-        num_sim_args[key] = int(ns)
+        num_sim_args[key] = int(count)
 
     if not compress and sum(num_sim_args.values()) > 1e4:
         warn("Generating large number of uncompressed books!")
@@ -35,7 +35,7 @@ def create_books(
             "Multithread profiling not supported, threads must = 1 with profiling enabled"
         )
 
-    startTime = time.time()
+    start_time = time.time()
     print("\nCreating books...")
     for bet_mode_name in num_sim_args:
         if num_sim_args[bet_mode_name] > 0:
@@ -61,7 +61,7 @@ def create_books(
                 compress=compress,
             )  # , write_event_list=config.write_event_list)
     shutil.rmtree(game_state.output_files.temp_path)
-    print("\nFinished creating books in", time.time() - startTime, "seconds.\n")
+    print("\nFinished creating books in", time.time() - start_time, "seconds.\n")
 
 
 def get_sim_splits(
@@ -70,30 +70,31 @@ def get_sim_splits(
     """Ensure assignment of criteria to all simulations numbers."""
     bet_mode_distributions = game_state.get_bet_mode(bet_mode_name).get_distributions()
     num_sims_criteria = {
-        d._criteria: max(int(num_sims * d._quota), 1) for d in bet_mode_distributions
+        dist._criteria: max(int(num_sims * dist._quota), 1)
+        for dist in bet_mode_distributions
     }
     total_sims = sum(num_sims_criteria.values())
     reduce_sims = total_sims > num_sims
-    listedCriteria = [d._criteria for d in bet_mode_distributions]
-    criteria_weights = [d._quota for d in bet_mode_distributions]
+    criteria_list = [dist._criteria for dist in bet_mode_distributions]
+    criteria_weights = [dist._quota for dist in bet_mode_distributions]
     random.seed(0)
     while sum(num_sims_criteria.values()) != num_sims:
-        c = random.choices(listedCriteria, criteria_weights)[0]
-        if reduce_sims and num_sims_criteria[c] > 1:
-            num_sims_criteria[c] -= 1
+        criteria = random.choices(criteria_list, criteria_weights)[0]
+        if reduce_sims and num_sims_criteria[criteria] > 1:
+            num_sims_criteria[criteria] -= 1
         elif not reduce_sims:
-            num_sims_criteria[c] += 1
+            num_sims_criteria[criteria] += 1
 
     return num_sims_criteria
 
 
 def assign_sim_criteria(num_sims_criteria: Dict[str, int], sims: int) -> Dict[int, str]:
     """Assign criteria randomly to simulations based on quota defined in config."""
-    simAllocation = [
+    sim_allocation = [
         criteria for criteria, count in num_sims_criteria.items() for _ in range(count)
     ]
-    random.shuffle(simAllocation)
-    return {i: simAllocation[i] for i in range(min(sims, len(simAllocation)))}
+    random.shuffle(sim_allocation)
+    return {i: sim_allocation[i] for i in range(min(sims, len(sim_allocation)))}
 
 
 async def profile_and_visualize(

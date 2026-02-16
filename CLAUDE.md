@@ -495,7 +495,7 @@ self.book.add_event(event)
 
 **Special symbol with attributes:**
 ```python
-def assign_special_sym_function(self):
+def assign_special_symbol_functions(self):
     self.special_symbol_functions = {
         "M": [self.assign_mult_property]
     }

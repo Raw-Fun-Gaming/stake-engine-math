@@ -309,16 +309,16 @@ def make_fe_config(game_state, json_padding=True, assign_properties=True, **kwar
     for key in sorted(symbols.keys(), key=symbol_sort_key):
         json_info["symbols"].append({key: symbols[key]})
 
-    reelstrip_json = {}
+    reel_strip_json = {}
     if json_padding:
         for idx, reels in game_state.config.padding_reels.items():
-            reelstrip_json[idx] = [[] for _ in range(game_state.config.num_reels)]
+            reel_strip_json[idx] = [[] for _ in range(game_state.config.num_reels)]
             for c, _ in enumerate(reels):
                 column = reels[c]
                 for i, _ in enumerate(column):
-                    reelstrip_json[idx][c].append({"name": column[i]})
+                    reel_strip_json[idx][c].append({"name": column[i]})
 
-        json_info["paddingReels"] = reelstrip_json
+        json_info["paddingReels"] = reel_strip_json
     elif not json_padding:
         json_info["paddingReels"] = game_state.config.paddingReels
 

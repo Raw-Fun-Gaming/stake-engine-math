@@ -15,7 +15,7 @@ from src.calculations.statistics import get_random_outcome
 from src.calculations.tumble import Tumble
 from src.events.core import set_total_win_event, set_win_event
 from src.events.free_spins import trigger_free_spins_event, update_free_spins_event
-from src.events.special_symbols import update_global_mult_event
+from src.events.special_symbols import update_global_multiplier_event
 from src.events.tumble import update_tumble_win_event
 
 
@@ -34,7 +34,7 @@ class GameState(Tumble):
     # SPECIAL SYMBOL HANDLERS
     # =========================================================================
 
-    def assign_special_sym_function(self) -> None:
+    def assign_special_symbol_functions(self) -> None:
         """Define special symbol behaviors.
 
         M symbols get assigned random multiplier values from distribution.
@@ -192,7 +192,7 @@ class GameState(Tumble):
         self.free_spin_count += 1
         update_free_spins_event(self)
         self.global_multiplier = 1
-        update_global_mult_event(self)
+        update_global_multiplier_event(self)
         self.win_manager.reset_spin_win()
         self.tumble_win_multiplier = 0
         self.win_data = {}
@@ -248,7 +248,7 @@ class GameState(Tumble):
 
             while self.win_data["totalWin"] > 0 and not (self.wincap_triggered):
                 self.tumble_game_board()
-                self.update_global_mult()  # Increases multiplier with each tumble
+                self.update_global_multiplier()  # Increases multiplier with each tumble
                 self.get_scatterpays_update_wins()
 
             self.set_end_tumble_event()

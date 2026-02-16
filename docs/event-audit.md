@@ -113,7 +113,7 @@ Based on `src/events/constants.py` and event modules (`core.py`, `free_spins.py`
   - **Optimization**: Could sum WIN events
 
 ### 5. Multiplier Events
-- **UPDATE_GLOBAL_MULTIPLIER** (`update_global_mult_event()`)
+- **UPDATE_GLOBAL_MULTIPLIER** (`update_global_multiplier_event()`)
   - **When**: Global multiplier changes
   - **Purpose**: Show multiplier progression
   - **Data**: new_multiplier

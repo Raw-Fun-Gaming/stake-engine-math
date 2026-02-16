@@ -201,11 +201,11 @@ class BetMode:
         """
         return self._distributions
 
-    def get_distribution_conditions(self, targetCriteria: str) -> dict[str, Any]:
+    def get_distribution_conditions(self, target_criteria: str) -> dict[str, Any]:
         """Return conditions for a specific distribution criteria.
 
         Args:
-            targetCriteria: Criteria identifier to search for
+            target_criteria: Criteria identifier to search for
 
         Returns:
             Dictionary of conditions for the target criteria
@@ -213,13 +213,13 @@ class BetMode:
         Raises:
             RuntimeError: If target criteria not found in distributions
         """
-        for d in self.get_distributions():
-            if d._criteria == targetCriteria:
+        for dist in self.get_distributions():
+            if dist._criteria == target_criteria:
                 # type: ignore[no-any-return]
-                return d._conditions
-        available_criteria = [d._criteria for d in self.get_distributions()]
+                return dist._conditions
+        available_criteria = [dist._criteria for dist in self.get_distributions()]
         raise GameConfigError(
-            f"Distribution criteria '{targetCriteria}' not found in bet_mode '{self._name}'. "
+            f"Distribution criteria '{target_criteria}' not found in bet_mode '{self._name}'. "
             f"Available criteria: {available_criteria}. "
             f"Check your distribution configuration in game_config.py."
         )

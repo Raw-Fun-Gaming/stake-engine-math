@@ -9,7 +9,7 @@ Base Game:
 Scatter Symbols appear on all reels, a minimum of 3 Scatters are needed to trigger the Free Game
 
 Free Game:
-A separate reelstrip is used for the free game
+A separate reel strip is used for the free game
 Wilds have larger multipliers (minimum of 2x) and appear on all reels
 2 Scatters are needed to trigger extra spins, appearing only on reels 2,3,4
 

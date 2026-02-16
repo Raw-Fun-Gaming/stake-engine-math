@@ -110,7 +110,7 @@ for symbol in reel_0:
 ### Special Symbol Assignment
 
 ```python
-def assign_special_sym_function(self) -> None:
+def assign_special_symbol_functions(self) -> None:
     """Define special symbol behaviors.
 
     Ways template has no special symbol attributes.
@@ -254,7 +254,7 @@ self.num_rows = [2, 3, 4, 3, 2]  # Total: 2×3×4×3×2 = 144 ways
 ### Add Multiplier Symbols
 
 ```python
-def assign_special_sym_function(self) -> None:
+def assign_special_symbol_functions(self) -> None:
     self.special_symbol_functions = {
         "M": [self.assign_multiplier]
     }

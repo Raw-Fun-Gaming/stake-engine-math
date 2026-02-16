@@ -143,7 +143,7 @@ Each payline is checked for matching symbols from left to right.
 ### Special Symbol Assignment
 
 ```python
-def assign_special_sym_function(self) -> None:
+def assign_special_symbol_functions(self) -> None:
     """Define special symbol behaviors.
 
     Lines template has no special symbol attributes.
@@ -266,7 +266,7 @@ The lines template is ideal for:
 ### Add Multiplier Wilds
 
 ```python
-def assign_special_sym_function(self) -> None:
+def assign_special_symbol_functions(self) -> None:
     self.special_symbol_functions = {
         "W": [self.assign_multiplier]
     }

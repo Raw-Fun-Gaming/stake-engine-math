@@ -32,7 +32,7 @@ self.win_type = "lines"
 ### Special Symbol Handlers
 
 ```python
-def assign_special_sym_function(self) -> None:
+def assign_special_symbol_functions(self) -> None:
     """Define special symbol behaviors.
 
     W symbols get multiplier attributes (in free game only)

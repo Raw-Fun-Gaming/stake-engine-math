@@ -97,11 +97,11 @@ class Config:
             {}
         )  # Symbol information assumes (count, symbol_name) format
         self.special_symbols: dict[Any, list[str]] = {None: []}
-        self.special_sybol_names: set[str] | list[str] = (
+        self.special_symbol_names: set[str] | list[str] = (
             set()
         )  # TODO: Fix typo in Phase 2
         self.paying_symbol_names: set[str] | list[str] = set()
-        self.all_valid_sym_names: set[str] = set()
+        self.all_valid_symbol_names: set[str] = set()
 
         # Define special Symbols properties - list all possible symbol states during game-play
         self.base_game_type: str = "base_game"
@@ -180,9 +180,9 @@ class Config:
                 f"Add this key to self.win_levels in your game_config.py."
             )
         levels = self.win_levels[win_level_key]
-        for idx, pair in levels.items():
+        for level, pair in levels.items():
             if win_amount >= pair[0] and win_amount < pair[1]:
-                return idx
+                return level
         # Show the actual ranges for debugging
         ranges_str = ", ".join(
             [f"Level {k}: [{v[0]}, {v[1]})" for k, v in levels.items()]
@@ -196,14 +196,14 @@ class Config:
     def get_special_symbol_names(self) -> None:
         """Extract all special symbol names from special_symbols dict.
 
-        Updates self.special_sybol_names with a list of all unique special
+        Updates self.special_symbol_names with a list of all unique special
         symbol names found in the special_symbols configuration.
         """
-        self.special_sybol_names = set()
+        self.special_symbol_names = set()
         for key in list(self.special_symbols.keys()):
             for sym in self.special_symbols[key]:
-                self.special_sybol_names.add(sym)
-        self.special_sybol_names = list(self.special_sybol_names)
+                self.special_symbol_names.add(sym)
+        self.special_symbol_names = list(self.special_symbol_names)
 
     def get_paying_symbols(self) -> None:
         """Extract all paying symbol names from paytable.
@@ -215,10 +215,10 @@ class Config:
             AssertionError: If symbol name in paytable is not a string
         """
         self.paying_symbol_names = set()
-        for tup in self.paytable:
-            assert type(tup[1]) == str, "symbol name must be a string"
-            self.paying_symbol_names.add(tup[1])
-        self.payingSymbolnames: list[str] = list(self.paying_symbol_names)
+        for combo in self.paytable:
+            assert type(combo[1]) == str, "symbol name must be a string"
+            self.paying_symbol_names.add(combo[1])
+        self.paying_symbol_names = list(self.paying_symbol_names)
 
     def validate_reel_symbols(self, reel_strip: list[list[str]]) -> None:
         """Verify that all symbols on the reel strip are valid.
@@ -227,19 +227,19 @@ class Config:
             reel_strip: 2D list of symbol names [reel][position]
 
         Raises:
-            RuntimeError: If reel strip contains symbols not in all_valid_sym_names
+            RuntimeError: If reel strip contains symbols not in all_valid_symbol_names
         """
-        uniqueSymbols: set[str] = set()
+        unique_symbols: set[str] = set()
         for reel in reel_strip:
             for row in reel:
-                uniqueSymbols.add(row)
+                unique_symbols.add(row)
 
-        isSubset = uniqueSymbols.issubset(set(self.all_valid_sym_names))
-        if not isSubset:
-            invalid_symbols = uniqueSymbols - set(self.all_valid_sym_names)
+        is_subset = unique_symbols.issubset(set(self.all_valid_symbol_names))
+        if not is_subset:
+            invalid_symbols = unique_symbols - set(self.all_valid_symbol_names)
             raise ReelStripError(
                 f"Reel strip contains {len(invalid_symbols)} unregistered symbol(s): {sorted(invalid_symbols)}. "
-                f"Valid symbols (from paytable + special_symbols): {sorted(self.all_valid_sym_names)}. "
+                f"Valid symbols (from paytable + special_symbols): {sorted(self.all_valid_symbol_names)}. "
                 f"Either add the missing symbols to your paytable/special_symbols in game_config.py, "
                 f"or remove them from the reel strip CSV file."
             )
@@ -259,44 +259,44 @@ class Config:
         Raises:
             AssertionError: If any symbol is empty after stripping
         """
-        reelstrips: list[list[str]] = []
+        reel_strips: list[list[str]] = []
         count = 0
         with open(os.path.abspath(file_path), "r", encoding="UTF-8") as file:
             for line in file:
                 split_line = line.strip().split(",")
-                for reelIndex in range(len(split_line)):
+                for reel_index in range(len(split_line)):
                     if count == 0:
-                        reelstrips.append(
+                        reel_strips.append(
                             [
                                 "".join(
                                     [
                                         ch
-                                        for ch in split_line[reelIndex]
+                                        for ch in split_line[reel_index]
                                         if ch.strip().isalnum()
                                     ]
                                 )
                             ]
                         )
                     else:
-                        reelstrips[reelIndex].append(
+                        reel_strips[reel_index].append(
                             "".join(
                                 [
                                     ch
-                                    for ch in split_line[reelIndex]
+                                    for ch in split_line[reel_index]
                                     if ch.strip().isalnum() and len(ch) > 0
                                 ]
                             )
                         )
 
-                    if len(reelstrips[reelIndex][-1]) == 0:
+                    if len(reel_strips[reel_index][-1]) == 0:
                         raise ReelStripError(
-                            f"Empty symbol found in reel strip at reel {reelIndex}, row {count}. "
+                            f"Empty symbol found in reel strip at reel {reel_index}, row {count}. "
                             f"File: {file_path}. "
                             f"Check for empty cells or trailing commas in your CSV file."
                         )
                 count += 1
 
-        return reelstrips
+        return reel_strips
 
     def construct_paths(self) -> None:
         """Construct all output file paths based on game_id.

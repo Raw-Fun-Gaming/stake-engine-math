@@ -36,9 +36,9 @@ def convert_symbol_json(symbol: Any, special_attributes: list[str]) -> dict[str,
     Returns:
         Dictionary with symbol name and any special attributes
     """
-    print_sym: dict[str, Any] = {"name": symbol.name}
+    symbol_dict: dict[str, Any] = {"name": symbol.name}
     attrs = vars(symbol)
-    for key, val in attrs.items():
+    for key, value in attrs.items():
         if key in special_attributes and symbol.get_attribute(key) is not False:
-            print_sym[key] = val
-    return print_sym
+            symbol_dict[key] = value
+    return symbol_dict

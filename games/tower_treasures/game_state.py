@@ -34,7 +34,7 @@ class GameState(Board):
     # SPECIAL SYMBOL HANDLERS
     # =========================================================================
 
-    def assign_special_sym_function(self) -> None:
+    def assign_special_symbol_functions(self) -> None:
         """Define special symbol behaviors.
 
         M symbols get multiplier attributes with prize values.

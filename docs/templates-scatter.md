@@ -102,7 +102,7 @@ for symbol, count in symbol_counts.items():
 ### Special Symbol Assignment
 
 ```python
-def assign_special_sym_function(self) -> None:
+def assign_special_symbol_functions(self) -> None:
     """Define special symbol behaviors.
 
     Scatter template can optionally include multiplier symbols.

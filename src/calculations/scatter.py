@@ -116,16 +116,16 @@ class Scatter:
                 symbols_on_board[sym].extend(wild_positions)
             win_size: int = len(symbols_on_board[sym])
             if (win_size, sym) in config.paytable:
-                symbol_mult: int = 0
-                for p in symbols_on_board[sym]:
-                    if board[p["reel"]][p["row"]].check_attribute(multiplier_key):
-                        symbol_mult += int(
-                            board[p["reel"]][p["row"]].get_attribute(multiplier_key)
+                symbol_multiplier: int = 0
+                for pos in symbols_on_board[sym]:
+                    if board[pos["reel"]][pos["row"]].check_attribute(multiplier_key):
+                        symbol_multiplier += int(
+                            board[pos["reel"]][pos["row"]].get_attribute(multiplier_key)
                         )
 
-                    board[p["reel"]][p["row"]].assign_attribute({"explode": True})
+                    board[pos["reel"]][pos["row"]].assign_attribute({"explode": True})
 
-                symbol_mult = max(symbol_mult, 1)
+                symbol_multiplier = max(symbol_multiplier, 1)
                 overlay_position: tuple[int, int] = (
                     Scatter.get_central_scatter_position(
                         rows_for_overlay,
@@ -139,11 +139,11 @@ class Scatter:
                     "symbol": sym,
                     "win": config.paytable[(win_size, sym)]
                     * global_multiplier
-                    * symbol_mult,
+                    * symbol_multiplier,
                     "positions": symbols_on_board[sym],
                     "meta": {
                         "globalMultiplier": global_multiplier,
-                        "clusterMultiplier": symbol_mult,
+                        "clusterMultiplier": symbol_multiplier,
                         "winWithoutMult": config.paytable[(win_size, sym)],
                         "overlay": {
                             "reel": overlay_position[0],

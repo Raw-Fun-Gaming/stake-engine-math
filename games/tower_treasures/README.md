@@ -73,7 +73,7 @@ Welcome to a thrilling tower defense slot experience where strategy meets specta
 - **`upgrade`** – Tracks the evolution of resource lands into powerful tower defenses
 - **`trigger_free_spins`** – Triggers the start of free spins (bonus campaign)
 - **`update_free_spins`** – Updates the current free spin count and emits related events
-- **`update_global_mult`** – (Not used in Tower Defense, but present in the codebase for other games) Updates the global multiplier
+- **`update_global_multiplier`** – (Not used in Tower Defense, but present in the codebase for other games) Updates the global multiplier
 
 ## 🔧 Analysis Tools
 
@@ -82,7 +82,7 @@ Welcome to a thrilling tower defense slot experience where strategy meets specta
 #### `analyze_clustering.py`
 **Purpose:** Evaluates the tactical potential of each resource land in your construction strategy.
 **Usage:** `python analyze_clustering.py`
-**Battle Intelligence:** 
+**Battle Intelligence:**
 - Analyzes horizontal and vertical formation opportunities
 - Calculates clustering effectiveness for each resource type (L1-L5)
 - Identifies maximum cluster potential and distribution strategies
