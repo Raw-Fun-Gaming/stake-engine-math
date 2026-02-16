@@ -47,7 +47,9 @@ event_type = "win"
 
 **Special Symbols**
 - `EventConstants.UPDATE_GLOBAL_MULTIPLIER` - Global multiplier change
-- `EventConstants.UPDATE_BOARD_MULTIPLIER` - Board multiplier information
+- `EventConstants.APPLY_SYMBOL_MULTIPLIERS` - Apply M symbol multipliers to total win
+- `EventConstants.REVEAL_GRID_MULTIPLIERS` - Reveal position grid multiplier state
+- `EventConstants.REVEAL_GRID_INCREMENTERS` - Reveal position grid incrementer state (adds to symbol count)
 - `EventConstants.UPGRADE` - Symbol upgrade
 - `EventConstants.REVEAL` - Reveal hidden symbols
 - `EventConstants.REVEAL_EXPANDING_WILDS` - Reveal new expanding wild symbols

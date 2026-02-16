@@ -1,6 +1,7 @@
 """Tumble/cascade event functions.
 
-Includes tumble, set_tumble_win, update_tumble_win, and reveal_board_multipliers events.
+Includes tumble, set_tumble_win, update_tumble_win, reveal_grid_multipliers,
+and reveal_grid_incrementers events.
 Only needed by games with tumble/cascade mechanics.
 """
 
@@ -100,8 +101,8 @@ def update_tumble_win_event(game_state: Any) -> None:
     game_state.book.add_event(event)
 
 
-def reveal_board_multipliers_event(game_state: Any) -> None:
-    """Reveal the current state of board position multipliers after a win.
+def reveal_grid_multipliers_event(game_state: Any) -> None:
+    """Reveal the current state of grid position multipliers after a win.
 
     Shows the multiplier value at each board position so the frontend
     can render the multiplier grid overlay.
@@ -111,7 +112,25 @@ def reveal_board_multipliers_event(game_state: Any) -> None:
     """
     event: dict[str, Any] = {
         "index": len(game_state.book.events),
-        "type": EventConstants.REVEAL_BOARD_MULTIPLIERS.value,
-        "boardMultipliers": deepcopy(game_state.position_multipliers),
+        "type": EventConstants.REVEAL_GRID_MULTIPLIERS.value,
+        "gridMultipliers": deepcopy(game_state.position_multipliers),
+    }
+    game_state.book.add_event(event)
+
+
+def reveal_grid_incrementers_event(game_state: Any) -> None:
+    """Reveal the current state of grid position incrementers after a win.
+
+    Shows the incrementer value at each board position so the frontend
+    can render the incrementer grid overlay. Incrementers add to the
+    symbol count in a cluster rather than multiplying the win.
+
+    Args:
+        game_state: Current game state with position_multipliers grid
+    """
+    event: dict[str, Any] = {
+        "index": len(game_state.book.events),
+        "type": EventConstants.REVEAL_GRID_INCREMENTERS.value,
+        "gridIncrementers": deepcopy(game_state.position_multipliers),
     }
     game_state.book.add_event(event)

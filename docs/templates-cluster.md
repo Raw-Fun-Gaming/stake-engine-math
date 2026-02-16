@@ -74,7 +74,7 @@ The `run_spin()` method implements the tumble cycle:
 def run_spin(self) -> Board:
     """Execute a single base game spin with tumbles."""
     board = self.draw_board()
-    self.book.add_event(reveal_board_multipliers_event(self))
+    self.book.add_event(reveal_grid_multipliers_event(self))
 
     # Initial cluster calculation
     cluster_calc = Cluster(board, self)
@@ -141,10 +141,10 @@ def check_free_spin_condition(self) -> bool:
 The template includes custom events defined in `game_events.py`:
 
 ```python
-def reveal_board_multipliers_event(game_state) -> dict:
+def reveal_grid_multipliers_event(game_state) -> dict:
     """Emit grid multiplier state at spin start."""
     return {
-        "type": "REVEAL_BOARD_MULTIPLIERS",
+        "type": "REVEAL_GRID_MULTIPLIERS",
         "multipliers": game_state.grid_multipliers
     }
 ```

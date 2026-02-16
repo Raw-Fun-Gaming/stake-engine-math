@@ -68,7 +68,7 @@ class Config:
         # Output formatting options (Phase 3.1: Output Optimization)
         self.output_mode: OutputMode = OutputMode.VERBOSE  # compact or verbose format
         self.include_losing_boards: bool = True  # Include board reveals for 0-win spins
-        self.compress_positions: bool = False  # Use [reel, row] instead of {reel, row}
+        self.compress_positions: bool = True  # Use [reel, row] instead of {reel, row}
         self.simple_symbols: bool = True  # Use "L5" instead of {"name": "L5"}
         self.skip_implicit_events: bool = (
             False  # Skip redundant events (e.g., set_final_win with 0)

@@ -23,7 +23,7 @@ from src.events.free_spins import (
 )
 from src.events.special_symbols import update_global_mult_event
 from src.events.tumble import tumble_event, update_tumble_win_event
-from src.exceptions import GameConfigError
+from src.exceptions import GameConfigError, SimulationError
 from src.formatter import OutputFormatter
 from src.state.books import Book
 from src.types import Board, Event, SimulationID
@@ -143,7 +143,14 @@ class GameState(ABC):
         Clears the board, resets win tracking, free spin counts, and
         prepares a new book for event recording with format versioning
         and event filtering.
+
+        Raises:
+            SimulationError: If retry limit exceeded, with actionable suggestions.
         """
+        if self._repeat_count >= self.MAX_REPEAT_ATTEMPTS:
+            self._raise_repeat_limit_error()
+        self._repeat_count += 1
+
         self.temp_wins = []
         self.board: Board = [
             [[] for _ in range(self.config.num_rows[x])]  # type: ignore[attr-defined]
@@ -181,6 +188,8 @@ class GameState(ABC):
         self.repeat = False
         self.anticipation = [0] * self.config.num_reels  # type: ignore[attr-defined]
 
+    MAX_REPEAT_ATTEMPTS: int = 10_000
+
     def reset_seed(self, sim: SimulationID = 0) -> None:
         """Reset RNG seed to simulation number for reproducibility.
 
@@ -189,6 +198,7 @@ class GameState(ABC):
         """
         random.seed(sim + 1)
         self.sim = sim
+        self._repeat_count: int = 0
 
     def reset_free_spin(self) -> None:
         """Reset state for free spin mode.
@@ -412,6 +422,57 @@ class GameState(ABC):
             if conditions.get("force_free_game") and not self.triggered_free_game:
                 self.repeat = True
 
+    def _raise_repeat_limit_error(self) -> None:
+        """Build and raise a descriptive error when repeat limit is exceeded.
+
+        Called from reset_book() when _repeat_count exceeds MAX_REPEAT_ATTEMPTS.
+        Uses state from the previous (failed) iteration which hasn't been reset yet.
+        """
+        dist = self.get_current_bet_mode_distributions()
+        conditions = self.get_current_distribution_conditions()
+        win_criteria = dist.get_win_criteria()
+
+        reasons = []
+        if win_criteria is not None and self.final_win != win_criteria:
+            reasons.append(
+                f"win_criteria={win_criteria} not met (best win this attempt: {self.final_win})"
+            )
+        if conditions.get("force_free_game") and not self.triggered_free_game:
+            reasons.append("force_free_game=True but free game never triggered")
+        if conditions.get("force_wincap") and not self.wincap_triggered:
+            reasons.append("force_wincap=True but win cap never reached")
+
+        reason_str = "; ".join(reasons) if reasons else "unknown condition not met"
+
+        suggestions = []
+        if win_criteria is not None:
+            suggestions.append(
+                f"- Reduce win_cap (currently {self.config.win_cap}) in game_config.py"
+            )
+            suggestions.append(
+                "- Add a dedicated wincap reel strip with higher-paying symbol density"
+            )
+        if conditions.get("force_free_game"):
+            suggestions.append("- Increase scatter frequency in reel strips")
+            suggestions.append(
+                "- Lower the minimum scatter trigger count in free_spin_triggers"
+            )
+        suggestions.append(
+            f"- Increase MAX_REPEAT_ATTEMPTS (currently {self.MAX_REPEAT_ATTEMPTS:,}) "
+            "if the criteria is achievable but rare"
+        )
+        suggestions.append("- Remove this distribution from the bet mode")
+
+        suggestion_str = "\n".join(suggestions)
+
+        raise SimulationError(
+            f"\nSimulation stuck: {self._repeat_count:,} retries for "
+            f"sim={self.sim}, bet_mode='{self.bet_mode}', "
+            f"criteria='{self.criteria}'.\n"
+            f"Reason: {reason_str}\n\n"
+            f"Suggestions:\n{suggestion_str}"
+        )
+
     # =========================================================================
     # STATE QUERY METHODS (from Conditions)
     # =========================================================================
@@ -491,7 +552,7 @@ class GameState(ABC):
         """
         if hasattr(self, "tumble_board"):
             self.tumble_board()  # type: ignore[attr-defined]
-            tumble_event(self)
+            tumble_event(self, include_padding_index=self.config.include_padding)
         else:
             raise NotImplementedError(
                 "tumble_game_board requires tumble_board method from Tumble class"
@@ -500,7 +561,7 @@ class GameState(ABC):
     def emit_tumble_win_events(self) -> None:
         """Transmit win and new board information upon tumble."""
         if self.win_data["totalWin"] > 0:
-            win_event(self)
+            win_event(self, include_padding_index=self.config.include_padding)
             update_tumble_win_event(self)
             self.evaluate_wincap()
 
@@ -580,6 +641,7 @@ class GameState(ABC):
             base_game_trigger, free_game_trigger = False, True
         trigger_free_spins_event(
             self,
+            include_padding_index=self.config.include_padding,
             base_game_trigger=base_game_trigger,
             free_game_trigger=free_game_trigger,
         )
@@ -593,7 +655,12 @@ class GameState(ABC):
         self.total_free_spins += self.config.free_spin_triggers[self.game_type][
             self.count_special_symbols(scatter_key)
         ]
-        trigger_free_spins_event(self, free_game_trigger=True, base_game_trigger=False)
+        trigger_free_spins_event(
+            self,
+            include_padding_index=self.config.include_padding,
+            free_game_trigger=True,
+            base_game_trigger=False,
+        )
 
     def update_free_spin(self) -> None:
         """Called before a new reveal during free game."""

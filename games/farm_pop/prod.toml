@@ -1,0 +1,25 @@
+# Production Configuration for template_cluster Game
+# Large sample sizes for accurate statistics and optimization
+
+# Target modes for optimization
+target_modes = ["base", "bonus"]
+
+[execution]
+num_threads = 10         # Max threads for performance
+rust_threads = 20
+batching_size = 50000    # Large batches for efficiency
+compression = true       # Enable compression for storage
+profiling = false
+
+[simulation]
+base = 1000000          # 1M simulations for production accuracy
+bonus = 1000000
+
+[pipeline]
+run_sims = true         # Generate simulation books
+run_optimization = true # Run full optimization
+run_analysis = true     # Generate PAR sheets
+run_format_checks = true # Verify output format
+
+[analysis]
+custom_keys = [{ symbol = "scatter" }]

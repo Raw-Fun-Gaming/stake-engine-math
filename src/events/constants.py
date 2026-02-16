@@ -29,8 +29,9 @@ class EventConstants(Enum):
 
     # Multiplier events
     UPDATE_GLOBAL_MULTIPLIER = "updateGlobalMultiplier"
-    UPDATE_BOARD_MULTIPLIER = "updateBoardMultiplier"
-    REVEAL_BOARD_MULTIPLIERS = "revealBoardMultipliers"
+    APPLY_SYMBOL_MULTIPLIERS = "applySymbolMultipliers"
+    REVEAL_GRID_MULTIPLIERS = "revealGridMultipliers"
+    REVEAL_GRID_INCREMENTERS = "revealGridIncrementers"
 
     # Special symbol events
     UPGRADE = "upgrade"

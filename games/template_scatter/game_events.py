@@ -40,7 +40,7 @@ def send_multiplier_info_event(
     assert round(updated_win, 1) == round(base_win * board_multiplier, 1)
     event = {
         "index": len(game_state.book.events),
-        "type": EventConstants.UPDATE_BOARD_MULTIPLIER.value,
+        "type": EventConstants.APPLY_SYMBOL_MULTIPLIERS.value,
         "multiplier": multiplier_info_formatted,
         "win": win_info_formatted,
     }
