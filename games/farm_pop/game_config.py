@@ -74,6 +74,7 @@ class GameConfig(Config):
         # Output paddingPositions array in reveal events
         self.output_padding_positions = False
         self.special_symbols = {"wild": ["W"], "scatter": ["S"]}
+        self.exclude_win_detail_keys = {"baseAmount", "multiplier"}
 
         self.free_spin_triggers = {
             self.base_game_type: {4: 10, 5: 12, 6: 15, 7: 18, 8: 20},

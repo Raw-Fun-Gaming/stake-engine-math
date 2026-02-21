@@ -8,6 +8,7 @@ anticipation logic for scatter symbols.
 from __future__ import annotations
 
 import random
+from copy import deepcopy
 from typing import TYPE_CHECKING, Any
 
 from src.calculations.statistics import get_random_outcome
@@ -119,6 +120,9 @@ class Board(GameState):
 
         self.board = board
         self.get_special_symbols_on_board()
+        self.reveal_scatter_positions = deepcopy(
+            self.special_symbols_on_board.get("scatter", [])
+        )
         self.reel_positions = reel_positions
         self.padding_positions = padding_positions
         self.anticipation = anticipation
@@ -204,6 +208,9 @@ class Board(GameState):
                 count += 1
 
         self.board = board
+        self.reveal_scatter_positions = deepcopy(
+            self.special_symbols_on_board.get("scatter", [])
+        )
         self.reel_positions = reel_positions
         self.padding_positions = padding_positions
         self.anticipation = anticipation

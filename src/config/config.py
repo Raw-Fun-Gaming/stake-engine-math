@@ -82,6 +82,9 @@ class Config:
             False  # Skip UPDATE_FREE_SPINS, UPDATE_TUMBLE_WIN
         )
         self.verbose_event_level: str = "full"  # "full", "standard", "minimal"
+        self.exclude_win_detail_keys: set[str] = (
+            set()
+        )  # Keys to omit from win event details
 
         if self.game_id != "template_sample":
             self.construct_paths()

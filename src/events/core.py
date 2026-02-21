@@ -153,6 +153,10 @@ def win_event(game_state: Any, include_padding_index: bool = True) -> None:
             # Remove old meta structure
             del detail["meta"]
 
+        # Strip any keys the game config marks as excluded
+        for key in game_state.config.exclude_win_detail_keys:
+            detail.pop(key, None)
+
     event: dict[str, Any] = {
         "index": len(game_state.book.events),
         "type": EventConstants.WIN.value,
