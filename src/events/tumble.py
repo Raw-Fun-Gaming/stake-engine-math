@@ -60,6 +60,19 @@ def tumble_event(game_state: Any, include_padding_index: bool = True) -> None:
         "newSymbols": new_symbols,
         "removedIndexes": removed_indexes,
     }
+
+    if game_state.config.include_board_in_tumble:
+        board_client: list[list[Any]] = []
+        for reel, _ in enumerate(game_state.board):
+            board_client.append([])
+            for row in range(len(game_state.board[reel])):
+                board_client[reel].append(
+                    formatter.format_symbol(
+                        game_state.board[reel][row], special_attributes
+                    )
+                )
+        event["board"] = board_client
+
     game_state.book.add_event(event)
 
 

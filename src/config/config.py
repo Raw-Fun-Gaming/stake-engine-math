@@ -85,6 +85,9 @@ class Config:
         self.exclude_win_detail_keys: set[str] = (
             set()
         )  # Keys to omit from win event details
+        self.include_board_in_tumble: bool = (
+            False  # Include current board state in tumble events (for debugging)
+        )
 
         if self.game_id != "template_sample":
             self.construct_paths()
