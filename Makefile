@@ -69,6 +69,17 @@ else
 	cd games/$(GAME) && ../../$(VENV_PY) run.py
 endif
 	@echo ""
+ifdef CONFIG
+	@echo "Checking compression setting in $(CONFIG)..."
+	@if grep -q "^compression = false" games/$(GAME)/$(CONFIG); then \
+		echo "Compression is disabled, formatting books files..."; \
+		$(VENV_PY) scripts/format_books_json.py games/$(GAME) || echo "Warning: Failed to format books files"; \
+	elif grep -q "^compression = true" games/$(GAME)/$(CONFIG); then \
+		echo "Compression is enabled, skipping formatting."; \
+	else \
+		echo "Could not determine compression setting, skipping formatting."; \
+	fi
+else
 	@echo "Checking compression setting in run_config.toml..."
 	@if grep -q "^compression = false" games/$(GAME)/run_config.toml; then \
 		echo "Compression is disabled, formatting books files..."; \
@@ -78,6 +89,7 @@ endif
 	else \
 		echo "Could not determine compression setting, skipping formatting."; \
 	fi
+endif
 
 test:
 	cd $(CURDIR)

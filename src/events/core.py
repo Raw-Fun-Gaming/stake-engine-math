@@ -140,8 +140,8 @@ def win_event(game_state: Any, include_padding_index: bool = True) -> None:
                 detail["clusterMultiplier"] = detail["meta"]["clusterMultiplier"]
 
             # Include cluster increment if present (for cluster-pay games with grid incrementers)
-            if "clusterIncrement" in detail["meta"]:
-                detail["clusterIncrement"] = detail["meta"]["clusterIncrement"]
+            if "positionIncrements" in detail["meta"]:
+                detail["positionIncrements"] = detail["meta"]["positionIncrements"]
                 detail["effectiveCount"] = detail["meta"]["effectiveCount"]
 
             # Handle overlay if present

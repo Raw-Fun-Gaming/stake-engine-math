@@ -314,14 +314,12 @@ def output_lookup_and_force_files(
             with open(filename, "r", encoding="UTF-8") as infile:
                 outfile.write(infile.read())
 
-    # Write _0 file if it does not exist
-    if not (
-        os.path.exists(game_state.output_files.get_optimized_lookup_name(bet_mode))
-    ):
-        shutil.copy(
-            game_state.output_files.get_final_lookup_name(bet_mode),
-            game_state.output_files.get_optimized_lookup_name(bet_mode),
-        )
+    # Always copy base lookup table to publish_files as baseline.
+    # Optimization will overwrite it later if it runs.
+    shutil.copy(
+        game_state.output_files.get_final_lookup_name(bet_mode),
+        game_state.output_files.get_optimized_lookup_name(bet_mode),
+    )
     with open(
         game_state.output_files.get_final_segmented_name(bet_mode),
         "w",

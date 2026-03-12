@@ -24,7 +24,7 @@ from src.writers.config import generate_configs
 def main() -> None:
     """Run the game pipeline based on run_config.toml settings."""
     # Load configuration from TOML file
-    run_config = RunConfig.from_toml("run_config.toml")
+    run_config = RunConfig.from_toml()
 
     # Validate configuration
     run_config.validate()

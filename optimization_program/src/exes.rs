@@ -40,6 +40,7 @@ pub struct BetMode {
     pub bet_mode: String,
     pub cost: f64,
     pub rtp: f64,
+    #[serde(alias = "maxWin")]
     pub max_win: f64,
 }
 

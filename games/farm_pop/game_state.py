@@ -146,9 +146,10 @@ class GameState(Tumble):
             for cluster in clusters[sym]:
                 syms_in_cluster = len(cluster)
                 if (syms_in_cluster, sym) in config.paytable:
-                    grid_increment = 0
-                    for positions in cluster:
-                        grid_increment += int(pos_mult_grid[positions[0]][positions[1]])
+                    position_increments = [
+                        int(pos_mult_grid[p[0]][p[1]]) for p in cluster
+                    ]
+                    grid_increment = sum(position_increments)
                     effective_count = syms_in_cluster + grid_increment
 
                     # Find highest valid paytable entry at or below effective_count
@@ -173,7 +174,7 @@ class GameState(Tumble):
                             "positions": json_positions,
                             "meta": {
                                 "globalMultiplier": global_multiplier,
-                                "clusterIncrement": grid_increment,
+                                "positionIncrements": position_increments,
                                 "effectiveCount": effective_count,
                                 "winWithoutMult": symbol_win,
                                 "overlay": {
@@ -225,7 +226,7 @@ class GameState(Tumble):
                 {
                     "kind": win["clusterSize"],
                     "symbol": win["symbol"],
-                    "increment": win["meta"]["clusterIncrement"],
+                    "increment": sum(win["meta"]["positionIncrements"]),
                     "effectiveCount": win["meta"]["effectiveCount"],
                     "game_type": self.game_type,
                 }

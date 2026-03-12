@@ -9,23 +9,44 @@ from optimization_program.optimization_config import (
 
 
 class OptimizationSetup:
-    """Handle all game mode optimization parameters."""
+    """Template expanding wilds optimization setup."""
 
     def __init__(self, game_config):
         self.game_config = game_config
+
+        rtp = game_config.rtp
+        win_cap = game_config.win_cap
+        splits = game_config.opt_rtp_splits
+
+        # Base mode RTP splits
+        base_splits = splits["base"]
+        wincap_rtp = base_splits["wincap"]
+        zero_rtp = base_splits["zero"]
+        free_game_rtp = base_splits["free_game"]
+        base_game_rtp = rtp - wincap_rtp - zero_rtp - free_game_rtp
+
+        # Bonus mode RTP splits
+        bonus_splits = splits["bonus"]
+        bonus_wincap_rtp = bonus_splits["wincap"]
+        bonus_free_game_rtp = rtp - bonus_wincap_rtp
+
         self.game_config.opt_params = {
             "base": {
                 "conditions": {
                     "wincap": ConstructConditions(
-                        rtp=0.01, av_win=5000, search_conditions=5000
+                        rtp=wincap_rtp, av_win=win_cap, search_conditions=win_cap
                     ).return_dict(),
                     "0": ConstructConditions(
-                        rtp=0, av_win=0, search_conditions=0
+                        rtp=zero_rtp, av_win=0, search_conditions=0
                     ).return_dict(),
                     "free_game": ConstructConditions(
-                        rtp=0.37, hr=200, search_conditions={"symbol": "scatter"}
+                        rtp=free_game_rtp,
+                        hr=game_config.opt_free_hr,
+                        search_conditions={"symbol": "scatter"},
                     ).return_dict(),
-                    "base_game": ConstructConditions(hr=3.5, rtp=0.59).return_dict(),
+                    "base_game": ConstructConditions(
+                        hr=game_config.opt_base_hr, rtp=base_game_rtp
+                    ).return_dict(),
                 },
                 "scaling": ConstructScaling(
                     [
@@ -70,9 +91,11 @@ class OptimizationSetup:
             "bonus": {
                 "conditions": {
                     "wincap": ConstructConditions(
-                        rtp=0.01, av_win=5000, search_conditions=5000
+                        rtp=bonus_wincap_rtp, av_win=win_cap, search_conditions=win_cap
                     ).return_dict(),
-                    "free_game": ConstructConditions(rtp=0.96, hr="x").return_dict(),
+                    "free_game": ConstructConditions(
+                        rtp=bonus_free_game_rtp, hr="x"
+                    ).return_dict(),
                 },
                 "scaling": ConstructScaling(
                     [
@@ -92,38 +115,6 @@ class OptimizationSetup:
                             "criteria": "free_game",
                             "scale_factor": 1.2,
                             "win_range": (3000, 4000),
-                            "probability": 1.0,
-                        },
-                    ]
-                ).return_dict(),
-                "parameters": ConstructParameters(
-                    num_show=5000,
-                    num_per_fence=10000,
-                    min_m2m=4,
-                    max_m2m=8,
-                    pmb_rtp=1.0,
-                    sim_trials=5000,
-                    test_spins=[10, 20, 50],
-                    test_weights=[0.6, 0.2, 0.2],
-                    score_type="rtp",
-                ).return_dict(),
-            },
-            "super_spin": {
-                "conditions": {
-                    "wincap": ConstructConditions(
-                        rtp=0.01, av_win=5000, search_conditions=5000
-                    ).return_dict(),
-                    "0": ConstructConditions(
-                        rtp=0, av_win=0, search_conditions=0
-                    ).return_dict(),
-                    "base_game": ConstructConditions(hr=1.9, rtp=0.96).return_dict(),
-                },
-                "scaling": ConstructScaling(
-                    [
-                        {
-                            "criteria": "free_game",
-                            "scale_factor": 3,
-                            "win_range": (200, 500),
                             "probability": 1.0,
                         },
                     ]

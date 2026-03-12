@@ -43,12 +43,8 @@ def trigger_free_spins_event(
 
     event: dict[str, Any] = {}
     scatter_positions: list[dict[str, int]] = []
-    # Use positions captured at reveal time (before tumbles shift rows)
-    source_positions = getattr(
-        game_state,
-        "reveal_scatter_positions",
-        game_state.special_symbols_on_board["scatter"],
-    )
+    # Use current scatter positions (updated after tumbles via get_special_symbols_on_board)
+    source_positions = game_state.special_symbols_on_board["scatter"]
     for pos in source_positions:
         row = pos["row"] + 1 if include_padding_index else pos["row"]
         scatter_positions.append({"reel": pos["reel"], "row": row})
