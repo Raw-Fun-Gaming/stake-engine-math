@@ -178,10 +178,10 @@ def win_event(game_state: Any, include_padding_index: bool = True) -> None:
     game_state.book.add_event(event)
 
 
-def set_win_event(game_state: Any, win_level_key: str = "standard") -> None:
-    """Update cumulative win ticker for a single outcome.
+def show_win_event(game_state: Any, win_level_key: str = "standard") -> None:
+    """Trigger the win celebration display for a single outcome.
 
-    Creates a SET_WIN event showing the current spin win amount and win level.
+    Creates a SHOW_WIN event showing the current spin win amount and win level.
     Only emitted if win cap hasn't been triggered yet.
 
     Args:
@@ -191,14 +191,14 @@ def set_win_event(game_state: Any, win_level_key: str = "standard") -> None:
     if not game_state.wincap_triggered:
         event: dict[str, Any] = {
             "index": len(game_state.book.events),
-            "type": EventConstants.SET_WIN.value,
+            "type": EventConstants.SHOW_WIN.value,
             "amount": int(
                 min(
                     round(game_state.win_manager.spin_win * 100, 0),
                     game_state.config.win_cap * 100,
                 )
             ),
-            "winLevel": game_state.config.get_win_level(
+            "level": game_state.config.get_win_level(
                 game_state.win_manager.spin_win, win_level_key
             ),
         }
@@ -247,23 +247,19 @@ def set_final_win_event(game_state: Any) -> None:
 
 
 def win_cap_event(game_state: Any) -> None:
-    """Emit event indicating win cap has been reached.
+    """Emit a showWin event when the win cap is reached.
 
-    Creates a WIN_CAP event when the maximum payout limit is hit,
-    signaling the end of spin actions.
+    Uses SHOW_WIN with the capped amount and max win level to signal
+    the maximum payout limit has been hit.
 
     Args:
         game_state: Current game state with win manager
     """
+    win_cap = game_state.config.win_cap
     event: dict[str, Any] = {
         "index": len(game_state.book.events),
-        "type": EventConstants.WIN_CAP.value,
-        "amount": int(
-            round(
-                min(game_state.win_manager.running_bet_win, game_state.config.win_cap)
-                * 100,
-                0,
-            )
-        ),
+        "type": EventConstants.SHOW_WIN.value,
+        "amount": int(round(win_cap * 100, 0)),
+        "level": game_state.config.get_win_level(win_cap, "standard"),
     }
     game_state.book.add_event(event)

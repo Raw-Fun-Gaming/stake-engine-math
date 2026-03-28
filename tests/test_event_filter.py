@@ -56,7 +56,7 @@ class TestEventFilter:
         filter = EventFilter(config)
 
         # Derived win events should be skipped
-        assert filter.should_include_event(EventConstants.SET_WIN.value) is False
+        assert filter.should_include_event(EventConstants.SHOW_WIN.value) is False
         assert filter.should_include_event(EventConstants.SET_TOTAL_WIN.value) is False
 
         # But WIN events should still be included (required)
@@ -74,7 +74,7 @@ class TestEventFilter:
             filter.should_include_event(EventConstants.UPDATE_FREE_SPINS.value) is False
         )
         assert (
-            filter.should_include_event(EventConstants.UPDATE_TUMBLE_WIN.value) is False
+            filter.should_include_event(EventConstants.SET_WIN.value) is False
         )
         assert filter.should_include_event(EventConstants.SET_TUMBLE_WIN.value) is False
 
@@ -90,7 +90,7 @@ class TestEventFilter:
         assert filter.should_include_event(EventConstants.REVEAL.value) is True
 
         # Standard events excluded
-        assert filter.should_include_event(EventConstants.SET_WIN.value) is False
+        assert filter.should_include_event(EventConstants.SHOW_WIN.value) is False
         assert filter.should_include_event(EventConstants.END_FREE_SPINS.value) is False
 
         # Verbose events excluded
@@ -109,7 +109,7 @@ class TestEventFilter:
         assert filter.should_include_event(EventConstants.WIN.value) is True
 
         # Standard events included
-        assert filter.should_include_event(EventConstants.SET_WIN.value) is True
+        assert filter.should_include_event(EventConstants.SHOW_WIN.value) is True
         assert filter.should_include_event(EventConstants.END_FREE_SPINS.value) is True
 
         # Verbose events excluded
@@ -126,7 +126,7 @@ class TestEventFilter:
 
         # All event types should be included
         assert filter.should_include_event(EventConstants.WIN.value) is True
-        assert filter.should_include_event(EventConstants.SET_WIN.value) is True
+        assert filter.should_include_event(EventConstants.SHOW_WIN.value) is True
         assert (
             filter.should_include_event(EventConstants.UPDATE_FREE_SPINS.value) is True
         )
@@ -141,14 +141,14 @@ class TestEventFilter:
         # Event with zero amount should be skipped
         event_data = {"amount": 0}
         assert (
-            filter.should_include_event(EventConstants.SET_WIN.value, event_data)
+            filter.should_include_event(EventConstants.SHOW_WIN.value, event_data)
             is False
         )
 
         # Event with non-zero amount should be included
         event_data = {"amount": 10}
         assert (
-            filter.should_include_event(EventConstants.SET_WIN.value, event_data)
+            filter.should_include_event(EventConstants.SHOW_WIN.value, event_data)
             is True
         )
 
@@ -182,7 +182,7 @@ class TestEventFilter:
 
         events = [
             {"type": EventConstants.WIN.value, "amount": 10},
-            {"type": EventConstants.SET_WIN.value, "amount": 10},
+            {"type": EventConstants.SHOW_WIN.value, "amount": 10},
             {"type": EventConstants.REVEAL.value, "board": [[]]},
             {"type": EventConstants.SET_TOTAL_WIN.value, "amount": 10},
         ]
@@ -200,7 +200,7 @@ class TestEventFilter:
         filter = EventFilter(config)
 
         assert filter.get_event_category(EventConstants.WIN.value) == "required"
-        assert filter.get_event_category(EventConstants.SET_WIN.value) == "standard"
+        assert filter.get_event_category(EventConstants.SHOW_WIN.value) == "standard"
         assert (
             filter.get_event_category(EventConstants.UPDATE_FREE_SPINS.value)
             == "verbose"
@@ -254,7 +254,7 @@ class TestEventFilter:
         filter = EventFilter(config)
 
         # Derived wins excluded
-        assert filter.should_include_event(EventConstants.SET_WIN.value) is False
+        assert filter.should_include_event(EventConstants.SHOW_WIN.value) is False
 
         # Progress updates excluded
         assert (

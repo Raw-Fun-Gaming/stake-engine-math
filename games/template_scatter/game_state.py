@@ -13,10 +13,10 @@ from game_events import send_multiplier_info_event
 from src.calculations.scatter import Scatter
 from src.calculations.statistics import get_random_outcome
 from src.calculations.tumble import Tumble
-from src.events.core import set_total_win_event, set_win_event
+from src.events.core import set_total_win_event, show_win_event
 from src.events.free_spins import trigger_free_spins_event, update_free_spins_event
 from src.events.special_symbols import update_global_multiplier_event
-from src.events.tumble import update_tumble_win_event
+from src.events.tumble import set_win_event
 
 
 class GameState(Tumble):
@@ -155,10 +155,10 @@ class GameState(Tumble):
                     base_tumble_win,
                     self.win_manager.spin_win,
                 )
-                update_tumble_win_event(self)
+                set_win_event(self)
 
         if self.win_manager.spin_win > 0:
-            set_win_event(self)
+            show_win_event(self)
         set_total_win_event(self)
 
     # =========================================================================

@@ -106,7 +106,7 @@ def end_free_spins_event(game_state: Any, win_level_key: str = "endFeature") -> 
         "amount": int(
             min(game_state.win_manager.free_game_wins, game_state.config.win_cap) * 100
         ),
-        "winLevel": game_state.config.get_win_level(
+        "level": game_state.config.get_win_level(
             game_state.win_manager.free_game_wins, win_level_key
         ),
     }

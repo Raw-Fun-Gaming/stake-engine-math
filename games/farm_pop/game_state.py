@@ -270,13 +270,15 @@ class GameState(Tumble):
 
             self.get_clusters_update_wins()
             self.emit_tumble_win_events()
-            self.update_grid_multipliers()
+            if not self.wincap_triggered:
+                self.update_grid_multipliers()
 
             while self.win_data["totalWin"] > 0 and not (self.wincap_triggered):
                 self.tumble_game_board()
                 self.get_clusters_update_wins()
                 self.emit_tumble_win_events()
-                self.update_grid_multipliers()
+                if not self.wincap_triggered:
+                    self.update_grid_multipliers()
 
             self.set_end_tumble_event()
             self.win_manager.update_game_type_wins(self.game_type)
@@ -302,16 +304,21 @@ class GameState(Tumble):
 
             self.get_clusters_update_wins()
             self.emit_tumble_win_events()
-            self.update_grid_multipliers()
+            if not self.wincap_triggered:
+                self.update_grid_multipliers()
 
             while self.win_data["totalWin"] > 0 and not (self.wincap_triggered):
                 self.tumble_game_board()
                 self.get_clusters_update_wins()
                 self.emit_tumble_win_events()
-                self.update_grid_multipliers()
+                if not self.wincap_triggered:
+                    self.update_grid_multipliers()
 
             self.set_end_tumble_event()
             self.win_manager.update_game_type_wins(self.game_type)
+
+            if self.wincap_triggered:
+                break
 
             if self.check_free_spin_condition():
                 self.update_free_spin_retrigger_amount()

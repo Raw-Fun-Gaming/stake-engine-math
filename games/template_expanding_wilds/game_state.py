@@ -20,7 +20,7 @@ from game_events import (
 from src.calculations.board import Board
 from src.calculations.lines import Lines
 from src.calculations.statistics import get_random_outcome
-from src.events.core import reveal_event, set_total_win_event, set_win_event
+from src.events.core import reveal_event, set_total_win_event, show_win_event
 from src.events.free_spins import update_free_spins_event
 
 
@@ -381,7 +381,7 @@ class GameState(Board):
         if self.win_manager.spin_win > 0:
             win_info_prize_event(self)
             self.evaluate_wincap()
-            set_win_event(self)
+            show_win_event(self)
         set_total_win_event(self)
 
         self.evaluate_final_win()

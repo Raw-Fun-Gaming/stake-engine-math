@@ -94,17 +94,18 @@ def set_tumble_win_event(game_state: Any) -> None:
     game_state.book.add_event(event)
 
 
-def update_tumble_win_event(game_state: Any) -> None:
-    """Update banner to record successive tumble wins.
+def set_win_event(game_state: Any) -> None:
+    """Update the running win total for the current spin.
 
-    Creates an UPDATE_TUMBLE_WIN event showing accumulated wins from cascades.
+    Creates a SET_WIN event showing accumulated wins within the current spin
+    (e.g. across tumbles, paylines, or other per-spin payouts).
 
     Args:
         game_state: Current game state with win manager
     """
     event: dict[str, Any] = {
         "index": len(game_state.book.events),
-        "type": EventConstants.UPDATE_TUMBLE_WIN.value,
+        "type": EventConstants.SET_WIN.value,
         "amount": int(
             round(
                 min(game_state.win_manager.spin_win, game_state.config.win_cap) * 100, 0

@@ -1,4 +1,4 @@
-PYTHON := python3
+PYTHON := python3.12
 VENV_DIR := env
 VENV_PY := $(VENV_DIR)/bin/python
 

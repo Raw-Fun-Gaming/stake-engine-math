@@ -12,6 +12,7 @@ class EventConstants(Enum):
     # Win events
     WIN = "win"
     SET_FINAL_WIN = "setFinalWin"
+    SHOW_WIN = "showWin"
     SET_WIN = "setWin"
     SET_TOTAL_WIN = "setTotalWin"
     WIN_CAP = "winCap"
@@ -25,7 +26,7 @@ class EventConstants(Enum):
     # Tumble events
     TUMBLE = "tumble"
     SET_TUMBLE_WIN = "setTumbleWin"
-    UPDATE_TUMBLE_WIN = "updateTumbleWin"
+    UPDATE_TUMBLE_WIN = "updateTumbleWin"  # deprecated, use SET_WIN
 
     # Multiplier events
     UPDATE_GLOBAL_MULTIPLIER = "updateGlobalMultiplier"

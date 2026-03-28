@@ -22,7 +22,7 @@ from src.events.free_spins import (
     update_free_spins_event,
 )
 from src.events.special_symbols import update_global_multiplier_event
-from src.events.tumble import tumble_event, update_tumble_win_event
+from src.events.tumble import set_win_event, tumble_event
 from src.exceptions import GameConfigError, SimulationError
 from src.formatter import OutputFormatter
 from src.state.books import Book
@@ -562,7 +562,7 @@ class GameState(ABC):
         """Transmit win and new board information upon tumble."""
         if self.win_data["totalWin"] > 0:
             win_event(self, include_padding_index=self.config.include_padding)
-            update_tumble_win_event(self)
+            set_win_event(self)
             self.evaluate_wincap()
 
     def evaluate_wincap(self) -> bool:

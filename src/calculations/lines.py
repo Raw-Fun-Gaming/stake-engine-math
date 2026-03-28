@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from src.events.core import set_total_win_event, set_win_event, win_event
+from src.events.core import set_total_win_event, show_win_event, win_event
 from src.wins.multiplier_strategy import apply_multiplier
 
 if TYPE_CHECKING:
@@ -197,7 +197,7 @@ class Lines:
         if game_state.win_manager.spin_win > 0:
             win_event(game_state)
             game_state.evaluate_wincap()
-            set_win_event(game_state)
+            show_win_event(game_state)
         set_total_win_event(game_state)
 
     @staticmethod

@@ -52,16 +52,15 @@ class EventFilter:
     }
 
     STANDARD_EVENTS = {
-        EventConstants.SET_WIN.value,
+        EventConstants.SHOW_WIN.value,
         EventConstants.SET_TOTAL_WIN.value,
-        EventConstants.WIN_CAP.value,
         EventConstants.END_FREE_SPINS.value,
         EventConstants.SET_FINAL_WIN.value,  # Required only when win cap applied
     }
 
     VERBOSE_EVENTS = {
         EventConstants.UPDATE_FREE_SPINS.value,
-        EventConstants.UPDATE_TUMBLE_WIN.value,
+        EventConstants.SET_WIN.value,
         EventConstants.SET_TUMBLE_WIN.value,
     }
 
@@ -128,7 +127,7 @@ class EventFilter:
             True if event is derived win (SET_WIN, SET_TOTAL_WIN)
         """
         return event_type in {
-            EventConstants.SET_WIN.value,
+            EventConstants.SHOW_WIN.value,
             EventConstants.SET_TOTAL_WIN.value,
         }
 
@@ -143,7 +142,7 @@ class EventFilter:
         """
         return event_type in {
             EventConstants.UPDATE_FREE_SPINS.value,
-            EventConstants.UPDATE_TUMBLE_WIN.value,
+            EventConstants.SET_WIN.value,
             EventConstants.SET_TUMBLE_WIN.value,
         }
 

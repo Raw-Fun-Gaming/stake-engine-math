@@ -11,7 +11,7 @@ from copy import copy
 from typing import TYPE_CHECKING, Any
 
 from src.calculations.board import Board
-from src.events.core import set_total_win_event, set_win_event
+from src.events.core import set_total_win_event, show_win_event
 from src.exceptions import BoardGenerationError
 
 if TYPE_CHECKING:
@@ -107,5 +107,5 @@ class Tumble(Board):
         there are actual wins.
         """
         if self.win_manager.spin_win > 0:
-            set_win_event(self)
+            show_win_event(self)
         set_total_win_event(self)
