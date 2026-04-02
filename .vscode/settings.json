@@ -38,7 +38,6 @@
     // Performance optimizations for Python project
     "python.terminal.activateEnvironment": false,
     "terminal.integrated.inheritEnv": false,
-    "terminal.integrated.allowMnemonics": false,
     "terminal.integrated.processIdleTimeout": 60000,
     "terminal.integrated.shellIntegration.historySize": 0,
     "terminal.integrated.enablePersistentSessions": false,
@@ -49,8 +48,6 @@
     "eslint.enable": false,
     "prettier.enable": false,
     "tailwindCSS.enable": false,
-    "postcss.enable": false,
-    "css.enable": false,
 
     // Optimize Python-specific settings
     "python.analysis.autoImportCompletions": true,
@@ -66,7 +63,6 @@
 
     // Disable unnecessary features
     "git.decorations.enabled": false,
-    "workbench.settings.enableNaturalLanguageSearch": false,
     "workbench.tips.enabled": false,
     "workbench.startupEditor": "none",
 
@@ -83,34 +79,19 @@
         "**/target/**": true
     },
 
-    // GitHub Copilot Chat automation settings
-    "github.copilot.chat.experimental.codeActions": true,
-    "github.copilot.chat.experimental.quickChat": true,
-    "github.copilot.chat.experimental.implicitContext": true,
-    "github.copilot.chat.experimental.agents": true,
-    "github.copilot.chat.experimental.contextualFiltering": true,
-    "github.copilot.chat.experimental.followUp": true,
-    "github.copilot.chat.experimental.foldingRanges": true,
-    "github.copilot.chat.experimental.multiFile": true,
-    "github.copilot.chat.experimental.codebaseIndexing": true,
-    "github.copilot.chat.experimental.usePythonREPLTool": true,
-    "github.copilot.chat.experimental.autoExecute": true,
-    "github.copilot.chat.trace.verbose": false,
-    "github.copilot.chat.welcomeMessage": "disabled",
-    "github.copilot.chat.experimental.executeMultipleTools": true,
-    "github.copilot.chat.experimental.toolsMode": "automatic",
-    "github.copilot.chat.experimental.continuousMode": true,
-    "github.copilot.chat.experimental.reduceManagedMode": false,
-    "github.copilot.chat.experimental.autoApproveTools": [
-        "read_file",
-        "file_search",
-        "grep_search",
-        "semantic_search",
-        "list_dir",
-        "run_in_terminal",
-        "get_terminal_output",
-        "create_file",
-        "insert_edit_into_file",
-        "replace_string_in_file"
-    ]
+    // Hide build artifacts from explorer
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/*.pyc": true,
+        "**/env": true,
+        "**/.pytest_cache": true
+    },
+
+    // Exclude build artifacts from search
+    "search.exclude": {
+        "**/build/**": true,
+        "**/target/**": true,
+        "**/env/**": true,
+        "**/*.jsonl": true
+    }
 }
