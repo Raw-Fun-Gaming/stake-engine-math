@@ -93,13 +93,8 @@ def verify_lookup_format(filename: str) -> list:
             weight = float(weight)
             payout = float(payout)
 
-            # Payout checks
+            # Payout checks (integer cents: multiplier × 100, supports 2 decimal places)
             assert payout.is_integer() and payout >= 0, "Payout must be uint64 format:"
-            if payout > 0:
-                assert (
-                    payout >= 10
-                ), "Minimum non-zero payout is 10 (RGS accepts 'cents' increments)."
-            assert payout % 10 == 0, "Payout values must be in increments of 10."
             integer_payouts.append(int(payout))
 
             if (min_win is None) or (payout < min_win):

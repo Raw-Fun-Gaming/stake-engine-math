@@ -136,16 +136,15 @@ class Config:
         # Define win-levels for each game-mode, returned during win information events
         self.win_levels: dict[str, dict[int, tuple[float, float]]] = {
             "standard": {
-                1: (0, 0.1),
-                2: (0.1, 1.0),
+                1: (0, 0.5),
+                2: (0.5, 1.0),
                 3: (1.0, 2.0),
                 4: (2.0, 5.0),
                 5: (5.0, 15.0),
                 6: (15.0, 30.0),
                 7: (30.0, 50.0),
-                8: (50.0, 100.0),
-                9: (100.0, self.win_cap),
-                10: (self.win_cap, float("inf")),
+                8: (50.0, self.win_cap),
+                9: (self.win_cap, float("inf")),
             },
             "endFeature": {
                 1: (0.0, 1.0),
@@ -155,9 +154,8 @@ class Config:
                 5: (20.0, 50.0),
                 6: (50.0, 100.0),
                 7: (100.0, 500.0),
-                8: (500.0, 2000.0),
-                9: (2000.0, self.win_cap),
-                10: (self.win_cap, float("inf")),
+                8: (500.0, self.win_cap),
+                9: (self.win_cap, float("inf")),
             },
         }
 
