@@ -85,7 +85,7 @@ def update_free_spins_event(game_state: Any) -> None:
     event: dict[str, Any] = {
         "index": len(game_state.book.events),
         "type": EventConstants.UPDATE_FREE_SPINS.value,
-        "amount": int(game_state.free_spin_count),
+        "count": int(game_state.free_spin_count),
         "total": int(game_state.total_free_spins),
     }
     game_state.book.add_event(event)
