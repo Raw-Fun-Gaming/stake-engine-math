@@ -382,6 +382,7 @@ class GameState(Board):
             win_info_prize_event(self)
             self.evaluate_wincap()
             show_win_event(self)
-        set_total_win_event(self)
+        if self.game_type != self.config.base_game_type:
+            set_total_win_event(self)
 
         self.evaluate_final_win()

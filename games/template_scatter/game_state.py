@@ -159,7 +159,8 @@ class GameState(Tumble):
 
         if self.win_manager.spin_win > 0:
             show_win_event(self)
-        set_total_win_event(self)
+        if self.game_type != self.config.base_game_type:
+            set_total_win_event(self)
 
     # =========================================================================
     # FREE SPIN HANDLING

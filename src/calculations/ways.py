@@ -163,7 +163,8 @@ class Ways:
             win_event(game_state)
             game_state.evaluate_wincap()
             show_win_event(game_state)
-        set_total_win_event(game_state)
+        if game_state.game_type != game_state.config.base_game_type:
+            set_total_win_event(game_state)
 
     @staticmethod
     def record_ways_wins(game_state: Any) -> None:

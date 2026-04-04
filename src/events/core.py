@@ -214,16 +214,25 @@ def set_total_win_event(game_state: Any) -> None:
     Args:
         game_state: Current game state with win manager
     """
+    amount = int(
+        round(
+            min(game_state.win_manager.running_bet_win, game_state.config.win_cap)
+            * 100,
+            0,
+        )
+    )
+
+    # Skip if the last setTotalWin already has the same amount
+    for prev in reversed(game_state.book.events):
+        if prev["type"] == EventConstants.SET_TOTAL_WIN.value:
+            if prev["amount"] == amount:
+                return
+            break
+
     event: dict[str, Any] = {
         "index": len(game_state.book.events),
         "type": EventConstants.SET_TOTAL_WIN.value,
-        "amount": int(
-            round(
-                min(game_state.win_manager.running_bet_win, game_state.config.win_cap)
-                * 100,
-                0,
-            )
-        ),
+        "amount": amount,
     }
     game_state.book.add_event(event)
 
