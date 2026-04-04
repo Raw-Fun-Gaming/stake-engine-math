@@ -173,6 +173,6 @@ def prize_win_event(game_state: Any, include_padding_index: bool = True) -> None
                     0,
                 )
             ),
-            "details": details,
+            "wins": details,
         }
         game_state.book.add_event(event)

@@ -59,9 +59,9 @@ def analyze_wins(filename):
 
                     # Second pass: analyze wins
                     for event in game["events"]:
-                        if event.get("type") == "win" and "details" in event:
+                        if event.get("type") == "win" and "wins" in event:
                             has_win = True
-                            for win in event["details"]:
+                            for win in event["wins"]:
                                 symbol = win.get("symbol", "unknown")
                                 cluster_size = win.get("count", 0)
                                 win_amount = win.get("amount", 0)
@@ -120,9 +120,9 @@ def analyze_wins(filename):
 
                         # Second pass: analyze wins
                         for event in game["events"]:
-                            if event.get("type") == "win" and "details" in event:
+                            if event.get("type") == "win" and "wins" in event:
                                 has_win = True
-                                for win in event["details"]:
+                                for win in event["wins"]:
                                     symbol = win.get("symbol", "unknown")
                                     cluster_size = win.get("count", 0)
                                     win_amount = win.get("amount", 0)

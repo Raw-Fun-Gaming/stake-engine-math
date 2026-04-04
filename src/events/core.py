@@ -92,8 +92,8 @@ def win_event(game_state: Any, include_padding_index: bool = True) -> None:
     )
 
     win_data_copy: dict[str, Any] = {}
-    win_data_copy["details"] = deepcopy(game_state.win_data["wins"])
-    for i, win_detail in enumerate(win_data_copy["details"]):
+    win_data_copy["wins"] = deepcopy(game_state.win_data["wins"])
+    for i, win_detail in enumerate(win_data_copy["wins"]):
         if include_padding_index:
             new_positions: list[dict[str, int]] = []
             for pos in win_detail["positions"]:
@@ -104,7 +104,7 @@ def win_event(game_state: Any, include_padding_index: bool = True) -> None:
         # Format positions using OutputFormatter
         formatted_positions = formatter.format_position_list(new_positions)
 
-        detail = win_data_copy["details"][i]
+        detail = win_data_copy["wins"][i]
         detail["amount"] = int(
             round(
                 min(detail["win"], game_state.config.win_cap) * 100,
@@ -173,7 +173,7 @@ def win_event(game_state: Any, include_padding_index: bool = True) -> None:
                 0,
             )
         ),
-        "details": win_data_copy["details"],
+        "wins": win_data_copy["wins"],
     }
     game_state.book.add_event(event)
 
