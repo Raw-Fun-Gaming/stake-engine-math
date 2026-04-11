@@ -131,7 +131,7 @@ class Config:
         self.write_event_list: bool = True
 
         self.bet_modes: list[BetMode] = []
-        self.opt_params: dict[Any, Any] = {None: None}
+        self.optimization_params: dict[Any, Any] = {None: None}
 
         # Define win-levels for each game-mode, returned during win information events
         self.win_levels: dict[str, dict[int, tuple[float, float]]] = {

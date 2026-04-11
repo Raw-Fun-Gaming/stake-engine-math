@@ -101,14 +101,14 @@ def make_temp_math_config(game_state):
     rust_dict["bet_modes"] = []
 
     # Separated bet_mode information
-    opt_mode = None
+    optimization_mode = None
     for bet_mode in game_state.config.bet_modes:
-        for mode, mode_obj in game_state.config.opt_params.items():
+        for mode, mode_obj in game_state.config.optimization_params.items():
             if mode == bet_mode.get_name():
-                opt_mode = mode
+                optimization_mode = mode
                 break
 
-        if opt_mode is not None:
+        if optimization_mode is not None:
             bet_mode_rust = {
                 "bet_mode": bet_mode.get_name(),
                 "cost": bet_mode.get_cost(),
@@ -189,42 +189,42 @@ def make_math_config(game_state):
             "rtp": bet_mode.get_rtp(),
             "maxWin": bet_mode.get_win_cap(),
         }
-        opt_mode = None
+        optimization_mode = None
         for mode, mode_obj in game_state.config.optimization_params.items():
             if mode == bet_mode.get_name():
-                opt_mode = mode
+                optimization_mode = mode
                 break
-        if opt_mode is not None:
+        if optimization_mode is not None:
 
             data = []
             search_data = []
-            for cond, opt_obj in mode_obj["conditions"].items():
-                opt_dict = opt_obj.to_dict()
-                if opt_dict["force_search"] != {}:
+            for cond, optimization_obj in mode_obj["conditions"].items():
+                optimization_dict = optimization_obj.to_dict()
+                if optimization_dict["force_search"] != {}:
                     search_data.append({})
                     search_data[-1]["name"] = str(
-                        list(opt_dict["force_search"].keys())[0]
+                        list(optimization_dict["force_search"].keys())[0]
                     )
                     search_data[-1]["value"] = str(
-                        list(opt_dict["force_search"].values())[0]
+                        list(optimization_dict["force_search"].values())[0]
                     )
                 else:
                     search_data = []
                 data.append(
                     {
                         "criteria": cond,
-                        "rtp": opt_dict["rtp"],
-                        "avg_win": opt_dict["av_win"],
-                        "hr": opt_dict["hr"],
+                        "rtp": optimization_dict["rtp"],
+                        "avg_win": optimization_dict["av_win"],
+                        "hr": optimization_dict["hr"],
                         "identity_condition": {
                             "search": search_data,
                             "opposite": False,
-                            "win_range_start": opt_dict["search_range"][0],
-                            "win_range_end": opt_dict["search_range"][1],
+                            "win_range_start": optimization_dict["search_range"][0],
+                            "win_range_end": optimization_dict["search_range"][1],
                         },
                     }
                 )
-            bet_mode_rust["opt_conditions"] = data
+            bet_mode_rust["optimization_conditions"] = data
 
             bet_mode_rust["scaling"] = []
             for scale in mode_obj["scaling"]:
@@ -240,7 +240,7 @@ def make_math_config(game_state):
                     }
                 )
 
-            bet_mode_rust["opt_params"] = mode_obj["parameters"]
+            bet_mode_rust["optimization_params"] = mode_obj["parameters"]
 
             rust_dict["bet_modes"].append(bet_mode_rust)
 

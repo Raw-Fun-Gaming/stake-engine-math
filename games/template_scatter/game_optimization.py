@@ -16,14 +16,13 @@ class OptimizationSetup:
 
         rtp = game_config.rtp
         win_cap = game_config.win_cap
-        splits = game_config.opt_rtp_splits
+        splits = game_config.optimization_rtp_splits
 
         # Base mode RTP splits
         base_splits = splits["base"]
         wincap_rtp = base_splits["wincap"]
-        zero_rtp = base_splits["zero"]
         free_game_rtp = base_splits["free_game"]
-        base_game_rtp = rtp - wincap_rtp - zero_rtp - free_game_rtp
+        base_game_rtp = rtp - wincap_rtp - free_game_rtp
 
         # Bonus mode RTP splits
         bonus_splits = splits["bonus"]
@@ -33,25 +32,24 @@ class OptimizationSetup:
         # Super spin mode RTP splits
         ss_splits = splits["super_spin"]
         ss_wincap_rtp = ss_splits["wincap"]
-        ss_zero_rtp = ss_splits["zero"]
-        ss_base_game_rtp = rtp - ss_wincap_rtp - ss_zero_rtp
+        ss_base_game_rtp = rtp - ss_wincap_rtp
 
-        self.game_config.opt_params = {
+        self.game_config.optimization_params = {
             "base": {
                 "conditions": {
                     "wincap": ConstructConditions(
                         rtp=wincap_rtp, av_win=win_cap, search_conditions=win_cap
                     ).return_dict(),
                     "0": ConstructConditions(
-                        rtp=zero_rtp, av_win=0, search_conditions=0
+                        rtp=0, av_win=0, search_conditions=0
                     ).return_dict(),
                     "free_game": ConstructConditions(
                         rtp=free_game_rtp,
-                        hr=game_config.opt_free_hr,
+                        hr=game_config.optimization_free_hit_rate,
                         search_conditions={"symbol": "scatter"},
                     ).return_dict(),
                     "base_game": ConstructConditions(
-                        hr=game_config.opt_base_hr, rtp=base_game_rtp
+                        hr=game_config.optimization_base_hit_rate, rtp=base_game_rtp
                     ).return_dict(),
                 },
                 "scaling": ConstructScaling(
@@ -143,10 +141,10 @@ class OptimizationSetup:
                         rtp=ss_wincap_rtp, av_win=win_cap, search_conditions=win_cap
                     ).return_dict(),
                     "0": ConstructConditions(
-                        rtp=ss_zero_rtp, av_win=0, search_conditions=0
+                        rtp=0, av_win=0, search_conditions=0
                     ).return_dict(),
                     "base_game": ConstructConditions(
-                        hr=game_config.opt_super_spin_hr, rtp=ss_base_game_rtp
+                        hr=game_config.optimization_super_spin_hit_rate, rtp=ss_base_game_rtp
                     ).return_dict(),
                 },
                 "scaling": ConstructScaling(
@@ -173,4 +171,4 @@ class OptimizationSetup:
             },
         }
 
-        verify_optimization_input(self.game_config, self.game_config.opt_params)
+        verify_optimization_input(self.game_config, self.game_config.optimization_params)

@@ -46,7 +46,7 @@ from optimization_program.optimization_config import (
 class OptimizationSetup:
     def __init__(self, game_config):
         self.game_config = game_config
-        self.game_config.opt_params = {
+        self.game_config.optimization_params = {
             "base": {  # Bet mode name
                 "conditions": {...},
                 "scaling": {...},
@@ -143,7 +143,7 @@ from optimization_program.optimization_config import (
 class OptimizationSetup:
     def __init__(self, game_config):
         self.game_config = game_config
-        self.game_config.opt_params = {
+        self.game_config.optimization_params = {
         "base": {
             "conditions": {
                 # Base game: 3.5% hit rate, contributes 59% RTP

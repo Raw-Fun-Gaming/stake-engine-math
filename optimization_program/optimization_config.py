@@ -133,16 +133,16 @@ class ConstructConditions:
         return self.params
 
 
-def verify_optimization_input(game_config, opt_dict):
+def verify_optimization_input(game_config, optimization_dict):
     """Check simulation setup is compatible with optimization inputs,"""
-    optimization_mode_names = list(opt_dict.keys())
+    optimization_mode_names = list(optimization_dict.keys())
     for mode_name in optimization_mode_names:
-        opt_keys = list(opt_dict[mode_name].keys())
+        optimization_keys = list(optimization_dict[mode_name].keys())
         assert all(
-            ["conditions" in opt_keys, "scaling" in opt_keys, "parameters" in opt_keys]
+            ["conditions" in optimization_keys, "scaling" in optimization_keys, "parameters" in optimization_keys]
         ), "Required keys: {<mode>: 'conditions':{}, 'scaling':{}, 'parameters':{}}"
 
-        criteria_list = opt_dict[mode_name]["conditions"].keys()
+        criteria_list = optimization_dict[mode_name]["conditions"].keys()
         bet = None
         for bm in game_config.bet_modes:
             if bm.get_name() == mode_name:
@@ -163,7 +163,7 @@ def verify_optimization_input(game_config, opt_dict):
         # Verify optimization segmentation matches target RTP
         bm_rtp = bm.get_rtp()
         param_rtp = 0.0
-        param_conditions = opt_dict[mode_name]["conditions"].values()
+        param_conditions = optimization_dict[mode_name]["conditions"].values()
         for p in param_conditions:
             param_rtp += p["rtp"]
 

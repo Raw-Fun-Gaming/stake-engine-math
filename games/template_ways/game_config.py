@@ -169,12 +169,11 @@ class GameConfig(Config):
         ]
 
         # Optimization RTP splits (must sum to self.rtp per bet mode)
-        self.opt_rtp_splits = {
+        self.optimization_rtp_splits = {
             "base": {
                 "wincap": 0.01,
-                "zero": 0.0,
                 "free_game": 0.37,
-                # base_game is the remainder: rtp - wincap - zero - free_game
+                # base_game is the remainder: rtp - wincap - free_game
             },
             "bonus": {
                 "wincap": 0.01,
@@ -183,5 +182,5 @@ class GameConfig(Config):
         }
 
         # Optimization hit rates
-        self.opt_base_hr = 3.5
-        self.opt_free_hr = 200
+        self.optimization_base_hit_rate = 3.5
+        self.optimization_free_hit_rate = 200
