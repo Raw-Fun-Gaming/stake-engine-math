@@ -258,9 +258,183 @@ class GameConfig(Config):
                     ),
                 ],
             ),
+            # Ante modes: graduated value — higher cost = better HR per bet
+            # Cost per trigger: 2x*90=180x, 5x*33=165x, 10x*15=150x (vs base 1x*200=200x)
+            BetMode(
+                name="ante-2x",
+                cost=2.0,
+                rtp=self.rtp,
+                max_win=self.win_cap,
+                auto_close_disabled=False,
+                is_feature=True,
+                is_buy_bonus=False,
+                distributions=[
+                    Distribution(
+                        criteria="wincap",
+                        quota=0.001,
+                        win_criteria=self.win_cap,
+                        conditions={
+                            "reel_weights": {
+                                self.base_game_type: {"base": 1},
+                                self.free_game_type: {"free": 1, "wincap": 5},
+                            },
+                            "scatter_triggers": {4: 1, 5: 2},
+                            "force_wincap": True,
+                            "force_free_game": True,
+                        },
+                    ),
+                    Distribution(
+                        criteria="free_game",
+                        quota=0.1,
+                        conditions={
+                            "reel_weights": {
+                                self.base_game_type: {"base": 1},
+                                self.free_game_type: {"free": 1},
+                            },
+                            "scatter_triggers": {4: 5, 5: 1},
+                            "force_wincap": False,
+                            "force_free_game": True,
+                        },
+                    ),
+                    Distribution(
+                        criteria="0",
+                        quota=0.4,
+                        win_criteria=0.0,
+                        conditions={
+                            "reel_weights": {self.base_game_type: {"base": 1}},
+                            "force_wincap": False,
+                            "force_free_game": False,
+                        },
+                    ),
+                    Distribution(
+                        criteria="base_game",
+                        quota=0.5,
+                        conditions={
+                            "reel_weights": {self.base_game_type: {"base": 1}},
+                            "force_wincap": False,
+                            "force_free_game": False,
+                        },
+                    ),
+                ],
+            ),
+            BetMode(
+                name="ante-5x",
+                cost=5.0,
+                rtp=self.rtp,
+                max_win=self.win_cap,
+                auto_close_disabled=False,
+                is_feature=True,
+                is_buy_bonus=False,
+                distributions=[
+                    Distribution(
+                        criteria="wincap",
+                        quota=0.001,
+                        win_criteria=self.win_cap,
+                        conditions={
+                            "reel_weights": {
+                                self.base_game_type: {"base": 1},
+                                self.free_game_type: {"free": 1, "wincap": 5},
+                            },
+                            "scatter_triggers": {4: 1, 5: 2},
+                            "force_wincap": True,
+                            "force_free_game": True,
+                        },
+                    ),
+                    Distribution(
+                        criteria="free_game",
+                        quota=0.1,
+                        conditions={
+                            "reel_weights": {
+                                self.base_game_type: {"base": 1},
+                                self.free_game_type: {"free": 1},
+                            },
+                            "scatter_triggers": {4: 5, 5: 1},
+                            "force_wincap": False,
+                            "force_free_game": True,
+                        },
+                    ),
+                    Distribution(
+                        criteria="0",
+                        quota=0.4,
+                        win_criteria=0.0,
+                        conditions={
+                            "reel_weights": {self.base_game_type: {"base": 1}},
+                            "force_wincap": False,
+                            "force_free_game": False,
+                        },
+                    ),
+                    Distribution(
+                        criteria="base_game",
+                        quota=0.5,
+                        conditions={
+                            "reel_weights": {self.base_game_type: {"base": 1}},
+                            "force_wincap": False,
+                            "force_free_game": False,
+                        },
+                    ),
+                ],
+            ),
+            BetMode(
+                name="ante-10x",
+                cost=10.0,
+                rtp=self.rtp,
+                max_win=self.win_cap,
+                auto_close_disabled=False,
+                is_feature=True,
+                is_buy_bonus=False,
+                distributions=[
+                    Distribution(
+                        criteria="wincap",
+                        quota=0.001,
+                        win_criteria=self.win_cap,
+                        conditions={
+                            "reel_weights": {
+                                self.base_game_type: {"base": 1},
+                                self.free_game_type: {"free": 1, "wincap": 5},
+                            },
+                            "scatter_triggers": {4: 1, 5: 2},
+                            "force_wincap": True,
+                            "force_free_game": True,
+                        },
+                    ),
+                    Distribution(
+                        criteria="free_game",
+                        quota=0.1,
+                        conditions={
+                            "reel_weights": {
+                                self.base_game_type: {"base": 1},
+                                self.free_game_type: {"free": 1},
+                            },
+                            "scatter_triggers": {4: 5, 5: 1},
+                            "force_wincap": False,
+                            "force_free_game": True,
+                        },
+                    ),
+                    Distribution(
+                        criteria="0",
+                        quota=0.4,
+                        win_criteria=0.0,
+                        conditions={
+                            "reel_weights": {self.base_game_type: {"base": 1}},
+                            "force_wincap": False,
+                            "force_free_game": False,
+                        },
+                    ),
+                    Distribution(
+                        criteria="base_game",
+                        quota=0.5,
+                        conditions={
+                            "reel_weights": {self.base_game_type: {"base": 1}},
+                            "force_wincap": False,
+                            "force_free_game": False,
+                        },
+                    ),
+                ],
+            ),
+            # Bonus: guaranteed free spins (100x cost, HR 1:1)
             BetMode(
                 name="bonus",
-                cost=200,
+                cost=100,
                 rtp=self.rtp,
                 max_win=self.win_cap,
                 auto_close_disabled=False,
@@ -318,20 +492,55 @@ class GameConfig(Config):
             ),
         ]
 
-        # Optimization RTP splits (must sum to self.rtp per bet mode)
-        self.opt_rtp_splits = {
+        # ── Optimization: RTP splits (must sum to self.rtp per mode) ──
+
+        self.optimization_rtp_splits = {
+            # Base: standard play
             "base": {
                 "wincap": 0.01,
-                "zero": 0.0,
                 "free_game": 0.37,
-                # base_game is the remainder: rtp - wincap - zero - free_game
+                # base_game is the remainder: rtp - wincap - free_game
             },
+            # Ante modes: progressively shift RTP toward free_game
+            "ante-2x": {
+                "wincap": 0.01,
+                "free_game": 0.45,
+            },
+            "ante-5x": {
+                "wincap": 0.01,
+                "free_game": 0.55,
+            },
+            "ante-10x": {
+                "wincap": 0.01,
+                "free_game": 0.65,
+            },
+            # Bonus: guaranteed free spins
             "bonus": {
                 "wincap": 0.01,
                 # free_game is the remainder: rtp - wincap
             },
         }
 
-        # Optimization hit rates and search conditions
-        self.opt_base_hr = 3.5
-        self.opt_free_hr = 200
+        # ── Optimization: hit rate targets per mode ──
+
+        self.optimization_hit_rates = {
+            # Base: 1x cost, 200x per trigger
+            "base": {
+                "base_game": 3.5,
+                "free_game": 200,
+            },
+            # Ante: graduated value — higher cost = better cost-per-trigger
+            "ante-2x": {
+                "base_game": 3.5,
+                "free_game": 90,     # 2x * 90 = 180x per trigger (10% better)
+            },
+            "ante-5x": {
+                "base_game": 3.5,
+                "free_game": 33,     # 5x * 33 = 165x per trigger (17% better)
+            },
+            "ante-10x": {
+                "base_game": 3.5,
+                "free_game": 15,     # 10x * 15 = 150x per trigger (25% better)
+            },
+            # Bonus: 100x cost, guaranteed (HR not used — always triggers)
+        }

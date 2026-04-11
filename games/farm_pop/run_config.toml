@@ -2,7 +2,7 @@
 # Fast iteration with small sample sizes for testing game logic
 
 # Target modes for optimization
-target_modes = ["base", "bonus"]
+target_modes = ["base", "ante-2x", "ante-5x", "ante-10x", "bonus"]
 
 [execution]
 num_threads = 4          # Fewer threads for development
@@ -13,6 +13,9 @@ profiling = false
 
 [simulation]
 base = 100              # Small sample for quick testing
+"ante-2x" = 100
+"ante-5x" = 100
+"ante-10x" = 100
 bonus = 100
 
 [pipeline]

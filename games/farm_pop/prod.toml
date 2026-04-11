@@ -2,7 +2,7 @@
 # Large sample sizes for accurate statistics and optimization
 
 # Target modes for optimization
-target_modes = ["base", "bonus"]
+target_modes = ["base", "ante-2x", "ante-5x", "ante-10x", "bonus"]
 
 [execution]
 num_threads = 10         # Max threads for performance
@@ -13,6 +13,9 @@ profiling = false
 
 [simulation]
 base = 1000000          # 1M simulations for production accuracy
+"ante-2x" = 1000000
+"ante-5x" = 1000000
+"ante-10x" = 1000000
 bonus = 1000000
 
 [pipeline]

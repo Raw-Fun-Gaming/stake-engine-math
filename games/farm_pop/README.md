@@ -94,19 +94,34 @@ Anticipation triggers at 2 scatters.
 
 ### Base (cost: 1.0×)
 
-| Distribution | Quota | Description |
-|-------------|-------|-------------|
-| `wincap` | 0.1% | Forces free game + win cap (10,000×). Uses wincap reel strip (5:1 weight vs free). |
-| `free_game` | 10% | Forces free game trigger. Scatter distribution: 4S (5:1 weight) or 5S. |
-| `0` | 40% | Forced zero-win outcome. Base reel strip only. |
-| `base_game` | 50% | Standard base game outcome with non-zero win. Base reel strip only. |
-
-### Bonus (cost: 200×)
+**Distributions:**
 
 | Distribution | Quota | Description |
 |-------------|-------|-------------|
-| `wincap` | 0.1% | Forces free game + win cap. Includes multiplier values (2×–50×). |
-| `free_game` | 99.9% | Standard free game outcome. |
+| `wincap` | 0.001 | Forces free game + win cap (10,000×). Uses wincap reel strip (5:1 weight vs free). |
+| `free_game` | 0.1 | Forces free game trigger. Scatter distribution: 4S (5:1 weight) or 5S. |
+| `0` | 0.4 | Forced zero-win outcome. Base reel strip only. |
+| `base_game` | 0.5 | Standard base game outcome with non-zero win. Base reel strip only. |
+
+### Ante Modes
+
+Ante modes increase the bet cost for a better free spin trigger rate. Higher antes offer progressively better cost-per-trigger, rewarding players who take the risk.
+
+| Mode | Cost | Free Spin HR | Cost per Trigger |
+|------|------|-------------|-----------------|
+| Base | 1× | 1:200 | 200× |
+| Ante-2x | 2× | 1:90 | 180× (10% better) |
+| Ante-5x | 5× | 1:33 | 165× (17% better) |
+| Ante-10x | 10× | 1:15 | 150× (25% better) |
+
+All ante modes share the same distributions as base.
+
+### Bonus (cost: 100×)
+
+| Distribution | Quota | Description |
+|-------------|-------|-------------|
+| `wincap` | 0.001 | Forces free game + win cap. Includes multiplier values (2×–50×). |
+| `free_game` | 0.1 | Standard free game outcome. |
 
 Bonus mode includes weighted multiplier values per game type:
 
@@ -119,6 +134,18 @@ Bonus mode includes weighted multiplier values per game type:
 | 10× | 20 |
 | 20× | 20 |
 | 50× | 10 |
+
+## Optimization RTP Splits
+
+All modes target 0.96 total RTP. Wincap contributes 0.01 RTP across all modes.
+
+| Mode | Free Game | Base Game (remainder) |
+|------|-----------|----------------------|
+| Base | 0.37 | 0.58 |
+| Ante-2x | 0.45 | 0.50 |
+| Ante-5x | 0.55 | 0.40 |
+| Ante-10x | 0.65 | 0.30 |
+| Bonus | 0.95 | — |
 
 ## Reel Strips
 

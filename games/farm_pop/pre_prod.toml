@@ -2,7 +2,7 @@
 # Smaller simulations with full pipeline for quick verification (~1 min)
 
 # Target modes for optimization
-target_modes = ["base", "bonus"]
+target_modes = ["base", "ante-2x", "ante-5x", "ante-10x", "bonus"]
 
 [execution]
 num_threads = 10
@@ -13,6 +13,9 @@ profiling = false
 
 [simulation]
 base = 10000
+"ante-2x" = 10000
+"ante-5x" = 10000
+"ante-10x" = 10000
 bonus = 10000
 
 [pipeline]
