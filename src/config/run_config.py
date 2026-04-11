@@ -73,48 +73,58 @@ class ExecutionConfig:
 class SimulationConfig:
     """Simulation settings for different game modes.
 
+    Supports arbitrary mode names (e.g., "base", "bonus", "ante-2x").
+    The "base" mode is required; all others are optional.
+
     Attributes:
-        base: Number of base game simulations
-        bonus: Number of bonus game simulations (optional)
-        free_spin: Number of free spin simulations (optional)
-        super_spin: Number of super spin simulations (optional)
+        _modes: Dictionary mapping mode names to simulation counts.
     """
 
-    base: int = 10000
-    bonus: int | None = None
-    free_spin: int | None = None
-    super_spin: int | None = None
+    _modes: dict[str, int] = field(default_factory=lambda: {"base": 10000})
+
+    def __init__(self, **kwargs: int) -> None:
+        """Initialize from keyword arguments.
+
+        Args:
+            **kwargs: Mode names and their simulation counts.
+                      Must include "base". All counts must be >= 1.
+        """
+        if not kwargs:
+            self._modes = {"base": 10000}
+        else:
+            self._modes = dict(kwargs)
+
+        if "base" not in self._modes:
+            raise ValueError("'base' mode is required in simulation config")
+        for mode, count in self._modes.items():
+            if count < 1:
+                raise ValueError(f"{mode} simulations must be >= 1, got {count}")
 
     def to_dict(self) -> dict[str, int]:
         """Convert to dictionary format expected by create_books().
 
         Returns:
             Dictionary with mode names as keys and simulation counts as values.
-            Only includes modes with non-None values.
         """
-        result = {"base": self.base}
-        if self.bonus is not None:
-            result["bonus"] = self.bonus
-        if self.free_spin is not None:
-            result["free_spin"] = self.free_spin
-        if self.super_spin is not None:
-            result["super_spin"] = self.super_spin
-        return result
+        return dict(self._modes)
 
-    def __post_init__(self) -> None:
-        """Validate simulation settings."""
-        if self.base < 1:
-            raise ValueError(f"base simulations must be >= 1, got {self.base}")
-        if self.bonus is not None and self.bonus < 1:
-            raise ValueError(f"bonus simulations must be >= 1, got {self.bonus}")
-        if self.free_spin is not None and self.free_spin < 1:
-            raise ValueError(
-                f"free_spin simulations must be >= 1, got {self.free_spin}"
-            )
-        if self.super_spin is not None and self.super_spin < 1:
-            raise ValueError(
-                f"super_spin simulations must be >= 1, got {self.super_spin}"
-            )
+    @classmethod
+    def from_dict(cls, data: dict[str, int]) -> "SimulationConfig":
+        """Create from a dictionary (supports keys with hyphens like 'ante-2x')."""
+        instance = cls.__new__(cls)
+        instance._modes = dict(data) if data else {"base": 10000}
+        if "base" not in instance._modes:
+            raise ValueError("'base' mode is required in simulation config")
+        for mode, count in instance._modes.items():
+            if count < 1:
+                raise ValueError(f"{mode} simulations must be >= 1, got {count}")
+        return instance
+
+    def __getattr__(self, name: str) -> int | None:
+        """Allow attribute-style access to mode counts (e.g., config.simulation.base)."""
+        if name.startswith("_"):
+            raise AttributeError(name)
+        return self._modes.get(name)
 
 
 @dataclass
@@ -215,9 +225,9 @@ class RunConfig:
         execution_data = data.get("execution", {})
         execution = ExecutionConfig(**execution_data)
 
-        # Parse simulation settings
+        # Parse simulation settings (use from_dict to support hyphenated mode names)
         simulation_data = data.get("simulation", {})
-        simulation = SimulationConfig(**simulation_data)
+        simulation = SimulationConfig.from_dict(simulation_data)
 
         # Parse pipeline settings
         pipeline_data = data.get("pipeline", {})
@@ -288,7 +298,7 @@ class RunConfig:
 
         # Check if optimization/analysis modes exist
         if self.pipeline.run_optimization or self.pipeline.run_analysis:
-            if not any([self.simulation.base, self.simulation.bonus]):
+            if not self.simulation.to_dict():
                 raise ValueError(
                     "Optimization/analysis requires at least one simulation mode configured"
                 )
