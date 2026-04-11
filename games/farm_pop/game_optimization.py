@@ -163,6 +163,25 @@ class OptimizationSetup:
             ).return_dict(),
         }
 
+        # ── Super mode ──
+
+        super_splits = splits["super"]
+        super_wincap_rtp = super_splits["wincap"]
+        super_free_game_rtp = rtp - super_wincap_rtp
+
+        super_params = {
+            "conditions": {
+                "wincap": ConstructConditions(
+                    rtp=super_wincap_rtp, av_win=win_cap, search_conditions=win_cap
+                ).return_dict(),
+                "free_game": ConstructConditions(
+                    rtp=super_free_game_rtp, hr="x"
+                ).return_dict(),
+            },
+            "scaling": bonus_params["scaling"],
+            "parameters": bonus_params["parameters"],
+        }
+
         # ── Assemble all modes ──
 
         self.game_config.optimization_params = {
@@ -171,6 +190,7 @@ class OptimizationSetup:
             "ante-5x": build_ante_params("ante-5x"),
             "ante-10x": build_ante_params("ante-10x"),
             "bonus": bonus_params,
+            "super": super_params,
         }
 
         verify_optimization_input(self.game_config, self.game_config.optimization_params)

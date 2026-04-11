@@ -181,9 +181,11 @@ class GameConfig(Config):
         self.free_spin_triggers = {
             self.base_game_type: {
                 4: 10, 5: 12, 6: 15, 7: 18, 8: 20, 9: 22, 10: 25,
+                11: 25, 12: 25, 13: 25, 14: 25, 15: 25,
             },
             self.free_game_type: {
                 3: 5, 4: 8, 5: 10, 6: 12, 7: 15, 8: 18, 9: 20, 10: 22,
+                11: 22, 12: 22, 13: 22, 14: 22, 15: 22,
             },
         }
         self.anticipation_triggers = {
@@ -206,6 +208,7 @@ class GameConfig(Config):
             "ante_2x": "ante_2x.csv",
             "ante_5x": "ante_5x.csv",
             "ante_10x": "ante_10x.csv",
+            "super": "ante_10x.csv",
         }
         self.reels = {}
         for r, f in reels.items():
@@ -481,7 +484,7 @@ class GameConfig(Config):
                                     50: 10,
                                 },
                             },
-                            "scatter_triggers": {4: 1, 5: 2},
+                            "scatter_triggers": {4: 1},
                             "force_wincap": True,
                             "force_free_game": True,
                         },
@@ -494,7 +497,66 @@ class GameConfig(Config):
                                 self.base_game_type: {"base": 1},
                                 self.free_game_type: {"free": 1},
                             },
-                            "scatter_triggers": {4: 5, 5: 1},
+                            "scatter_triggers": {4: 1},
+                            "force_wincap": False,
+                            "force_free_game": True,
+                        },
+                    ),
+                ],
+            ),
+            # Super: guaranteed 7 scatters → 18 free spins (300x cost)
+            BetMode(
+                name="super",
+                cost=300,
+                rtp=self.rtp,
+                max_win=self.win_cap,
+                auto_close_disabled=False,
+                is_feature=True,
+                is_buy_bonus=False,
+                distributions=[
+                    Distribution(
+                        criteria="wincap",
+                        quota=0.001,
+                        win_criteria=self.win_cap,
+                        conditions={
+                            "reel_weights": {
+                                self.base_game_type: {"super": 1},
+                                self.free_game_type: {"free": 1, "wincap": 5},
+                            },
+                            "multiplier_values": {
+                                self.base_game_type: {
+                                    2: 10,
+                                    3: 20,
+                                    4: 30,
+                                    5: 20,
+                                    10: 20,
+                                    20: 20,
+                                    50: 10,
+                                },
+                                self.free_game_type: {
+                                    2: 10,
+                                    3: 20,
+                                    4: 30,
+                                    5: 20,
+                                    10: 20,
+                                    20: 20,
+                                    50: 10,
+                                },
+                            },
+                            "scatter_triggers": {7: 1},
+                            "force_wincap": True,
+                            "force_free_game": True,
+                        },
+                    ),
+                    Distribution(
+                        criteria="free_game",
+                        quota=0.1,
+                        conditions={
+                            "reel_weights": {
+                                self.base_game_type: {"super": 1},
+                                self.free_game_type: {"free": 1},
+                            },
+                            "scatter_triggers": {7: 1},
                             "force_wincap": False,
                             "force_free_game": True,
                         },
@@ -527,6 +589,11 @@ class GameConfig(Config):
             },
             # Bonus: guaranteed free spins
             "bonus": {
+                "wincap": 0.01,
+                # free_game is the remainder: rtp - wincap
+            },
+            # Super: guaranteed free spins (same split as bonus)
+            "super": {
                 "wincap": 0.01,
                 # free_game is the remainder: rtp - wincap
             },

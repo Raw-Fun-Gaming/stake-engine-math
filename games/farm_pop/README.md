@@ -69,7 +69,6 @@ Standard tumbling game with grid incrementers. Wilds substitute for any paying s
 | 5 | 12 |
 | 6 | 15 |
 | 7 | 18 |
-| 8 | 20 |
 
 Anticipation triggers at 3 scatters (one below minimum).
 
@@ -86,7 +85,6 @@ Same tumble and cluster mechanics as base game. Grid incrementers **persist acro
 | 5 | 10 |
 | 6 | 12 |
 | 7 | 15 |
-| 8 | 18 |
 
 Anticipation triggers at 2 scatters.
 
@@ -118,12 +116,23 @@ All ante modes share the same distributions as base.
 
 ### Bonus (cost: 100×)
 
+Guaranteed 4 scatters → 10 free spins every spin.
+
 | Distribution | Quota | Description |
 |-------------|-------|-------------|
 | `wincap` | 0.001 | Forces free game + win cap. Includes multiplier values (2×–50×). |
 | `free_game` | 0.1 | Standard free game outcome. |
 
-Bonus mode includes weighted multiplier values per game type:
+### Super (cost: 300×)
+
+Guaranteed 7 scatters → 18 free spins every spin. Uses ante_10x reel strip (8 scatters/reel).
+
+| Distribution | Quota | Description |
+|-------------|-------|-------------|
+| `wincap` | 0.001 | Forces free game + win cap. Includes multiplier values (2×–50×). |
+| `free_game` | 0.1 | Standard free game outcome. |
+
+Both bonus and super include weighted multiplier values (wincap distribution):
 
 | Multiplier | Weight |
 |------------|--------|
@@ -146,6 +155,7 @@ All modes target 0.96 total RTP. Wincap contributes 0.01 RTP across all modes.
 | Ante-5x | 0.55 | 0.40 |
 | Ante-10x | 0.65 | 0.30 |
 | Bonus | 0.95 | — |
+| Super | 0.95 | — |
 
 ## Reel Strips
 
@@ -154,6 +164,9 @@ All modes target 0.96 total RTP. Wincap contributes 0.01 RTP across all modes.
 | `reels/base.csv` | Base game (all distributions) |
 | `reels/free.csv` | Free game (standard) |
 | `reels/wincap.csv` | Free game (wincap distribution, 5:1 weight vs free) |
+| `reels/ante_2x.csv` | Ante-2x base game (4 scatters/reel) |
+| `reels/ante_5x.csv` | Ante-5x base game (6 scatters/reel) |
+| `reels/ante_10x.csv` | Ante-10x and Super base game (8 scatters/reel) |
 
 ## Events
 
