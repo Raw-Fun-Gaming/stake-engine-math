@@ -179,8 +179,12 @@ class GameConfig(Config):
         self.include_board_in_tumble = False
 
         self.free_spin_triggers = {
-            self.base_game_type: {4: 10, 5: 12, 6: 15, 7: 18, 8: 20},
-            self.free_game_type: {3: 5, 4: 8, 5: 10, 6: 12, 7: 15, 8: 18},
+            self.base_game_type: {
+                4: 10, 5: 12, 6: 15, 7: 18, 8: 20, 9: 22, 10: 25,
+            },
+            self.free_game_type: {
+                3: 5, 4: 8, 5: 10, 6: 12, 7: 15, 8: 18, 9: 20, 10: 22,
+            },
         }
         self.anticipation_triggers = {
             self.base_game_type: min(
@@ -195,7 +199,14 @@ class GameConfig(Config):
 
         self.maximum_board_multiplier = 512
 
-        reels = {"base": "base.csv", "free": "free.csv", "wincap": "wincap.csv"}
+        reels = {
+            "base": "base.csv",
+            "free": "free.csv",
+            "wincap": "wincap.csv",
+            "ante_2x": "ante_2x.csv",
+            "ante_5x": "ante_5x.csv",
+            "ante_10x": "ante_10x.csv",
+        }
         self.reels = {}
         for r, f in reels.items():
             self.reels[r] = self.read_reels_csv(os.path.join(self.reels_path, f))
@@ -275,7 +286,7 @@ class GameConfig(Config):
                         win_criteria=self.win_cap,
                         conditions={
                             "reel_weights": {
-                                self.base_game_type: {"base": 1},
+                                self.base_game_type: {"ante_2x": 1},
                                 self.free_game_type: {"free": 1, "wincap": 5},
                             },
                             "scatter_triggers": {4: 1, 5: 2},
@@ -288,7 +299,7 @@ class GameConfig(Config):
                         quota=0.1,
                         conditions={
                             "reel_weights": {
-                                self.base_game_type: {"base": 1},
+                                self.base_game_type: {"ante_2x": 1},
                                 self.free_game_type: {"free": 1},
                             },
                             "scatter_triggers": {4: 5, 5: 1},
@@ -301,7 +312,7 @@ class GameConfig(Config):
                         quota=0.4,
                         win_criteria=0.0,
                         conditions={
-                            "reel_weights": {self.base_game_type: {"base": 1}},
+                            "reel_weights": {self.base_game_type: {"ante_2x": 1}},
                             "force_wincap": False,
                             "force_free_game": False,
                         },
@@ -310,7 +321,7 @@ class GameConfig(Config):
                         criteria="base_game",
                         quota=0.5,
                         conditions={
-                            "reel_weights": {self.base_game_type: {"base": 1}},
+                            "reel_weights": {self.base_game_type: {"ante_2x": 1}},
                             "force_wincap": False,
                             "force_free_game": False,
                         },
@@ -332,7 +343,7 @@ class GameConfig(Config):
                         win_criteria=self.win_cap,
                         conditions={
                             "reel_weights": {
-                                self.base_game_type: {"base": 1},
+                                self.base_game_type: {"ante_5x": 1},
                                 self.free_game_type: {"free": 1, "wincap": 5},
                             },
                             "scatter_triggers": {4: 1, 5: 2},
@@ -345,7 +356,7 @@ class GameConfig(Config):
                         quota=0.1,
                         conditions={
                             "reel_weights": {
-                                self.base_game_type: {"base": 1},
+                                self.base_game_type: {"ante_5x": 1},
                                 self.free_game_type: {"free": 1},
                             },
                             "scatter_triggers": {4: 5, 5: 1},
@@ -358,7 +369,7 @@ class GameConfig(Config):
                         quota=0.4,
                         win_criteria=0.0,
                         conditions={
-                            "reel_weights": {self.base_game_type: {"base": 1}},
+                            "reel_weights": {self.base_game_type: {"ante_5x": 1}},
                             "force_wincap": False,
                             "force_free_game": False,
                         },
@@ -367,7 +378,7 @@ class GameConfig(Config):
                         criteria="base_game",
                         quota=0.5,
                         conditions={
-                            "reel_weights": {self.base_game_type: {"base": 1}},
+                            "reel_weights": {self.base_game_type: {"ante_5x": 1}},
                             "force_wincap": False,
                             "force_free_game": False,
                         },
@@ -389,7 +400,7 @@ class GameConfig(Config):
                         win_criteria=self.win_cap,
                         conditions={
                             "reel_weights": {
-                                self.base_game_type: {"base": 1},
+                                self.base_game_type: {"ante_10x": 1},
                                 self.free_game_type: {"free": 1, "wincap": 5},
                             },
                             "scatter_triggers": {4: 1, 5: 2},
@@ -402,7 +413,7 @@ class GameConfig(Config):
                         quota=0.1,
                         conditions={
                             "reel_weights": {
-                                self.base_game_type: {"base": 1},
+                                self.base_game_type: {"ante_10x": 1},
                                 self.free_game_type: {"free": 1},
                             },
                             "scatter_triggers": {4: 5, 5: 1},
@@ -415,7 +426,7 @@ class GameConfig(Config):
                         quota=0.4,
                         win_criteria=0.0,
                         conditions={
-                            "reel_weights": {self.base_game_type: {"base": 1}},
+                            "reel_weights": {self.base_game_type: {"ante_10x": 1}},
                             "force_wincap": False,
                             "force_free_game": False,
                         },
@@ -424,7 +435,7 @@ class GameConfig(Config):
                         criteria="base_game",
                         quota=0.5,
                         conditions={
-                            "reel_weights": {self.base_game_type: {"base": 1}},
+                            "reel_weights": {self.base_game_type: {"ante_10x": 1}},
                             "force_wincap": False,
                             "force_free_game": False,
                         },
