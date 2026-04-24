@@ -256,19 +256,41 @@ def set_final_win_event(game_state: Any) -> None:
 
 
 def win_cap_event(game_state: Any) -> None:
-    """Emit a showWin event when the win cap is reached.
+    """Emit a tumble then showWin event when the win cap is reached.
 
-    Uses SHOW_WIN with the capped amount and max win level to signal
-    the maximum payout limit has been hit.
+    Emits a TUMBLE event to clear winning symbols off-screen before the
+    SHOW_WIN celebration, so the frontend can animate symbol removal first.
 
     Args:
         game_state: Current game state with win manager
     """
+    # Emit tumble so the frontend explodes the winning symbols before showWin.
+    # removedIndexes comes from the current win positions; newSymbols is empty
+    # because the game ends at wincap — nothing new drops in.
+    removed_indexes: list[list[int]] = [[] for _ in range(game_state.config.num_reels)]
+    include_padding = getattr(game_state.config, "include_padding", False)
+    for win in game_state.win_data["wins"]:
+        for pos in win["positions"]:
+            reel = pos["reel"]
+            row = pos["row"] + 1 if include_padding else pos["row"]
+            if row not in removed_indexes[reel]:
+                removed_indexes[reel].append(row)
+    for reel_indexes in removed_indexes:
+        reel_indexes.sort()
+
+    tumble_event: dict[str, Any] = {
+        "index": len(game_state.book.events),
+        "type": EventConstants.TUMBLE.value,
+        "newSymbols": [[] for _ in range(game_state.config.num_reels)],
+        "removedIndexes": removed_indexes,
+    }
+    game_state.book.add_event(tumble_event)
+
     win_cap = game_state.config.win_cap
-    event: dict[str, Any] = {
+    show_win: dict[str, Any] = {
         "index": len(game_state.book.events),
         "type": EventConstants.SHOW_WIN.value,
         "amount": int(round(win_cap * 100, 0)),
         "level": game_state.config.get_win_level(win_cap, "standard"),
     }
-    game_state.book.add_event(event)
+    game_state.book.add_event(show_win)
